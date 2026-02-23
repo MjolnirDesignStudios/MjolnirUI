@@ -193,7 +193,6 @@
   .aurora-text[data-animation-duration] {
     animation-duration: attr(data-animation-duration);
   }
-  }
 
   @keyframes aurora-gradient-move {
     0% {
@@ -225,7 +224,6 @@
 .electric-border-radius-16 { border-radius: 16px; }
 .electric-border-radius-32 { border-radius: 32px; }
 .electric-border-radius-8 { border-radius: 8px; }
-}
 
 .eb-canvas-container {
   position: absolute;
