@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">mjolnirui</string>
+    <string name="title_activity_main">mjolnirui</string>
+    <string name="package_name">com.mjolnirui.app</string>
+    <string name="custom_url_scheme">com.mjolnirui.app</string>
+</resources>
