@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^cmd /c attrib \"m:\\\\Dev\\\\mjolnirui\\\\app\\\\components\\\\lib\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
