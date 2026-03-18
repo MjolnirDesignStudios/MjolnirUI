@@ -21,7 +21,7 @@ export default function Footer() {
         />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-5 gap-12 justify-items-start mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 justify-items-start mb-16">
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category} className="space-y-6 text-left">
               <h3 className="text-2xl font-black text-white">{category}</h3>
@@ -64,7 +64,7 @@ export default function Footer() {
                 }}
               />
               <Image
-                src="/Logos/mjolnir_logo_officialtransparent.png"
+                src="/logos/mjolnir_logo_officialtransparent.png"
                 alt="MjolnirUI"
                 width={160}
                 height={160}
@@ -75,7 +75,7 @@ export default function Footer() {
           </Link>
 
 
-          <div className="flex gap-6">
+          <div className="flex gap-4 lg:gap-6">
             {socialMedia.map((profile) => (
               <motion.a
                 key={profile.id}
@@ -87,9 +87,9 @@ export default function Footer() {
                   rotate: 5,
                   boxShadow: "0 0 20px #FFD700, 0 0 40px #FFD700"
                 }}
-                className="w-14 h-14 bg-black/60 backdrop-blur-xl border border-white/20 rounded-2xl flex items-center justify-center hover:border-gold transition-all duration-300"
+                className="w-12 h-12 lg:w-14 lg:h-14 bg-black/60 backdrop-blur-xl border border-white/20 rounded-2xl flex items-center justify-center hover:border-gold transition-all duration-300"
               >
-                <Image src={profile.img} alt="" width={28} height={28} />
+                <Image src={profile.img} alt="" width={24} height={24} className="lg:w-7 lg:h-7" />
               </motion.a>
             ))}
           </div>
@@ -97,7 +97,7 @@ export default function Footer() {
 
           {/* Copyright */}
           <div className="text-center">
-            <p className="text-xl font-bold text-gold">Copyright © 2026 MjölnirUI</p>
+            <p className="text-xl font-bold text-gold">Copyright © 2026 MjölnirUI and Mjölnir Design Studios</p>
             <p className="text-lg text-gray-400 mt-2">All rights reserved.</p>
           </div>
         </div>

@@ -24,9 +24,15 @@ export default function Hero() {
 	const { data: session } = useSession();
 	const router = useRouter();
 
-	const handleAuthAction = () => {
+	const handleWieldMjolnir = () => {
+		router.push('/pricing');
+	};
+
+	const handleViewBlocks = () => {
 		if (!session) {
-			router.push('/auth/signin');
+			router.push('/auth/signin?callbackUrl=/blocks/dashboard');
+		} else {
+			router.push('/blocks/dashboard');
 		}
 	};
 
@@ -35,7 +41,7 @@ export default function Hero() {
 			{/* Staggered, book-like text reveal sequence */}
 			<TextReveal
 				as="h1"
-				className="text-2xl md:text-4xl font-extrabold text-white mb-2 text-center"
+				className="text-xl md:text-4xl font-extrabold text-white mb-2 text-center"
 				animation="blurInLeft"
 				by="character"
 				duration={0.8}
@@ -44,13 +50,23 @@ export default function Hero() {
 			</TextReveal>
 			<TextReveal
 				as="h1"
-				className="text-2xl md:text-4xl font-extrabold text-white mb-2 text-center"
+				className="text-xl md:text-4xl font-extrabold text-white mb-2 text-center"
 				animation="blurInLeft"
 				by="character"
 				delay={0.85}
 				duration={0.8}
 			>
-				IF HE BE WORTHY, SHALL POSSESS THE POWER OF
+				IF HE BE WORTH, SHALL POSSESS
+			</TextReveal>
+			<TextReveal
+				as="h1"
+				className="text-xl md:text-4xl font-extrabold text-white mb-2 text-center"
+				animation="blurInLeft"
+				by="character"
+				delay={0.85}
+				duration={0.8}
+			>
+				THE POWER OF
 			</TextReveal>
 			<div className="my-4">
 				<motion.div
@@ -62,7 +78,7 @@ export default function Hero() {
 						duration: 0.5,
 						ease: "easeOut",
 					}}
-					className="inline-block text-6xl md:text-8xl font-black mb-4"
+					className="inline-block text-4xl md:text-8xl font-black mb-2 md:mb-4"
 				>
 					{/* Toggle between AuroraText and GradientText for debugging */}
 					<AuroraText
@@ -76,7 +92,7 @@ export default function Hero() {
 			</div>
 			<TextReveal
 				as="p"
-				className="text-lg md:text-2xl text-gray-200 mb-2 text-center"
+				className="text-base md:text-2xl text-gray-200 mb-2 text-center"
 				animation="blurInLeft"
 				by="character"
 				delay={3.0}
@@ -86,7 +102,7 @@ export default function Hero() {
 			</TextReveal>
 			<TextReveal
 				as="p"
-				className="text-lg md:text-2xl text-gray-200 mb-2 text-center"
+				className="text-base md:text-2xl text-gray-200 mb-2 text-center"
 				animation="blurInLeft"
 				by="character"
 				delay={4.2}
@@ -96,7 +112,7 @@ export default function Hero() {
 			</TextReveal>
 			<div className="mb-8 flex flex-col items-center justify-center">
 				<motion.p
-					className="text-lg md:text-2xl inline-block text-center"
+					className="text-base md:text-2xl inline-block text-center"
 					initial="hidden"
 					animate="visible"
 					variants={defaultVariants.blurInLeft}
@@ -119,7 +135,7 @@ export default function Hero() {
 					ease: "easeOut",
 				}}
 			>
-				<div onClick={handleAuthAction}>
+				<div onClick={handleWieldMjolnir}>
 					<ShimmerButton
 						title="Wield Mjolnir!"
 						variant="gold"
@@ -128,7 +144,7 @@ export default function Hero() {
 						otherClasses="text-lg px-8 py-4 border border-yellow-400/80"
 					/>
 				</div>
-				<div onClick={handleAuthAction}>
+				<div onClick={handleViewBlocks}>
 					<ShimmerButton
 						title="View Blocks"
 						variant="silver"

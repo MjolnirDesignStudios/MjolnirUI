@@ -6,10 +6,22 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = request.nextUrl;
 
-  // Protect all routes under /app/(protected)
-  if (pathname.startsWith('/app/(protected)')) {
+  // All /blocks/* routes require authentication (any tier, including free)
+  if (pathname.startsWith('/blocks')) {
+    if (!token) {
+      const signInUrl = new URL('/auth/signin', request.url);
+      signInUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+  }
+
+  // Admin routes require authentication + admin role
+  if (pathname.startsWith('/admin')) {
     if (!token) {
       return NextResponse.redirect(new URL('/auth/signin', request.url));
+    }
+    if (token.role !== 'admin') {
+      return NextResponse.redirect(new URL('/blocks/dashboard', request.url));
     }
   }
 
@@ -17,5 +29,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/app/(protected)/:path*'],
+  matcher: ['/blocks/:path*', '/admin/:path*'],
 };

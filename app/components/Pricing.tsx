@@ -1,4 +1,4 @@
-// components/Pricing.tsx — FINAL 2026 MJÖLNIR PRICING — REVENUE LIVE — NO BUILD ERRORS
+// components/Pricing.tsx — MJÖLNIR 4-TIER PRICING 2026
 "use client";
 
 import React, { useState } from "react";
@@ -7,6 +7,7 @@ import { Zap, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import ElectricBorder from "@/components/ui/ElectricBorder";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 
 interface Tier {
@@ -14,78 +15,95 @@ interface Tier {
   subtitle: string;
   monthly: number;
   annual: number;
-  original: number;
   description: string;
   features: string[];
   buttonText: string;
   electricColor: string;
   buttonGradient: string;
   popular?: boolean;
+  isFree?: boolean;
   stripePriceIdMonthly: string;
   stripePriceIdAnnual: string;
 }
 
 const tiers: Tier[] = [
   {
+    name: "MjolnirUI Free",
+    subtitle: "For Explorers",
+    monthly: 0,
+    annual: 0,
+    description: "",
+    features: [
+      "Browse Component Library",
+      "Preview All Tools",
+      "Community Access",
+      "3 Free Components",
+      "Design Token Reference",
+    ],
+    buttonText: "Join Free",
+    electricColor: "#3B82F6",
+    buttonGradient: "from-blue-600 to-blue-400",
+    isFree: true,
+    stripePriceIdMonthly: "",
+    stripePriceIdAnnual: "",
+  },
+  {
     name: "MjolnirUI Base",
     subtitle: "For Creators",
     monthly: 10,
     annual: 100,
-    original: 149,
     description: "",
     features: [
-      "MjolnirUI Base Components",
+      "Full Component Library",
       "Basic Animations & Effects",
-      "Email Support 27/7/365",
-      "Community Access",
+      "Background Studio",
+      "Email Support 24/7",
       "Lifetime Updates",
     ],
-    buttonText: "Get Started",
-    electricColor: "#3B82F6",
-    buttonGradient: "from-blue-500 to-cyan-500",
-    stripePriceIdMonthly: "price_1SdGLZFxkFUD7EnZJbUPdiP6",
-    stripePriceIdAnnual: "price_1SdG59FxkFUD7EnZsjsdT2pa",
+    buttonText: "Unlock Base",
+    electricColor: "#10B981",
+    buttonGradient: "from-emerald-600 to-emerald-400",
+    stripePriceIdMonthly: "price_1TBIjFFxkFUD7EnZqANuPLav",
+    stripePriceIdAnnual: "price_1TBIjFFxkFUD7EnZsDQ2WVgH",
   },
   {
     name: "MjolnirUI Pro",
     subtitle: "For Professionals",
-    monthly: 50,
-    annual: 500,
-    original: 749,
+    monthly: 25,
+    annual: 250,
     description: "",
     features: [
       "Everything in Base",
       "Advanced GSAP Animations",
-      "3D Model and Printing Forge",
+      "3D Forge & Shader Engine",
       "Custom Component Requests",
       "Commercial License",
     ],
-    buttonText: "Go Pro",
-    electricColor: "#10B981",
-    buttonGradient: "from-green-500 to-emerald-500",
+    buttonText: "Upgrade to Pro",
+    electricColor: "#EAB308",
+    buttonGradient: "from-yellow-400 to-yellow-600",
     popular: true,
-    stripePriceIdMonthly: "price_1SdHO8FxkFUD7EnZn7ntnR3I",
-    stripePriceIdAnnual: "price_1SdHAqFxkFUD7EnZJgRjye5s",
+    stripePriceIdMonthly: "price_1TBIltFxkFUD7EnZI5cxamBR",
+    stripePriceIdAnnual: "price_1TBIltFxkFUD7EnZ1DFBq6gN",
   },
   {
     name: "MjolnirUI Elite",
     subtitle: "For Agencies",
-    monthly: 250,
-    annual: 2500,
-    original: 7499,
+    monthly: 50,
+    annual: 500,
     description: "",
     features: [
       "Everything in Pro",
-      "Agentic AI Stack",
+      "OdinAI Design Agent",
       "Dedicated Engineer",
       "Custom Development",
       "Source Code Access",
     ],
-    buttonText: "Join Elite",
-    electricColor: "#FFFF00",
-    buttonGradient: "from-yellow-300 to-yellow-500",
-    stripePriceIdMonthly: "price_1SdHuoFxkFUD7EnZIt8MeINJ",
-    stripePriceIdAnnual: "price_1SdHpQFxkFUD7EnZq9jBzUQE",
+    buttonText: "Elite Company",
+    electricColor: "#F97316",
+    buttonGradient: "from-orange-400 to-orange-600",
+    stripePriceIdMonthly: "price_1TBIuCFxkFUD7EnZlAYMZOEO",
+    stripePriceIdAnnual: "price_1TBIslFxkFUD7EnZb9TDuHYF",
   },
 ];
 
@@ -93,8 +111,19 @@ export default function Pricing() {
   const [isAnnual, setIsAnnual] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const router = useRouter();
+  const { data: session } = useSession();
+
+  const handleFreeSignup = () => {
+    router.push("/auth/signin");
+  };
 
   const handleStripeCheckout = async (tier: Tier) => {
+    // If not logged in, redirect to sign-in first
+    if (!session?.user) {
+      router.push(`/auth/signin?callbackUrl=${encodeURIComponent('/#pricing')}`);
+      return;
+    }
+
     const priceId = isAnnual ? tier.stripePriceIdAnnual : tier.stripePriceIdMonthly;
     if (!priceId) return;
 
@@ -103,19 +132,19 @@ export default function Pricing() {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId, mode: "subscription" }), // Always subscription
+        body: JSON.stringify({ priceId, mode: "subscription" }),
       });
 
       const data = await res.json();
 
       if (!data.url) {
         console.error("Stripe error:", data);
-        alert("Payment setup failed. See console.");
+        alert("Payment setup failed. Please sign in first, then try again.");
         setLoading(null);
         return;
       }
 
-      router.push(data.url);
+      window.location.href = data.url; // Use window.location for external Stripe URL
     } catch (err) {
       console.error("Fetch error:", err);
       alert("Payment failed. Try again.");
@@ -125,9 +154,9 @@ export default function Pricing() {
 
   return (
     <section id="pricing"
-      className="py-16 relative flex items-center justify-center overflow-hidden">
+      className="pt-36 pb-16 scroll-mt-32 relative flex items-center justify-center overflow-hidden">
       <div className="relative z-10 max-w-7xl mx-auto w-full">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
           <h1 className="heading text-silver-100 text-5xl lg:text-5xl font-bold text-center mb-4">
             Our Pricing: We Accept All Forms of <span className="text-gold">Gold!</span>
@@ -152,7 +181,7 @@ export default function Pricing() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 max-w-7xl mx-auto px-4 sm:px-6">
           {tiers.map((tier) => {
             const price = isAnnual ? tier.annual : tier.monthly;
             const period = isAnnual ? "year" : "month";
@@ -160,29 +189,35 @@ export default function Pricing() {
             return (
               <div key={tier.name} className="group relative">
                 {tier.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full text-xs font-bold z-60">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-yellow-500 to-orange-500 text-black px-4 py-2 rounded-full text-xs font-bold z-60">
                     MOST POPULAR
                   </div>
                 )}
                 <ElectricBorder color={tier.electricColor} speed={1} chaos={0.12} borderRadius={24} className="absolute inset-0 z-50">
                   <div className="relative h-full p-6 rounded-3xl bg-black/40 backdrop-blur-xl border border-white/10 transition-all duration-300 group-hover:border-white/20">
                     <div className="text-center mb-8">
-                      <h3 className="text-3xl font-heading font-black text-white">{tier.name}</h3>
+                      <h3 className="text-2xl lg:text-3xl font-heading font-black text-white">{tier.name}</h3>
                       <p className="text-gray-400 text-sm mt-1">{tier.subtitle}</p>
                     </div>
 
                     <div className="text-center mb-8">
-                      <div className="text-5xl font-black text-white">${price}</div>
-                      <div className="text-gray-500 text-sm">/{period}</div>
-                      {price !== null && price !== undefined && tier.original !== undefined && price < tier.original && (
-                        <div className="text-gray-600 line-through text-lg mt-2">${tier.original}</div>
+                      {tier.isFree ? (
+                        <>
+                          <div className="text-5xl font-black text-white">Free</div>
+                          <div className="text-gray-500 text-sm">Forever</div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="text-5xl font-black text-white">${price}</div>
+                          <div className="text-gray-500 text-sm">/{period}</div>
+                        </>
                       )}
                     </div>
 
                     <ul className="space-y-3 mb-10">
                       {tier.features.map((f) => (
                         <li key={f} className="flex items-center gap-3 text-gray-300 text-sm">
-                          <Zap className="w-4 h-4 text-emerald-400" />
+                          <Zap className="w-4 h-4 shrink-0" style={{ color: tier.electricColor }} />
                           <span>{f}</span>
                         </li>
                       ))}
@@ -190,7 +225,7 @@ export default function Pricing() {
 
                     <div className="relative z-50">
                       <motion.button
-                        onClick={() => handleStripeCheckout(tier)}
+                        onClick={() => tier.isFree ? handleFreeSignup() : handleStripeCheckout(tier)}
                         disabled={loading === tier.name}
                         className={cn(
                           "relative w-full py-4 rounded-2xl font-bold text-black text-xl overflow-hidden shadow-2xl",
@@ -213,7 +248,7 @@ export default function Pricing() {
                         <span className="relative z-10 flex items-center justify-center gap-3">
                           {loading === tier.name ? (
                             <>
-                              <Zap className="animate-pulse w-6 h-6 text-emerald-400" />
+                              <Zap className="animate-pulse w-6 h-6" style={{ color: tier.electricColor }} />
                               Charging...
                             </>
                           ) : (

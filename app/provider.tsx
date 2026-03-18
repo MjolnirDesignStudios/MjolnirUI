@@ -11,7 +11,15 @@ export function Providers({
 }: ThemeProviderProps) {
 	return (
 		<SessionProvider>
-			<NextThemesProvider {...props}>{children}</NextThemesProvider>
+			<NextThemesProvider
+				attribute="class"
+				defaultTheme="dark"
+				forcedTheme="dark"
+				disableTransitionOnChange
+				{...props}
+			>
+				{children}
+			</NextThemesProvider>
 		</SessionProvider>
 	)
 }

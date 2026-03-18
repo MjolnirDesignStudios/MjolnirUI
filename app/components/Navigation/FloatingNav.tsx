@@ -76,7 +76,7 @@ export const FloatingNav = ({ className }: { className?: string }) => {
           exit={{ y: -100 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
           className={cn(
-            "hidden fixed top-4 inset-x-4 z-5000 w-auto items-center justify-between",
+            "flex lg:hidden fixed top-4 inset-x-4 z-5000 w-auto items-center justify-between",
             // SOLID, OPAQUE, BEAUTIFUL BACKGROUND
             "bg-black/95 backdrop-blur-xl border border-white/10 rounded-2xl",
             "px-6 py-5 shadow-2xl shadow-black/50",
@@ -145,16 +145,18 @@ export const FloatingNav = ({ className }: { className?: string }) => {
               >
                 <div className="p-6 space-y-6">
                   {/* GitHub Badge */}
-                  <div className="flex items-center justify-between bg-linear-to-r from-electric/10 to-gold/10 rounded-xl p-4 border border-electric/20">
-                    <div className="flex items-center gap-3">
-                      <Github className="w-6 h-6 text-electric" />
-                      <span className="text-lg font-heading text-electric">GitHub Stars</span>
+                  <Link href="https://github.com/MjolnirDesignStudios" target="_blank" rel="noopener noreferrer">
+                    <div className="flex items-center justify-between bg-linear-to-r from-electric/10 to-gold/10 rounded-xl p-4 border border-electric/20 hover:bg-electric/20 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <Github className="w-6 h-6 text-electric" />
+                        <span className="text-lg font-heading text-electric">GitHub Stars</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl font-black text-gold">12.4k</span>
+                        <span className="text-sm text-gray-400">★</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl font-black text-gold">12.4k</span>
-                      <span className="text-sm text-gray-400">★</span>
-                    </div>
-                  </div>
+                  </Link>
 
                   {/* Navigation */}
                   <nav className="space-y-5">

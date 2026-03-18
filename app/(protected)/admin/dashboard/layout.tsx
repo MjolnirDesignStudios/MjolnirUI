@@ -1,6 +1,6 @@
 import { Toaster } from "sonner";
-import { MjolnirSidebar } from "@/components/ui/Dashboards/sidebar";
-import { MjolnirHeader } from "@/components/ui/Dashboards/header";
+import { MjolnirSidebar } from "@/components/Dashboards/Sidebar";
+import { MjolnirHeader } from "@/components/Dashboards/Header";
 
 export const metadata = {
   title: "MjolnirUI Admin • Dashboard",
