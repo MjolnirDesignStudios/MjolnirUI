@@ -175,8 +175,8 @@ export function MjolnirSidebar() {
       <aside className="w-64 bg-linear-to-br from-zinc-900 via-black to-zinc-950 border-r border-zinc-800/50 h-screen flex flex-col">
         {/* Logo — sticky */}
         <div className="p-6 pb-4 shrink-0 border-b border-zinc-800/30">
-          <Link href="/" className="font-black text-2xl">
-            <span className="text-white">Mjolnir</span><span className="text-[#FFCC11]">UI</span>
+          <Link href="/" className="block">
+            <img src="/logos/MjolnirUI.png" alt="MjolnirUI" className="h-10 object-contain" />
           </Link>
         </div>
 

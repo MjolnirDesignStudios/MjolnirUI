@@ -51,11 +51,11 @@ export default function Navbar() {
               }}
             />
             <Image
-              src="/logos/mjolnir_logo_officialtransparent.png"
+              src="/logos/MjolnirUI.png"
               alt="MjolnirUI"
-              width={160}
-              height={160}
-              className="rounded-full drop-shadow-2xl relative z-10"
+              width={220}
+              height={80}
+              className="drop-shadow-2xl relative z-10"
               priority
             />
           </motion.div>

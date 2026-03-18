@@ -89,12 +89,12 @@ export const FloatingNav = ({ className }: { className?: string }) => {
           {/* LEFT: Logo */}
           <Link href="/" className="shrink-0">
             <Image
-              src="/logos/mjolnir_logo_officialtransparent.png"
+              src="/logos/MjolnirUI.png"
               alt="MjolnirUI"
-              width={140}
-              height={36}
+              width={160}
+              height={42}
               className="object-contain drop-shadow-2xl"
-              sizes="(max-width: 768px) 140px, 180px"
+              sizes="(max-width: 768px) 160px, 200px"
               priority
             />
           </Link>

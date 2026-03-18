@@ -20,7 +20,9 @@ export default function Home() {
 				<FloatingNav />
 			</div>
 			{/* Navbar — Desktop Only */}
-			<Navbar_V2 />
+			<div className="hidden lg:block">
+				<Navbar_V2 />
+			</div>
 
 			{/* Content Layer - Above BG and Nav, main page content */}
 			<div className="relative z-10">
