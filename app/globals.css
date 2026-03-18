@@ -258,6 +258,7 @@
   border-radius: inherit;
   overflow: visible;
   isolation: isolate;
+  height: 100%;
 }
 
 /* Dynamic border color classes (add more as needed) */
@@ -290,6 +291,7 @@
   position: relative;
   border-radius: inherit;
   z-index: 1;
+  height: 100%;
 }
 
 .eb-layers {
