@@ -1,58 +1,176 @@
-import { Twitter, Sparkles } from "lucide-react";
+// Dashboard Home — Tier-aware welcome + feature grid
+"use client";
+import React, { Suspense, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
+import {
+  Sparkles, Image, Layers, MousePointer, Palette,
+  Box, Hammer, Bot, Code2, Wrench, Gauge, Zap,
+  LockKeyhole,
+} from "lucide-react";
+import { TierBadge } from "@/components/Dashboards/TierBadge";
+import { UpgradeModal } from "@/components/Dashboards/UpgradeModal";
+import { hasAccess, getTierConfig, type TierName } from "@/lib/tierConfig";
+
+type FeatureCard = {
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string; size?: number; style?: React.CSSProperties }>;
+  requiredTier: TierName;
+  href: string;
+  comingSoon?: boolean;
+};
+
+const featureCards: FeatureCard[] = [
+  { title: "Component Library", description: "Premium React components with copy/paste and CLI install", icon: MousePointer, requiredTier: "free", href: "/blocks/components/buttons" },
+  { title: "Design Tokens", description: "HSL color system, typography scale, and spacing tokens", icon: Palette, requiredTier: "free", href: "/blocks/foundation/tokens" },
+  { title: "Text & Transitions", description: "Aurora text, reveal animations, and electric effects", icon: Sparkles, requiredTier: "free", href: "/blocks/animation/text" },
+  { title: "Background Studio", description: "Gradient backgrounds, mesh patterns, and animated canvases", icon: Image, requiredTier: "base", href: "/blocks/canvas/backgrounds" },
+  { title: "Electric Effects", description: "Glowing borders, spark animations, and neon accents", icon: Zap, requiredTier: "base", href: "/blocks/animation/electric" },
+  { title: "Animated Orbs", description: "React Three Fiber 3D orb scenes with custom shaders", icon: Box, requiredTier: "base", href: "/blocks/3d/orbs" },
+  { title: "Shader Engine", description: "GLSL/WebGL shader backgrounds with real-time controls", icon: Layers, requiredTier: "pro", href: "/blocks/canvas/shaders", comingSoon: true },
+  { title: "3D Forge", description: "Image-to-3D model generation powered by Meshy API", icon: Hammer, requiredTier: "pro", href: "/blocks/3d/forge", comingSoon: true },
+  { title: "Dashboard Builder", description: "Visual dashboard designer with drag-and-drop layouts", icon: Gauge, requiredTier: "pro", href: "/blocks/systems/dashboard", comingSoon: true },
+  { title: "Website Tuner", description: "Theme optimizer and site performance analyzer", icon: Wrench, requiredTier: "pro", href: "/blocks/systems/tuner" },
+  { title: "OdinAI Agent", description: "Agentic AI UI/UX designer with Ralph Self-Improvement Loop", icon: Bot, requiredTier: "elite", href: "/blocks/ai/odinai", comingSoon: true },
+  { title: "Shader Designer", description: "Prompt-based GLSL shader generation system", icon: Code2, requiredTier: "elite", href: "/blocks/ai/shader", comingSoon: true },
+];
 
 export default function DashboardHome() {
   return (
-    <div className="space-y-16">
-      {/* Hero Welcome */}
-      <div className="mb-12">
-        <h1 className="text-4xl md:text-6xl font-black mb-4 bg-linear-to-r from-white via-cyan-300 to-emerald-400 bg-clip-text text-transparent">
-          Welcome to MjolnirUI Pro
+    <Suspense fallback={<div className="animate-pulse text-gray-500 p-12 text-center">Loading dashboard…</div>}>
+      <DashboardContent />
+    </Suspense>
+  );
+}
+
+function DashboardContent() {
+  const { data: session, update } = useSession();
+  const searchParams = useSearchParams();
+  const userTier = (session?.user?.tier as TierName) || 'free';
+
+  const [upgradeModal, setUpgradeModal] = useState<{
+    isOpen: boolean;
+    requiredTier: TierName;
+    featureName: string;
+  }>({ isOpen: false, requiredTier: 'base', featureName: '' });
+
+  // Refresh session after successful checkout
+  useEffect(() => {
+    if (searchParams.get('upgraded') === 'true') {
+      update(); // Force JWT refresh to pick up new tier from Supabase
+    }
+  }, [searchParams, update]);
+
+  const handleCardClick = (card: FeatureCard) => {
+    if (!hasAccess(userTier, card.requiredTier)) {
+      setUpgradeModal({
+        isOpen: true,
+        requiredTier: card.requiredTier,
+        featureName: card.title,
+      });
+    }
+    // TODO: Navigate to card.href when pages are built
+  };
+
+  return (
+    <div className="space-y-12">
+      {/* Welcome Header */}
+      <div>
+        <h1 className="text-4xl md:text-5xl font-black mb-3 bg-linear-to-r from-white via-cyan-300 to-emerald-400 bg-clip-text text-transparent">
+          Welcome{session?.user?.name ? `, ${session.user.name.split(' ')[0]}` : ''}
         </h1>
-        <p className="text-xl text-gray-300">
-          70+ handcrafted thunder-powered components & templates. Copy, paste, dominate.
+        <p className="text-lg text-gray-400 flex items-center gap-3">
+          Your design arsenal awaits. You&apos;re currently on the{" "}
+          <TierBadge tier={userTier} size="md" /> plan.
         </p>
       </div>
-      {/* Component Showcase Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {[
-          { title: "Neon Gradient Button", desc: "Glowing animated button with glassmorphism", pro: true },
-          { title: "3D Card Tilt", desc: "Interactive 3D tilt on hover", pro: true },
-        ].map((item) => (
-          <div
-            key={item.title}
-            className="group relative overflow-hidden bg-linear-to-br from-zinc-900 to-black border border-zinc-800/50 rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(34,197,94,0.15)]"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-white">{item.title}</h3>
-              {item.pro && (
-                <span className="px-3 py-1 bg-linear-to-r from-purple-600 to-pink-600 text-white text-xs font-bold rounded-full">
-                  Pro
-                </span>
+
+      {/* Feature Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {featureCards.map((card, index) => {
+          const isLocked = !hasAccess(userTier, card.requiredTier);
+          const tierConfig = getTierConfig(card.requiredTier);
+
+          return (
+            <motion.button
+              key={card.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+              onClick={() => handleCardClick(card)}
+              className="relative text-left overflow-hidden bg-linear-to-br from-zinc-900 to-black border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg group"
+              style={{
+                borderColor: isLocked ? 'rgba(63,63,70,0.5)' : `${tierConfig.color}30`,
+              }}
+              whileHover={{ scale: 1.02 }}
+            >
+              {/* Tier badge */}
+              <div className="flex items-center justify-between mb-4">
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ backgroundColor: `${tierConfig.color}20` }}
+                >
+                  <card.icon size={20} style={{ color: tierConfig.color }} />
+                </div>
+                <div className="flex items-center gap-2">
+                  {isLocked && <LockKeyhole size={14} className="text-gray-500" />}
+                  <TierBadge tier={card.requiredTier} size="sm" showIcon={false} />
+                </div>
+              </div>
+
+              <h3 className={`text-lg font-bold mb-1 ${isLocked ? 'text-gray-500' : 'text-white'}`}>
+                {card.title}
+              </h3>
+              <p className={`text-sm ${isLocked ? 'text-gray-600' : 'text-gray-400'}`}>
+                {card.description}
+              </p>
+
+              {/* Coming Soon badge for in-development Pro/Elite features */}
+              {card.comingSoon && (
+                <motion.span
+                  className="inline-flex items-center mt-3 px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide"
+                  style={{
+                    backgroundColor: `${tierConfig.color}15`,
+                    color: tierConfig.color,
+                    border: `1px solid ${tierConfig.color}30`,
+                  }}
+                  animate={{ opacity: [0.6, 1, 0.6] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  Coming May 29
+                </motion.span>
               )}
-            </div>
-            <p className="text-gray-400 mb-6 text-sm">{item.desc}</p>
-            <div className="h-48 bg-black/50 rounded-xl border border-zinc-800 flex items-center justify-center">
-              <Sparkles className="w-16 h-16 text-purple-500/30" />
-            </div>
-            <button className="mt-6 w-full py-3 bg-linear-to-r from-cyan-500 to-emerald-500 text-black font-bold rounded-xl hover:brightness-110 transition">
-              View Component
-            </button>
-          </div>
-        ))}
+
+              {/* Locked overlay shimmer */}
+              {isLocked && (
+                <div className="absolute inset-0 bg-black/20 rounded-2xl" />
+              )}
+            </motion.button>
+          );
+        })}
       </div>
-      {/* Lifetime Deal */}
-      <div className="max-w-4xl mx-auto bg-linear-to-br from-purple-950/30 via-zinc-950 to-black border border-purple-800/30 rounded-3xl p-10 text-center">
-        <h2 className="text-4xl font-black mb-6 bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-          Lifetime Access Activated ⚡
+
+      {/* Quick Stats / CTA */}
+      <div className="bg-linear-to-br from-zinc-900/50 via-black to-zinc-900/50 border border-zinc-800/50 rounded-2xl p-8 text-center">
+        <h2 className="text-2xl font-bold text-white mb-3">
+          {userTier === 'free' ? 'Unlock the Full Arsenal' : 'Your Design Arsenal'}
         </h2>
-        <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-          No subscriptions. All components, updates, agents, 3D assets — yours forever.
+        <p className="text-gray-400 max-w-2xl mx-auto">
+          {userTier === 'free'
+            ? 'Upgrade to Base to access the full component library, Background Studio, and electric effects.'
+            : 'Browse the sidebar to explore all your unlocked tools and components.'
+          }
         </p>
-        <div className="flex items-center justify-center gap-4 text-gray-400">
-          <Twitter className="w-6 h-6" />
-          <span>Follow @mjolnirui for weekly thunder drops</span>
-        </div>
       </div>
+
+      <UpgradeModal
+        isOpen={upgradeModal.isOpen}
+        onClose={() => setUpgradeModal(prev => ({ ...prev, isOpen: false }))}
+        requiredTier={upgradeModal.requiredTier}
+        featureName={upgradeModal.featureName}
+      />
     </div>
   );
 }

@@ -3,8 +3,10 @@ import Navbar_V2 from '@/components/Navigation/Navbar_V2';
 import { FloatingNav } from '@/components/Navigation/FloatingNav';
 import Footer from '@/components/Footer';
 import Hero from '@/components/Hero';
+import About from '@/components/About';
 import Blocks from '@/components/Blocks';
 import Pricing from '@/components/Pricing';
+import Tech from '@/components/Tech';
 
 export default function Home() {
 	return (
@@ -26,11 +28,17 @@ export default function Home() {
 					{/* Hero Section */}
 					<Hero />
 
+					{/* About Section */}
+					<About />
+
 					{/* Blocks Section */}
 					<Blocks />
 
 					{/* Pricing Section */}
 					<Pricing />
+
+					{/* Tech Section */}
+					<Tech />
 
 					{/* Footer - At the bottom */}
 					<Footer />

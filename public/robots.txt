@@ -1,0 +1,14 @@
+# MjolnirUI.com — Robots.txt
+# Allow all crawlers for public pages
+
+User-agent: *
+Allow: /
+
+# Disallow private and internal routes
+Disallow: /api/
+Disallow: /blocks/
+Disallow: /admin/
+Disallow: /_next/
+
+# Sitemap
+Sitemap: https://www.mjolnirui.com/sitemap.xml

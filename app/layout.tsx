@@ -13,11 +13,11 @@ const ubuntu = Ubuntu({
 export const metadata: Metadata = {
 	metadataBase: new URL("https://www.mjolnirui.com"),
 	title: {
-		default: "Mjolnir Design Studios | Thunderous UI/UX",
-		template: "%s • Mjolnir Design Studios",
+		default: "MjolnirUI — Premium React Component Library",
+		template: "%s • MjolnirUI",
 	},
 	description:
-		"Premium Agentic AI Agent for UI/UX Design.",
+		"Asgardian-grade UI/UX design system. Components, shaders, 3D tools, and AI-powered design by Mjolnir Design Studios.",
 	keywords: [
 		"Agentic AI",
 		"Agentic AI Design Agent",
@@ -37,8 +37,8 @@ export const metadata: Metadata = {
 		locale: "en_US",
 		url: "https://www.mjolnirui.com",
 		siteName: "MjolnirUI",
-		title: "MjolnirUI • Agentic AI Design for Thunderous UI/UX",
-		description: "Electric UI/UX Design Powered by Agentic AI.",
+		title: "MjolnirUI — Premium React Component Library",
+		description: "Asgardian-grade UI/UX design system. Components, shaders, 3D tools, and AI-powered design.",
 		images: [
 			{
 				url: "/og-image.jpg",
@@ -52,8 +52,8 @@ export const metadata: Metadata = {
 		card: "summary_large_image",
 		site: "@MjolnirDesignsX",
 		creator: "@MjolnirDesignsX",
-		title: "Mjolnir Design Studios - Thunderous Web Agency",
-		description: "We don’t just build websites.. We electrify your business!",
+		title: "MjolnirUI — Premium React Component Library",
+		description: "Asgardian-grade UI/UX design system. Components, shaders, 3D tools, and AI-powered design.",
 		images: ["/og-image.jpg"],
 	},
 	icons: {
