@@ -228,7 +228,7 @@ export default function Demo() {
         >
           {/* Liquid glass container */}
           <div
-            className="relative w-full rounded-3xl"
+            className="relative w-full rounded-3xl border border-white/30"
             style={{
               background: "rgba(255, 255, 255, 0.01)",
               backgroundBlendMode: "luminosity",
@@ -236,19 +236,6 @@ export default function Demo() {
               boxShadow: "inset 0 1px 1px rgba(255, 255, 255, 0.1)",
             }}
           >
-            {/* Gradient border */}
-            <div
-              className="absolute inset-0 rounded-3xl pointer-events-none"
-              style={{
-                padding: "1.4px",
-                background:
-                  "linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%)",
-                WebkitMask:
-                  "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                WebkitMaskComposite: "xor",
-                maskComposite: "exclude",
-              }}
-            />
 
             {/* Dashboard demo */}
             <div className="relative w-full h-[340px] sm:h-[380px] lg:h-[420px]">

@@ -21,11 +21,11 @@ export default function Footer() {
         />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 justify-items-start mb-16">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-12 justify-items-center lg:justify-items-start mb-16">
           {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category} className="space-y-6 text-left">
+            <div key={category} className="space-y-6 text-center lg:text-left">
               <h3 className="text-2xl font-black text-white">{category}</h3>
-              <ul className="space-y-3 list-none text-left">
+              <ul className="space-y-3 list-none text-center lg:text-left">
                 {links.map((link) => (
                   <li key={link.name}>
                     <Link

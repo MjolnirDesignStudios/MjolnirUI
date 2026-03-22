@@ -62,7 +62,7 @@ export default function Build() {
                   <Rocket className="w-16 h-16 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-3xl md:text-4xl lg:text-5xl font-black text-white drop-shadow-2xl">
+                  <h3 className="text-3xl md:text-4xl lg:text-5xl font-black text-white drop-shadow-2xl whitespace-nowrap">
                     Build Your Startup!
                   </h3>
                   <p className="text-gold text-xl lg:text-2xl drop-shadow-lg">
@@ -101,7 +101,7 @@ export default function Build() {
                 <Zap className="w-12 h-12 text-white" />
               </div>
               <div>
-                <h3 className="text-xl md:text-2xl font-black text-white">Powerful UI/UX</h3>
+                <h3 className="text-lg md:text-xl font-black text-white">Powerful UI/UX</h3>
                 <p className="text-gold text-lg">Lightning-Fast</p>
               </div>
             </div>
@@ -110,7 +110,7 @@ export default function Build() {
           {/* 4. Crypto Payments */}
           <li className="md:[grid-area:2/1/3/4] lg:[grid-area:2/1/3/4]">
             <div className="relative h-full rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl p-8 flex flex-col items-center justify-center text-center gap-6">
-              <div className="p-8 rounded-3xl bg-linear-to-br from-yellow-400 to-orange-500 shadow-2xl">
+              <div className="p-8 rounded-3xl bg-linear-to-br from-amber-400 to-orange-600 shadow-2xl">
                 <Hammer className="w-12 h-12 text-white" />
               </div>
               <div>

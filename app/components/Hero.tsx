@@ -37,11 +37,11 @@ export default function Hero() {
 	};
 
 	return (
-		<section className="flex flex-col items-center justify-center relative overflow-hidden py-16 px-4 mt-14 sm:mt-16 md:mt-20 lg:mt-24">
+		<section className="flex flex-col items-center justify-center relative overflow-hidden min-h-[100svh] md:min-h-0 py-10 md:py-16 px-6 mt-0 md:mt-20 lg:mt-24">
 			{/* Staggered, book-like text reveal sequence */}
 			<TextReveal
 				as="h1"
-				className="text-xl md:text-4xl font-extrabold text-white mb-2 text-center"
+				className="text-[4.8vw] md:text-4xl font-extrabold text-white mb-2 text-center whitespace-nowrap"
 				animation="blurInLeft"
 				by="character"
 				duration={0.8}
@@ -50,17 +50,17 @@ export default function Hero() {
 			</TextReveal>
 			<TextReveal
 				as="h1"
-				className="text-xl md:text-4xl font-extrabold text-white mb-2 text-center"
+				className="text-[4.2vw] md:text-4xl font-extrabold text-white mb-2 text-center whitespace-nowrap"
 				animation="blurInLeft"
 				by="character"
 				delay={0.85}
 				duration={0.8}
 			>
-				IF HE BE WORTH, SHALL POSSESS
+				IF HE BE WORTHY, SHALL POSSESS
 			</TextReveal>
 			<TextReveal
 				as="h1"
-				className="text-xl md:text-4xl font-extrabold text-white mb-2 text-center"
+				className="text-[5.5vw] md:text-4xl font-extrabold text-white mb-2 text-center whitespace-nowrap"
 				animation="blurInLeft"
 				by="character"
 				delay={0.85}
@@ -68,7 +68,7 @@ export default function Hero() {
 			>
 				THE POWER OF
 			</TextReveal>
-			<div className="my-4">
+			<div className="my-3 md:my-4">
 				<motion.div
 					initial="hidden"
 					animate="visible"
@@ -76,7 +76,7 @@ export default function Hero() {
 					transition={{
 						delay: 2.0,
 						duration: 0.5,
-						ease: "easeOut",
+						ease: "easeOut" as const,
 					}}
 					className="inline-block text-4xl md:text-8xl font-black mb-2 md:mb-4"
 				>
@@ -110,7 +110,7 @@ export default function Hero() {
 			>
 				A weapon to destroy...
 			</TextReveal>
-			<div className="mb-8 flex flex-col items-center justify-center">
+			<div className="mb-4 md:mb-8 flex flex-col items-center justify-center">
 				<motion.p
 					className="text-base md:text-2xl inline-block text-center"
 					initial="hidden"
@@ -126,16 +126,16 @@ export default function Hero() {
 				</motion.p>
 			</div>
 			<motion.div
-				className="flex flex-col sm:flex-row gap-6 justify-center items-center mt-8"
+				className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mt-4 md:mt-8 w-full max-w-sm sm:max-w-none mx-auto"
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{
 					delay: 6.5,
 					duration: 0.5,
-					ease: "easeOut",
+					ease: "easeOut" as const,
 				}}
 			>
-				<div onClick={handleWieldMjolnir}>
+				<div onClick={handleWieldMjolnir} className="w-full sm:w-auto">
 					<ShimmerButton
 						title="Wield Mjolnir!"
 						variant="gold"
@@ -144,7 +144,7 @@ export default function Hero() {
 						otherClasses="text-lg px-8 py-4 border border-yellow-400/80"
 					/>
 				</div>
-				<div onClick={handleViewBlocks}>
+				<div onClick={handleViewBlocks} className="w-full sm:w-auto">
 					<ShimmerButton
 						title="View Blocks"
 						variant="silver"

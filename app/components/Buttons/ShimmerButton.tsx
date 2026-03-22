@@ -73,16 +73,21 @@ export default function ShimmerButton({
     <button
       onClick={handleClick}
       className={cn(
-        "inline-flex h-14 w-84 items-center justify-center rounded-xl",
+        "inline-flex h-14 items-center justify-center rounded-xl",
         variantClasses.border,
         variantClasses.bg,
         "animate-shimmer",
-        "px-6 font-bold text-xl text-white transition-all hover:scale-105",
-        variantClasses.shadow,
+        "px-6 font-bold text-xl text-white transition-all",
+        // 3D bezel effect
+        "shadow-[0_4px_0_rgba(0,0,0,0.4),0_6px_16px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.15)]",
+        "hover:shadow-[0_6px_0_rgba(0,0,0,0.4),0_8px_20px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.2)]",
+        "hover:translate-y-[-2px]",
+        // Pressed effect
+        "active:shadow-[0_1px_0_rgba(0,0,0,0.4),0_2px_4px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(0,0,0,0.3)]",
+        "active:translate-y-[2px]",
         variantClasses.focus,
         "whitespace-nowrap overflow-hidden",
-        // Mobile: full width, Desktop: fixed width
-        "w-92 sm:w-92",
+        "w-full sm:w-auto sm:min-w-[240px]",
         otherClasses
       )}
       style={{ backgroundSize: '200% 100%' }}

@@ -277,13 +277,13 @@ export default function Pricing() {
         {/* Trusted Payments */}
         <div className="mt-20 text-center">
           <p className="text-gray-500 mb-6 text-lg">Trusted Payment Services</p>
-          <div className="flex items-center justify-center lg:gap-8 gap-4 flex-wrap">
-            <Image src="/Icons/bitcoin-64.svg" alt="Bitcoin" width={48} height={48} />
-            <Image src="/Icons/cash-app-64.svg" alt="CashApp" width={56} height={56} />
-            <Image src="/Icons/coinbase-64.svg" alt="Coinbase" width={56} height={56} />
-            <Image src="/Icons/stripe-64.svg" alt="Stripe" width={42} height={42} />
-            <Image src="/Icons/uphold-64.svg" alt="Uphold" width={46} height={46} />
-            <Image src="/Icons/venmo-64.svg" alt="Venmo" width={42} height={42} />
+          <div className="flex items-center justify-center lg:gap-8 gap-2 px-6 flex-nowrap">
+            <Image src="/Icons/bitcoin-64.svg" alt="Bitcoin" width={42} height={42} className="lg:w-12 lg:h-12" />
+            <Image src="/Icons/cash-app-64.svg" alt="CashApp" width={46} height={46} className="lg:w-14 lg:h-14" />
+            <Image src="/Icons/coinbase-64.svg" alt="Coinbase" width={46} height={46} className="lg:w-14 lg:h-14" />
+            <Image src="/Icons/stripe-64.svg" alt="Stripe" width={36} height={36} className="lg:w-[42px] lg:h-[42px]" />
+            <Image src="/Icons/uphold-64.svg" alt="Uphold" width={40} height={40} className="lg:w-[46px] lg:h-[46px]" />
+            <Image src="/Icons/venmo-64.svg" alt="Venmo" width={36} height={36} className="lg:w-[42px] lg:h-[42px]" />
           </div>
         </div>
       </div>
