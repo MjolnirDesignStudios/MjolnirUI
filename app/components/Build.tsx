@@ -1,7 +1,7 @@
 // app/components/Build.tsx — Founder's Kit / Startup Builder
 "use client";
 import React from "react";
-import { Rocket, Zap, Globe, Bot, Coins, Box } from "lucide-react";
+import { Rocket, Zap, Globe, Bot, Hammer, Box } from "lucide-react";
 import ShimmerButton from "@/components/Buttons/ShimmerButton";
 import Image from "next/image";
 import { useSession } from 'next-auth/react';
@@ -89,7 +89,7 @@ export default function Build() {
               </div>
               <div>
                 <h3 className="text-lg md:text-xl font-black text-white">AI Automation</h3>
-                <p className="text-gold text-lg">Claude Code Workflows</p>
+                <p className="text-gold text-lg">Agentic Workflows</p>
               </div>
             </div>
           </li>
@@ -101,8 +101,8 @@ export default function Build() {
                 <Zap className="w-12 h-12 text-white" />
               </div>
               <div>
-                <h3 className="text-xl md:text-2xl font-black text-white">Design Systems</h3>
-                <p className="text-gold text-lg">Premium UI/UX Blocks</p>
+                <h3 className="text-xl md:text-2xl font-black text-white">Powerful UI/UX</h3>
+                <p className="text-gold text-lg">Lightning-Fast</p>
               </div>
             </div>
           </li>
@@ -111,11 +111,11 @@ export default function Build() {
           <li className="md:[grid-area:2/1/3/4] lg:[grid-area:2/1/3/4]">
             <div className="relative h-full rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl p-8 flex flex-col items-center justify-center text-center gap-6">
               <div className="p-8 rounded-3xl bg-linear-to-br from-yellow-400 to-orange-500 shadow-2xl">
-                <Coins className="w-12 h-12 text-white" />
+                <Hammer className="w-12 h-12 text-white" />
               </div>
               <div>
-                <h3 className="text-lg md:text-xl font-black text-white">Battle Tested</h3>
-                <p className="text-gold text-lg">Production Ready</p>
+                <h3 className="text-lg md:text-xl font-black text-white">Build Strategically</h3>
+                <p className="text-gold text-lg">Designs for Creators</p>
               </div>
             </div>
           </li>
