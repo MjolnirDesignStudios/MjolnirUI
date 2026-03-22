@@ -31,11 +31,11 @@ export default function Build() {
           className="text-center mb-10"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">
-            Build an Agentic AI{" "}
-            <span className="text-gold">Startup Business!</span>
+            Build an AI-Based Startup{" "}
+            <span className="text-gold">with MjolnirUI</span>
           </h2>
           <p className="mt-4 text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto">
-            Power Your Startup with Premium Components — Click &apos;View Blocks&apos; for{" "}
+            Click &apos;View Blocks&apos; for our{" "}
             <span className="bg-linear-to-r from-emerald-400 to-yellow-400 bg-clip-text text-transparent font-semibold">
               Freemiums!
             </span>
@@ -84,7 +84,7 @@ export default function Build() {
           {/* 2. AI Automation */}
           <li className="md:[grid-area:1/1/2/4] lg:[grid-area:1/1/1.5/4]">
             <div className="relative h-full rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl p-8 flex flex-col items-center justify-center text-center gap-6">
-              <div className="p-8 rounded-3xl bg-linear-to-br from-blue-500 to-cyan-400 shadow-2xl">
+              <div className="p-8 rounded-3xl bg-linear-to-br from-blue-500 to-green-400 shadow-2xl">
                 <Bot className="w-12 h-12 text-white" />
               </div>
               <div>
@@ -110,12 +110,12 @@ export default function Build() {
           {/* 4. Crypto Payments */}
           <li className="md:[grid-area:2/1/3/4] lg:[grid-area:2/1/3/4]">
             <div className="relative h-full rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl p-8 flex flex-col items-center justify-center text-center gap-6">
-              <div className="p-8 rounded-3xl bg-linear-to-br from-yellow-300 to-orange-500 shadow-2xl">
+              <div className="p-8 rounded-3xl bg-linear-to-br from-yellow-400 to-orange-500 shadow-2xl">
                 <Coins className="w-12 h-12 text-white" />
               </div>
               <div>
-                <h3 className="text-lg md:text-xl font-black text-white">Crypto Payments</h3>
-                <p className="text-gold text-lg">Web3-Ready Checkout</p>
+                <h3 className="text-lg md:text-xl font-black text-white">Battle Tested</h3>
+                <p className="text-gold text-lg">Production Ready</p>
               </div>
             </div>
           </li>

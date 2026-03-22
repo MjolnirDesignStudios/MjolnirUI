@@ -199,11 +199,20 @@ export default function Demo() {
           className="text-center mb-6 sm:mb-8"
         >
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
-            Access Our Agentic Dashboard{" "}
-            <span className="block sm:inline">
-              Powered by <span className="text-gold">OdinAI</span>
-            </span>
+            Access our Components Dashboard
           </h2>
+          <p className="text-2xl sm:text-3xl lg:text-4xl font-bold mt-2">
+            <span className="text-gold">Powered by </span>
+            <span
+              className="bg-linear-to-r from-gray-300 via-gold via-50% to-emerald-400 bg-clip-text text-transparent font-black"
+              style={{
+                backgroundSize: "200% 100%",
+                animation: "animate-shimmer 3s ease-in-out infinite",
+              }}
+            >
+              OdinAI
+            </span>
+          </p>
           <p className="text-base sm:text-lg lg:text-xl text-gray-400 mt-4 max-w-2xl mx-auto">
             MjolnirUI&apos;s dashboard is designed with creators and developers in mind.
           </p>
