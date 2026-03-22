@@ -174,8 +174,8 @@ export function MjolnirSidebar() {
       <aside className="w-64 bg-linear-to-br from-zinc-900 via-black to-zinc-950 border-r border-zinc-800/50 min-h-screen flex flex-col overflow-y-auto">
         {/* Logo */}
         <div className="p-6 pb-4">
-          <Link href="/" className="font-black text-2xl bg-linear-to-r from-cyan-300 to-emerald-400 bg-clip-text text-transparent">
-            MjolnirUI
+          <Link href="/">
+            <img src="/logos/MjolnirUI.png" alt="MjolnirUI" className="h-10 object-contain" />
           </Link>
           <div className="mt-2">
             <TierBadge tier={userTier} size="sm" />
