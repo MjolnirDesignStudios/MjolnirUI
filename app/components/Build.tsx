@@ -31,8 +31,8 @@ export default function Build() {
           className="text-center mb-10"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">
-            Build an AI-Based Startup{" "}
-            <span className="text-gold">with MjolnirUI</span>
+            Build an AI-Based Startup with {" "}
+            <span className="text-gold">MjolnirUI</span>
           </h2>
           <p className="mt-4 text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto">
             Click &apos;View Blocks&apos; for our{" "}
