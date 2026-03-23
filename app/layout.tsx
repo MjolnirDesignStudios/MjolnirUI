@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Ubuntu } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Providers } from "./provider";
 
@@ -133,6 +134,7 @@ export default function RootLayout({
 				<Providers>
 					{children}
 				</Providers>
+				<Analytics />
 			</body>
 		</html>
 	);
