@@ -76,7 +76,7 @@ export const FloatingNav = ({ className }: { className?: string }) => {
           exit={{ y: -100 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
           className={cn(
-            "hidden fixed top-4 inset-x-4 z-5000 w-auto items-center justify-between",
+            "flex lg:hidden fixed top-4 inset-x-4 z-5000 w-auto items-center justify-between",
             // SOLID, OPAQUE, BEAUTIFUL BACKGROUND
             "bg-black/95 backdrop-blur-xl border border-white/10 rounded-2xl",
             "px-6 py-5 shadow-2xl shadow-black/50",
