@@ -7,7 +7,6 @@ import { Zap, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import ElectricBorder from "@/components/ui/ElectricBorder";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 
 interface Tier {
@@ -38,11 +37,10 @@ const tiers: Tier[] = [
       "Preview All Tools",
       "Community Access",
       "3 Free Components",
-      "Design Token Reference",
     ],
     buttonText: "Join Free",
     electricColor: "#3B82F6",
-    buttonGradient: "from-blue-600 to-blue-400",
+    buttonGradient: "from-blue-400 to-blue-600",
     isFree: true,
     stripePriceIdMonthly: "",
     stripePriceIdAnnual: "",
@@ -62,7 +60,7 @@ const tiers: Tier[] = [
     ],
     buttonText: "Unlock Base",
     electricColor: "#10B981",
-    buttonGradient: "from-emerald-600 to-emerald-400",
+    buttonGradient: "from-emerald-400 to-emerald-600",
     stripePriceIdMonthly: "price_1TBIjFFxkFUD7EnZqANuPLav",
     stripePriceIdAnnual: "price_1TBIjFFxkFUD7EnZsDQ2WVgH",
   },
@@ -95,7 +93,7 @@ const tiers: Tier[] = [
     features: [
       "Everything in Pro",
       "OdinAI Design Agent",
-      "Dedicated Engineer",
+      "End-to-End Design",
       "Custom Development",
       "Source Code Access",
     ],
@@ -111,19 +109,12 @@ export default function Pricing() {
   const [isAnnual, setIsAnnual] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const router = useRouter();
-  const { data: session } = useSession();
 
   const handleFreeSignup = () => {
     router.push("/auth/signin");
   };
 
   const handleStripeCheckout = async (tier: Tier) => {
-    // If not logged in, redirect to sign-in first
-    if (!session?.user) {
-      router.push(`/auth/signin?callbackUrl=${encodeURIComponent('/#pricing')}`);
-      return;
-    }
-
     const priceId = isAnnual ? tier.stripePriceIdAnnual : tier.stripePriceIdMonthly;
     if (!priceId) return;
 
@@ -139,12 +130,12 @@ export default function Pricing() {
 
       if (!data.url) {
         console.error("Stripe error:", data);
-        alert("Payment setup failed. Please sign in first, then try again.");
+        alert("Payment setup failed. See console.");
         setLoading(null);
         return;
       }
 
-      window.location.href = data.url; // Use window.location for external Stripe URL
+      router.push(data.url);
     } catch (err) {
       console.error("Fetch error:", err);
       alert("Payment failed. Try again.");
@@ -154,7 +145,7 @@ export default function Pricing() {
 
   return (
     <section id="pricing"
-      className="pt-36 pb-16 scroll-mt-32 relative flex items-center justify-center overflow-hidden">
+      className="py-16 relative flex items-center justify-center overflow-hidden">
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
@@ -228,40 +219,36 @@ export default function Pricing() {
                         onClick={() => tier.isFree ? handleFreeSignup() : handleStripeCheckout(tier)}
                         disabled={loading === tier.name}
                         className={cn(
-                          "relative w-full py-4 rounded-2xl font-bold text-black text-xl overflow-hidden shadow-2xl",
+                          "group/btn relative w-full py-4 rounded-2xl font-bold text-black text-xl overflow-hidden",
                           "bg-linear-to-r",
-                          tier.buttonGradient
+                          tier.buttonGradient,
+                          "shadow-[0_4px_0_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.25)]",
+                          "hover:shadow-[0_6px_0_rgba(0,0,0,0.3),0_12px_32px_rgba(0,0,0,0.3)]",
+                          "hover:translate-y-[-2px]",
+                          "active:shadow-[0_1px_0_rgba(0,0,0,0.3),0_2px_8px_rgba(0,0,0,0.2)]",
+                          "active:translate-y-[1px]",
+                          "transition-all duration-200"
                         )}
-                        whileHover={{ scale: 1.06 }}
-                        whileTap={{ scale: 0.97 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
                       >
-                        <motion.div
-                          className="absolute inset-0 rounded-2xl"
-                          initial={{ opacity: 0 }}
-                          whileHover={{ opacity: 0.7 }}
+                        {/* Shimmer sweep on hover */}
+                        <div
+                          className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out"
                           style={{
-                            background: `radial-gradient(circle at center, ${tier.electricColor}88, transparent 70%)`,
-                            filter: "blur(20px)",
+                            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
                           }}
                         />
+                        {/* Subtle top highlight */}
+                        <div className="absolute inset-x-0 top-0 h-px bg-white/30 rounded-t-2xl" />
                         <span className="relative z-10 flex items-center justify-center gap-3">
                           {loading === tier.name ? (
                             <>
-                              <Zap className="animate-pulse w-6 h-6" style={{ color: tier.electricColor }} />
+                              <Zap className="animate-pulse w-5 h-5" />
                               Charging...
                             </>
                           ) : (
                             <>
-                              <motion.span
-                                initial={{ scale: 1 }}
-                                whileHover={{ scale: 1.1 }}
-                                transition={{ duration: 0.3 }}
-                                className="tracking-wide"
-                              >
-                                {tier.buttonText}
-                              </motion.span>
-                              <ArrowRight className="w-6 h-6" />
+                              <span className="tracking-wide">{tier.buttonText}</span>
+                              <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform duration-200" />
                             </>
                           )}
                         </span>
@@ -277,13 +264,13 @@ export default function Pricing() {
         {/* Trusted Payments */}
         <div className="mt-20 text-center">
           <p className="text-gray-500 mb-6 text-lg">Trusted Payment Services</p>
-          <div className="flex items-center justify-center lg:gap-8 gap-2 px-6 flex-nowrap">
-            <Image src="/Icons/bitcoin-64.svg" alt="Bitcoin" width={42} height={42} className="lg:w-12 lg:h-12" />
-            <Image src="/Icons/cash-app-64.svg" alt="CashApp" width={46} height={46} className="lg:w-14 lg:h-14" />
-            <Image src="/Icons/coinbase-64.svg" alt="Coinbase" width={46} height={46} className="lg:w-14 lg:h-14" />
-            <Image src="/Icons/stripe-64.svg" alt="Stripe" width={36} height={36} className="lg:w-[42px] lg:h-[42px]" />
-            <Image src="/Icons/uphold-64.svg" alt="Uphold" width={40} height={40} className="lg:w-[46px] lg:h-[46px]" />
-            <Image src="/Icons/venmo-64.svg" alt="Venmo" width={36} height={36} className="lg:w-[42px] lg:h-[42px]" />
+          <div className="flex items-center justify-center lg:gap-8 gap-4 flex-wrap">
+            <Image src="/Icons/bitcoin-64.svg" alt="Bitcoin" width={48} height={48} />
+            <Image src="/Icons/cash-app-64.svg" alt="CashApp" width={56} height={56} />
+            <Image src="/Icons/coinbase-64.svg" alt="Coinbase" width={56} height={56} />
+            <Image src="/Icons/stripe-64.svg" alt="Stripe" width={42} height={42} />
+            <Image src="/Icons/uphold-64.svg" alt="Uphold" width={46} height={46} />
+            <Image src="/Icons/venmo-64.svg" alt="Venmo" width={42} height={42} />
           </div>
         </div>
       </div>

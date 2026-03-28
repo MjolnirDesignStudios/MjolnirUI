@@ -124,9 +124,9 @@ function DashboardDemo() {
               viewport={{ once: true }}
               className="rounded-xl bg-white/[0.03] border border-white/5 p-3"
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] text-gray-500">{stat.label}</span>
-                <span className="text-[9px] font-medium" style={{ color: stat.color }}>
+              <div className="flex items-center justify-between mb-2 gap-1">
+                <span className="text-[10px] text-gray-500 whitespace-nowrap truncate">{stat.label}</span>
+                <span className="text-[9px] font-medium shrink-0" style={{ color: stat.color }}>
                   {stat.change}
                 </span>
               </div>
