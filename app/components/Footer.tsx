@@ -21,57 +21,9 @@ export default function Footer() {
         />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        {/* Top row: Company, Designs, Products (alphabetical) — always 3 cols */}
-        <div className="grid grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-8 lg:gap-12 justify-items-start mb-10">
-          {["Company", "Designs", "Products"].map((category) => {
-            const links = footerLinks[category as keyof typeof footerLinks];
-            if (!links) return null;
-            return (
-              <div key={category} className="space-y-4 text-left">
-                <h3 className="text-base sm:text-xl lg:text-2xl font-black text-white">{category}</h3>
-                <ul className="space-y-2 list-none text-left">
-                  {links.map((link) => (
-                    <li key={link.name}>
-                      <Link
-                        href={link.href}
-                        className="text-gray-400 hover:text-gold transition-colors duration-300 block text-sm sm:text-base lg:text-lg"
-                      >
-                        {link.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
-
-          {/* Legal and Support on desktop — fills columns 4 & 5 */}
-          {["Legal", "Support"].map((category) => {
-            const links = footerLinks[category as keyof typeof footerLinks];
-            if (!links) return null;
-            return (
-              <div key={category} className="space-y-4 text-left hidden lg:block">
-                <h3 className="text-base sm:text-xl lg:text-2xl font-black text-white">{category}</h3>
-                <ul className="space-y-2 list-none text-left">
-                  {links.map((link) => (
-                    <li key={link.name}>
-                      <Link
-                        href={link.href}
-                        className="text-gray-400 hover:text-gold transition-colors duration-300 block text-sm sm:text-base lg:text-lg"
-                      >
-                        {link.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Bottom row: Legal + Support on mobile/tablet — always 2 cols */}
-        <div className="grid grid-cols-2 gap-4 sm:gap-8 justify-items-start mb-16 lg:hidden">
-          {["Legal", "Support"].map((category) => {
+        {/* All 5 categories: single column on mobile, 5-col row on lg+ */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 justify-items-start mb-10">
+          {["Company", "Designs", "Products", "Support", "Legal"].map((category) => {
             const links = footerLinks[category as keyof typeof footerLinks];
             if (!links) return null;
             return (
