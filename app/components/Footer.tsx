@@ -80,21 +80,21 @@ export default function Footer() {
           </Link>
 
 
-          <div className="flex gap-6">
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-5">
             {socialMedia.map((profile) => (
               <motion.a
                 key={profile.id}
                 href={profile.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ 
-                  scale: 1.2, 
+                whileHover={{
+                  scale: 1.2,
                   rotate: 5,
                   boxShadow: "0 0 20px #FFD700, 0 0 40px #FFD700"
                 }}
-                className="w-14 h-14 bg-black/60 backdrop-blur-xl border border-white/20 rounded-2xl flex items-center justify-center hover:border-gold transition-all duration-300"
+                className="w-11 h-11 sm:w-14 sm:h-14 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center hover:border-gold transition-all duration-300"
               >
-                <Image src={profile.img} alt="" width={28} height={28} />
+                <Image src={profile.img} alt="" width={22} height={22} className="sm:w-7 sm:h-7" />
               </motion.a>
             ))}
           </div>
