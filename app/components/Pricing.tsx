@@ -37,6 +37,7 @@ const tiers: Tier[] = [
       "Preview All Tools",
       "Community Access",
       "3 Free Components",
+      "Lifetime Updates",
     ],
     buttonText: "Join Free",
     electricColor: "#3B82F6",
@@ -185,7 +186,7 @@ export default function Pricing() {
                   </div>
                 )}
                 <ElectricBorder color={tier.electricColor} speed={1} chaos={0.12} borderRadius={24} className="absolute inset-0 z-50">
-                  <div className="relative h-full p-6 rounded-3xl bg-black/40 backdrop-blur-xl border border-white/10 transition-all duration-300 group-hover:border-white/20">
+                  <div className="relative h-full p-6 rounded-3xl bg-black/40 backdrop-blur-xl border border-white/10 transition-all duration-300 group-hover:border-white/20 flex flex-col">
                     <div className="text-center mb-8">
                       <h3 className="text-2xl lg:text-3xl font-heading font-black text-white">{tier.name}</h3>
                       <p className="text-gray-400 text-sm mt-1">{tier.subtitle}</p>
@@ -205,7 +206,7 @@ export default function Pricing() {
                       )}
                     </div>
 
-                    <ul className="space-y-3 mb-10">
+                    <ul className="space-y-3 mb-10 flex-1">
                       {tier.features.map((f) => (
                         <li key={f} className="flex items-center gap-3 text-gray-300 text-sm">
                           <Zap className="w-4 h-4 shrink-0" style={{ color: tier.electricColor }} />
@@ -214,7 +215,7 @@ export default function Pricing() {
                       ))}
                     </ul>
 
-                    <div className="relative z-50">
+                    <div className="relative z-50 mt-auto">
                       <motion.button
                         onClick={() => tier.isFree ? handleFreeSignup() : handleStripeCheckout(tier)}
                         disabled={loading === tier.name}

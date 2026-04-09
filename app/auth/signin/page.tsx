@@ -26,6 +26,14 @@ const XIcon = () => (
   </svg>
 )
 
+const Web3Icon = () => (
+  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+    <path d="M2 17l10 5 10-5" />
+    <path d="M2 12l10 5 10-5" />
+  </svg>
+)
+
 function SignInContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -55,8 +63,12 @@ function SignInContent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
-      <div className="bg-zinc-900/60 backdrop-blur border border-white/10 rounded-xl p-8 max-w-md w-full mx-4">
-        <h1 className="text-3xl font-bold text-center mb-8 text-white">Sign In to MjolnirUI</h1>
+      <div className="bg-zinc-900/60 backdrop-blur border border-white/10 rounded-2xl p-8 max-w-md w-full mx-4">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Sign In to MjolnirUI</h1>
+          <p className="text-gray-500 text-sm">Choose your preferred sign-in method</p>
+        </div>
 
         {error && (
           <div className="mb-6 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
@@ -67,7 +79,7 @@ function SignInContent() {
           </div>
         )}
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           <ShimmerButton
             title={loading ? "Redirecting..." : "Continue with Google"}
             variant="silver"
@@ -91,10 +103,34 @@ function SignInContent() {
             handleClick={() => handleSignIn('twitter')}
             otherClasses="w-full sm:min-w-0"
           />
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-1">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-xs text-gray-600 uppercase tracking-wider">or</span>
+            <div className="flex-1 h-px bg-white/10" />
+          </div>
+
+          {/* Web3 Auth — Coming Soon */}
+          <button
+            disabled
+            className="inline-flex h-14 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-6 font-bold text-base text-gray-500 cursor-not-allowed w-full relative overflow-hidden"
+          >
+            <span className="flex items-center gap-3">
+              <Web3Icon />
+              <span>Web3 Wallet Auth</span>
+            </span>
+            <span className="absolute top-2 right-3 text-[10px] font-semibold uppercase tracking-wider text-electric bg-electric/10 border border-electric/20 px-2 py-0.5 rounded-full">
+              Soon
+            </span>
+          </button>
         </div>
 
-        <p className="text-center text-gray-400 mt-6 text-sm">
-          By signing in, you agree to our Terms of Service and Privacy Policy.
+        <p className="text-center text-gray-500 mt-6 text-sm">
+          By signing in, you agree to our{' '}
+          <a href="/legal/terms" className="text-gray-400 hover:text-gold transition-colors underline underline-offset-2">Terms of Service</a>
+          {' '}and{' '}
+          <a href="/legal/privacy" className="text-gray-400 hover:text-gold transition-colors underline underline-offset-2">Privacy Policy</a>.
         </p>
       </div>
     </div>
