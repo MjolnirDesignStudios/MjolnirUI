@@ -13,6 +13,11 @@ import { TextReveal } from "@/components/ui/TextReveal";
 import GradientText from "@/components/ui/GradientText";
 import { TypewriterText } from "@/components/ui/TypewriterText";
 import { GlitchText } from "@/components/ui/GlitchText";
+import { DecryptText } from "@/components/ui/DecryptText";
+import { ShinyText } from "@/components/ui/ShinyText";
+import { WaveText } from "@/components/ui/WaveText";
+import { CountUp } from "@/components/ui/CountUp";
+import { NeonGlowText } from "@/components/ui/NeonGlowText";
 
 /* ─── Copy button ─── */
 function CopyButton({ code }: { code: string }) {
@@ -367,13 +372,166 @@ export default function TextEffectsPage() {
             A weapon to destroy or a tool to build
           </TextReveal>
         </ShowcaseCard>
+
+        {/* 9. DecryptText — Matrix-style scramble reveal */}
+        <ShowcaseCard
+          title="DecryptText"
+          description="Matrix/cyberpunk-style decryption — characters scramble through Norse runes before resolving to the final string."
+          tier="base"
+          code={`import { DecryptText } from "@/components/ui/DecryptText";
+
+<DecryptText
+  speed={40}
+  revealSpeed={80}
+  scrambleColor="#00f0ff"
+  revealColor="#FFD700"
+  replayInterval={5000}
+  className="text-3xl font-black"
+>
+  ACCESS GRANTED
+</DecryptText>`}
+        >
+          <DecryptText
+            speed={40}
+            revealSpeed={80}
+            scrambleColor="#00f0ff"
+            revealColor="#FFD700"
+            replayInterval={5000}
+            className="text-2xl sm:text-3xl font-black"
+          >
+            ACCESS GRANTED
+          </DecryptText>
+        </ShowcaseCard>
+
+        {/* 10. ShinyText — Metallic shimmer sweep */}
+        <ShowcaseCard
+          title="ShinyText"
+          description="Premium metallic shimmer that continuously sweeps across the text. Subtle, elegant — perfect for premium CTAs and section labels."
+          tier="free"
+          code={`import { ShinyText } from "@/components/ui/ShinyText";
+
+<ShinyText
+  speed={4}
+  baseColor="#444"
+  shineColor="#FFD700"
+  shineWidth={30}
+  className="text-4xl font-black"
+>
+  PREMIUM EDITION
+</ShinyText>`}
+        >
+          <ShinyText
+            speed={4}
+            baseColor="#444"
+            shineColor="#FFD700"
+            shineWidth={30}
+            className="text-3xl sm:text-4xl font-black"
+          >
+            PREMIUM EDITION
+          </ShinyText>
+        </ShowcaseCard>
+
+        {/* 11. WaveText — Sine-wave undulating letters */}
+        <ShowcaseCard
+          title="WaveText"
+          description="Each letter rides its own sine wave with offset phase — playful, organic motion. Perfect for hero callouts and floating banners."
+          tier="free"
+          code={`import { WaveText } from "@/components/ui/WaveText";
+
+<WaveText
+  amplitude={14}
+  duration={1.6}
+  stagger={0.08}
+  gradient={["#00f0ff", "#FFD700", "#10B981", "#FFD700", "#00f0ff"]}
+  className="text-4xl font-black"
+>
+  Asgard Rising
+</WaveText>`}
+        >
+          <WaveText
+            amplitude={14}
+            duration={1.6}
+            stagger={0.08}
+            gradient={["#00f0ff", "#FFD700", "#10B981", "#FFD700", "#00f0ff"]}
+            className="text-3xl sm:text-4xl font-black"
+          >
+            Asgard Rising
+          </WaveText>
+        </ShowcaseCard>
+
+        {/* 12. CountUp — Animated number counter */}
+        <ShowcaseCard
+          title="CountUp"
+          description="Smooth animated number counter with easing functions. Use for stats, metrics, pricing, or hero numbers."
+          tier="free"
+          code={`import { CountUp } from "@/components/ui/CountUp";
+
+<CountUp
+  to={9842}
+  duration={2.5}
+  easing="easeOut"
+  separator=","
+  prefix="$"
+  suffix="+"
+  color="#00f0ff"
+  className="text-5xl font-black"
+/>`}
+        >
+          <div className="flex flex-col items-center gap-1">
+            <CountUp
+              to={9842}
+              duration={2.5}
+              easing="easeOut"
+              separator=","
+              prefix="$"
+              suffix="+"
+              color="#00f0ff"
+              className="text-4xl sm:text-5xl font-black"
+            />
+            <span className="text-xs text-gray-500 uppercase tracking-wider">
+              Realms Conquered
+            </span>
+          </div>
+        </ShowcaseCard>
+
+        {/* 13. NeonGlowText — Pulsing neon with flicker */}
+        <ShowcaseCard
+          title="NeonGlowText"
+          description="Pulsing neon sign with optional flicker effect (subtle, neon, broken). Three flicker styles for that authentic vintage glow."
+          tier="base"
+          code={`import { NeonGlowText } from "@/components/ui/NeonGlowText";
+
+<NeonGlowText
+  glowColor="#00f0ff"
+  textColor="#ffffff"
+  intensity={25}
+  pulseSpeed={2.5}
+  flicker
+  flickerStyle="neon"
+  className="text-5xl font-black"
+>
+  ELECTRIC
+</NeonGlowText>`}
+        >
+          <NeonGlowText
+            glowColor="#00f0ff"
+            textColor="#ffffff"
+            intensity={25}
+            pulseSpeed={2.5}
+            flicker
+            flickerStyle="neon"
+            className="text-4xl sm:text-5xl font-black"
+          >
+            ELECTRIC
+          </NeonGlowText>
+        </ShowcaseCard>
       </div>
 
       {/* Installation section */}
       <div className="mt-12 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
         <h2 className="text-lg font-bold text-white mb-4">Installation</h2>
         <pre className="text-sm text-gray-300 bg-black/40 rounded-xl p-4 overflow-x-auto font-mono">
-          <code>{`npx mjolnirui add aurora-text gradient-text text-reveal typewriter-text glitch-text`}</code>
+          <code>{`npx mjolnirui add aurora-text gradient-text text-reveal typewriter-text glitch-text decrypt-text shiny-text wave-text count-up neon-glow-text`}</code>
         </pre>
         <p className="text-xs text-gray-500 mt-3">
           All text effects use Framer Motion for animations. Make sure{" "}
