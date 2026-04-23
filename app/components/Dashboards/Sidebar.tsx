@@ -122,7 +122,8 @@ const sidebarSections: SidebarSection[] = [
     title: "AI TOOLS",
     items: [
       { name: "OdinAI Agent", href: "/blocks/ai/odinai", icon: Bot, requiredTier: "elite" },
-      { name: "Asgardian Shader Lab", href: "/blocks/shader-lab", icon: Code2, requiredTier: "pro" },
+      { name: "Asgardian Shader Tool", href: "/blocks/shader-tool", icon: Code2, requiredTier: "pro" },
+      { name: "Particle Engine", href: "/blocks/particle-engine", icon: Sparkles, requiredTier: "pro" },
     ],
   },
 ];
