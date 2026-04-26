@@ -7,8 +7,14 @@
 // Next.js page data collection. The clients are created on first access at runtime.
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-let _admin: SupabaseClient | undefined;
-let _authAdmin: SupabaseClient | undefined;
+// Schema-aware client types. Default schema is "public"; the auth-admin client
+// uses the next_auth schema and needs its third type parameter pinned to match
+// the createClient(..., { db: { schema: "next_auth" } }) return type.
+type PublicAdminClient = SupabaseClient;
+type AuthAdminClient = SupabaseClient<any, any, "next_auth">;
+
+let _admin: PublicAdminClient | undefined;
+let _authAdmin: AuthAdminClient | undefined;
 
 function ensureEnv(): { url: string; key: string } {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -21,14 +27,14 @@ function ensureEnv(): { url: string; key: string } {
   return { url, key };
 }
 
-function getAdmin(): SupabaseClient {
+function getAdmin(): PublicAdminClient {
   if (_admin) return _admin;
   const { url, key } = ensureEnv();
   _admin = createClient(url, key);
   return _admin;
 }
 
-function getAuthAdmin(): SupabaseClient {
+function getAuthAdmin(): AuthAdminClient {
   if (_authAdmin) return _authAdmin;
   const { url, key } = ensureEnv();
   _authAdmin = createClient(url, key, { db: { schema: "next_auth" } });
@@ -36,7 +42,7 @@ function getAuthAdmin(): SupabaseClient {
 }
 
 // Default public schema admin client
-export const supabaseAdmin: SupabaseClient = new Proxy({} as SupabaseClient, {
+export const supabaseAdmin: PublicAdminClient = new Proxy({} as PublicAdminClient, {
   get(_target, prop) {
     const client = getAdmin();
     const value = Reflect.get(client, prop);
@@ -45,7 +51,7 @@ export const supabaseAdmin: SupabaseClient = new Proxy({} as SupabaseClient, {
 });
 
 // next_auth schema admin client — for querying NextAuth-managed user table
-export const supabaseAuthAdmin: SupabaseClient = new Proxy({} as SupabaseClient, {
+export const supabaseAuthAdmin: AuthAdminClient = new Proxy({} as AuthAdminClient, {
   get(_target, prop) {
     const client = getAuthAdmin();
     const value = Reflect.get(client, prop);
