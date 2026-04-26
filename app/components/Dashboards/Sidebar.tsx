@@ -42,7 +42,7 @@ export const sidebarSections: SidebarSection[] = [
       { name: "Introduction", href: "/blocks/docs/intro", icon: BookOpen, requiredTier: "free" },
       { name: "Installation", href: "/blocks/docs/install", icon: Download, requiredTier: "free" },
       { name: "CLI Reference", href: "/blocks/docs/cli", icon: Terminal, requiredTier: "free" },
-      { name: "MCP / AI Agent", href: "/blocks/docs/mcp", icon: Cpu, requiredTier: "free" },
+      { name: "MCP / AI Agent", href: "/blocks/docs/mcp", icon: Cpu, requiredTier: "pro" },
       { name: "Documentation", href: "/blocks/docs", icon: BookOpen, requiredTier: "free" },
     ],
   },
@@ -122,7 +122,8 @@ export const sidebarSections: SidebarSection[] = [
     title: "AI TOOLS",
     items: [
       { name: "OdinAI Agent", href: "/blocks/ai/odinai", icon: Bot, requiredTier: "elite" },
-      { name: "Asgardian Shader Lab", href: "/blocks/shader-lab", icon: Code2, requiredTier: "pro" },
+      { name: "Asgardian Shader Tool", href: "/blocks/shader-tool", icon: Code2, requiredTier: "pro" },
+      { name: "Particle Engine", href: "/blocks/particle-engine", icon: Sparkles, requiredTier: "pro" },
     ],
   },
 ];
