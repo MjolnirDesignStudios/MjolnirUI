@@ -7,7 +7,6 @@ import { Zap, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import ElectricBorder from "@/components/ui/ElectricBorder";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 
 interface Tier {
@@ -38,11 +37,11 @@ const tiers: Tier[] = [
       "Preview All Tools",
       "Community Access",
       "3 Free Components",
-      "Design Token Reference",
+      "Lifetime Updates",
     ],
     buttonText: "Join Free",
     electricColor: "#3B82F6",
-    buttonGradient: "from-blue-600 to-blue-400",
+    buttonGradient: "from-blue-400 to-blue-600",
     isFree: true,
     stripePriceIdMonthly: "",
     stripePriceIdAnnual: "",
@@ -62,7 +61,7 @@ const tiers: Tier[] = [
     ],
     buttonText: "Unlock Base",
     electricColor: "#10B981",
-    buttonGradient: "from-emerald-600 to-emerald-400",
+    buttonGradient: "from-emerald-400 to-emerald-600",
     stripePriceIdMonthly: "price_1TBIjFFxkFUD7EnZqANuPLav",
     stripePriceIdAnnual: "price_1TBIjFFxkFUD7EnZsDQ2WVgH",
   },
@@ -95,7 +94,7 @@ const tiers: Tier[] = [
     features: [
       "Everything in Pro",
       "OdinAI Design Agent",
-      "Dedicated Engineer",
+      "End-to-End Design",
       "Custom Development",
       "Source Code Access",
     ],
@@ -111,19 +110,12 @@ export default function Pricing() {
   const [isAnnual, setIsAnnual] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const router = useRouter();
-  const { data: session } = useSession();
 
   const handleFreeSignup = () => {
     router.push("/auth/signin");
   };
 
   const handleStripeCheckout = async (tier: Tier) => {
-    // If not logged in, redirect to sign-in first
-    if (!session?.user) {
-      router.push(`/auth/signin?callbackUrl=${encodeURIComponent('/#pricing')}`);
-      return;
-    }
-
     const priceId = isAnnual ? tier.stripePriceIdAnnual : tier.stripePriceIdMonthly;
     if (!priceId) return;
 
@@ -139,12 +131,12 @@ export default function Pricing() {
 
       if (!data.url) {
         console.error("Stripe error:", data);
-        alert("Payment setup failed. Please sign in first, then try again.");
+        alert("Payment setup failed. See console.");
         setLoading(null);
         return;
       }
 
-      window.location.href = data.url; // Use window.location for external Stripe URL
+      router.push(data.url);
     } catch (err) {
       console.error("Fetch error:", err);
       alert("Payment failed. Try again.");
@@ -154,7 +146,7 @@ export default function Pricing() {
 
   return (
     <section id="pricing"
-      className="pt-36 pb-16 scroll-mt-32 relative flex items-center justify-center overflow-hidden">
+      className="py-16 relative flex items-center justify-center overflow-hidden">
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
@@ -194,7 +186,7 @@ export default function Pricing() {
                   </div>
                 )}
                 <ElectricBorder color={tier.electricColor} speed={1} chaos={0.12} borderRadius={24} className="absolute inset-0 z-50">
-                  <div className="relative h-full p-6 rounded-3xl bg-black/40 backdrop-blur-xl border border-white/10 transition-all duration-300 group-hover:border-white/20">
+                  <div className="relative h-full p-6 rounded-3xl bg-black/40 backdrop-blur-xl border border-white/10 transition-all duration-300 group-hover:border-white/20 flex flex-col">
                     <div className="text-center mb-8">
                       <h3 className="text-2xl lg:text-3xl font-heading font-black text-white">{tier.name}</h3>
                       <p className="text-gray-400 text-sm mt-1">{tier.subtitle}</p>
@@ -214,7 +206,7 @@ export default function Pricing() {
                       )}
                     </div>
 
-                    <ul className="space-y-3 mb-10">
+                    <ul className="space-y-3 mb-10 flex-1">
                       {tier.features.map((f) => (
                         <li key={f} className="flex items-center gap-3 text-gray-300 text-sm">
                           <Zap className="w-4 h-4 shrink-0" style={{ color: tier.electricColor }} />
@@ -223,45 +215,41 @@ export default function Pricing() {
                       ))}
                     </ul>
 
-                    <div className="relative z-50">
+                    <div className="relative z-50 mt-auto">
                       <motion.button
                         onClick={() => tier.isFree ? handleFreeSignup() : handleStripeCheckout(tier)}
                         disabled={loading === tier.name}
                         className={cn(
-                          "relative w-full py-4 rounded-2xl font-bold text-black text-xl overflow-hidden shadow-2xl",
+                          "group/btn relative w-full py-4 rounded-2xl font-bold text-black text-xl overflow-hidden",
                           "bg-linear-to-r",
-                          tier.buttonGradient
+                          tier.buttonGradient,
+                          "shadow-[0_4px_0_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.25)]",
+                          "hover:shadow-[0_6px_0_rgba(0,0,0,0.3),0_12px_32px_rgba(0,0,0,0.3)]",
+                          "hover:translate-y-[-2px]",
+                          "active:shadow-[0_1px_0_rgba(0,0,0,0.3),0_2px_8px_rgba(0,0,0,0.2)]",
+                          "active:translate-y-[1px]",
+                          "transition-all duration-200"
                         )}
-                        whileHover={{ scale: 1.06 }}
-                        whileTap={{ scale: 0.97 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
                       >
-                        <motion.div
-                          className="absolute inset-0 rounded-2xl"
-                          initial={{ opacity: 0 }}
-                          whileHover={{ opacity: 0.7 }}
+                        {/* Shimmer sweep on hover */}
+                        <div
+                          className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out"
                           style={{
-                            background: `radial-gradient(circle at center, ${tier.electricColor}88, transparent 70%)`,
-                            filter: "blur(20px)",
+                            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
                           }}
                         />
+                        {/* Subtle top highlight */}
+                        <div className="absolute inset-x-0 top-0 h-px bg-white/30 rounded-t-2xl" />
                         <span className="relative z-10 flex items-center justify-center gap-3">
                           {loading === tier.name ? (
                             <>
-                              <Zap className="animate-pulse w-6 h-6" style={{ color: tier.electricColor }} />
+                              <Zap className="animate-pulse w-5 h-5" />
                               Charging...
                             </>
                           ) : (
                             <>
-                              <motion.span
-                                initial={{ scale: 1 }}
-                                whileHover={{ scale: 1.1 }}
-                                transition={{ duration: 0.3 }}
-                                className="tracking-wide"
-                              >
-                                {tier.buttonText}
-                              </motion.span>
-                              <ArrowRight className="w-6 h-6" />
+                              <span className="tracking-wide">{tier.buttonText}</span>
+                              <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform duration-200" />
                             </>
                           )}
                         </span>

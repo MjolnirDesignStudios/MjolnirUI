@@ -29,19 +29,8 @@ const CATEGORY_META: Record<ComponentCategory, { label: string; icon: React.Reac
   "3d": { label: "3D & WebGL", icon: <Box size={16} />, count: COMPONENT_REGISTRY.filter(c => c.category === "3d").length },
 };
 
-/* ── Tech badge colors ───────────────────────────────── */
-const TECH_COLORS: Record<string, string> = {
-  css: "#3B82F6",
-  canvas: "#10B981",
-  three: "#EAB308",
-  ogl: "#8B5CF6",
-  glsl: "#F97316",
-  "framer-motion": "#EC4899",
-  gsap: "#22C55E",
-  r3f: "#06B6D4",
-  tsparticles: "#6366F1",
-  postprocessing: "#F43F5E",
-};
+/* ── Tech badge color — unified neutral for clean card design ── */
+const TECH_COLOR = "#a1a1aa"; // zinc-400 — subtle, consistent
 
 /* ── Component Card ──────────────────────────────────── */
 function ComponentCard({
@@ -151,9 +140,9 @@ function ComponentCard({
           {component.tech.map((t) => (
             <span key={t} className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase"
               style={{
-                backgroundColor: `${TECH_COLORS[t] || "#666"}15`,
-                color: TECH_COLORS[t] || "#666",
-                border: `1px solid ${TECH_COLORS[t] || "#666"}30`,
+                backgroundColor: `${TECH_COLOR}15`,
+                color: TECH_COLOR,
+                border: `1px solid ${TECH_COLOR}30`,
               }}>
               {t}
             </span>

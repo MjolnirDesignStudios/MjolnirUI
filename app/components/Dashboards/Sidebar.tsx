@@ -23,19 +23,19 @@ import { hasAccess, getTierConfig, type TierName } from "@/lib/tierConfig";
 
 import { UpgradeModal } from "./UpgradeModal";
 
-type SidebarItem = {
+export type SidebarItem = {
   name: string;
   href: string;
   icon: React.ComponentType<{ className?: string; size?: number }>;
   requiredTier: TierName;
 };
 
-type SidebarSection = {
+export type SidebarSection = {
   title: string;
   items: SidebarItem[];
 };
 
-const sidebarSections: SidebarSection[] = [
+export const sidebarSections: SidebarSection[] = [
   {
     title: "GET STARTED",
     items: [
@@ -128,7 +128,7 @@ const sidebarSections: SidebarSection[] = [
   },
 ];
 
-const accountItems: SidebarItem[] = [
+export const accountItems: SidebarItem[] = [
   { name: "Profile", href: "/blocks/account/profile", icon: User, requiredTier: "free" },
   { name: "Subscription", href: "/blocks/account/subscription", icon: Receipt, requiredTier: "free" },
   { name: "Support", href: "/blocks/account/support", icon: HelpCircle, requiredTier: "free" },
@@ -173,7 +173,7 @@ export function MjolnirSidebar() {
 
   return (
     <>
-      <aside className="w-64 bg-linear-to-br from-zinc-900 via-black to-zinc-950 border-r border-zinc-800/50 h-screen flex flex-col">
+      <aside className="hidden md:flex w-64 bg-linear-to-br from-zinc-900 via-black to-zinc-950 border-r border-zinc-800/50 h-screen flex-col">
         {/* Logo — sticky */}
         <div className="p-6 pb-4 shrink-0 border-b border-zinc-800/30">
           <Link href="/" className="block">

@@ -29,11 +29,11 @@ export const nextAuthOptions = {
       clientId: process.env.GITHUB_CLIENT_ID || '',
       clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
     }),
-    // Uncomment below to add Twitter/X
-    // TwitterProvider({
-    //   clientId: process.env.TWITTER_CLIENT_ID || '',
-    //   clientSecret: process.env.TWITTER_CLIENT_SECRET || '',
-    // }),
+    TwitterProvider({
+      clientId: process.env.TWITTER_CLIENT_ID || '',
+      clientSecret: process.env.TWITTER_CLIENT_SECRET || '',
+      version: '2.0',
+    }),
   ],
   adapter: SupabaseAdapter({
     url: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
