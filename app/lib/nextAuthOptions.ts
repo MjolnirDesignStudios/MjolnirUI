@@ -35,10 +35,18 @@ export const nextAuthOptions = {
       version: '2.0',
     }),
   ],
-  adapter: SupabaseAdapter({
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    secret: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-  }),
+  // Only construct the SupabaseAdapter when env vars are actually present.
+  // Empty strings would cause SupabaseAdapter -> createClient to throw
+  // "supabaseUrl is required" during Next.js page data collection at build time.
+  // When undefined, NextAuth falls back to JWT-only mode (graceful, not a crash).
+  ...(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? {
+        adapter: SupabaseAdapter({
+          url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+          secret: process.env.SUPABASE_SERVICE_ROLE_KEY,
+        }),
+      }
+    : {}),
   session: {
     strategy: 'jwt' as SessionStrategy,
   },
