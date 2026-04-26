@@ -8,7 +8,8 @@ import { nextAuthOptions } from '@/lib/nextAuthOptions';
 import { supabaseAuthAdmin } from '@/lib/supabaseAdmin';
 import { rateLimit } from '@/lib/rateLimit';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Lazy-init Stripe inside the handler — module-load instantiation breaks the build
+// when STRIPE_SECRET_KEY isn't available during Next.js page data collection.
 
 const limiter = rateLimit({
   interval: 60 * 1000, // 1 minute
@@ -17,6 +18,13 @@ const limiter = rateLimit({
 
 export async function POST(req: Request) {
   try {
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+    if (!secretKey) {
+      console.error('Missing STRIPE_SECRET_KEY');
+      return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+    }
+    const stripe = new Stripe(secretKey);
+
     // Rate limit: 10 requests per minute per IP
     const forwarded = req.headers.get('x-forwarded-for');
     const ip = forwarded?.split(',')[0]?.trim() || 'unknown';

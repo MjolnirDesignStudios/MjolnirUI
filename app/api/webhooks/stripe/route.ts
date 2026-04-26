@@ -6,9 +6,17 @@ import Stripe from 'stripe';
 import { supabaseAuthAdmin } from '@/lib/supabaseAdmin';
 import { PRICE_TO_TIER } from '@/lib/tierConfig';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
+// Lazy-init Stripe inside the handler — module-load instantiation breaks the build
+// when STRIPE_SECRET_KEY isn't available during Next.js page data collection.
 export async function POST(req: Request) {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secretKey || !webhookSecret) {
+    console.error('Missing STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET');
+    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+  }
+  const stripe = new Stripe(secretKey);
+
   const rawBody = await req.text();
   const sig = req.headers.get('stripe-signature');
 
@@ -21,7 +29,7 @@ export async function POST(req: Request) {
     event = stripe.webhooks.constructEvent(
       rawBody,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      webhookSecret
     );
   } catch (err: any) {
     console.error('Webhook signature verification failed:', err.message);
