@@ -42,7 +42,7 @@ const sidebarSections: SidebarSection[] = [
       { name: "Introduction", href: "/blocks/docs/intro", icon: BookOpen, requiredTier: "free" },
       { name: "Installation", href: "/blocks/docs/install", icon: Download, requiredTier: "free" },
       { name: "CLI Reference", href: "/blocks/docs/cli", icon: Terminal, requiredTier: "free" },
-      { name: "MCP / AI Agent", href: "/blocks/docs/mcp", icon: Cpu, requiredTier: "free" },
+      { name: "MCP / AI Agent", href: "/blocks/docs/mcp", icon: Cpu, requiredTier: "pro" },
       { name: "Documentation", href: "/blocks/docs", icon: BookOpen, requiredTier: "free" },
     ],
   },
