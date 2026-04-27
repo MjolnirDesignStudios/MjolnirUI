@@ -5,14 +5,17 @@
 //              Pro/Elite: OdinAI Icon Wizard (shell)
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search, Copy, Check, Filter, Bot, Wand2, X, Layers,
-  Sparkles,
+  Search, Copy, Check, Filter, Bot, Wand2, X,
+  Sparkles, Trash2, RefreshCw, Lock,
 } from "lucide-react";
 import { TierBadge } from "@/components/Dashboards/TierBadge";
-import { getTierConfig } from "@/lib/tierConfig";
+import { UpgradeModal } from "@/components/Dashboards/UpgradeModal";
+import { hasAccess, getTierConfig, type TierName } from "@/lib/tierConfig";
+import { IconBuilder } from "@/components/foundation/IconBuilder";
 import {
   ICON_REGISTRY,
   getIconCategories,
@@ -29,7 +32,18 @@ const LIBRARIES: { id: IconLibrary | "all"; label: string }[] = [
   { id: "tabler", label: "Tabler" },
 ];
 
+interface SavedIcon {
+  id: string;
+  name: string;
+  config: { svg: string; shapes: Array<{ type: string }> };
+  created_at: string;
+}
+
 export default function IconsPage() {
+  const { data: session } = useSession();
+  const userTier = (session?.user?.tier as TierName) || "free";
+  const canSave = hasAccess(userTier, "base");
+
   const [query, setQuery] = useState("");
   const [library, setLibrary] = useState<IconLibrary | "all">("all");
   const [category, setCategory] = useState<string | null>(null);
@@ -37,6 +51,19 @@ export default function IconsPage() {
   const [stroke, setStroke] = useState(2);
   const [color, setColor] = useState("#FFCC11");
   const [active, setActive] = useState<IconEntry | null>(null);
+
+  const [saved, setSaved] = useState<SavedIcon[]>([]);
+  const [loadingSaved, setLoadingSaved] = useState(false);
+  const [savedError, setSavedError] = useState<string | null>(null);
+
+  const [upgradeModal, setUpgradeModal] = useState<{
+    isOpen: boolean;
+    requiredTier: TierName;
+    featureName: string;
+  }>({ isOpen: false, requiredTier: "base", featureName: "" });
+
+  const requestUpgrade = (featureName: string, requiredTier: TierName) =>
+    setUpgradeModal({ isOpen: true, featureName, requiredTier });
 
   const categories = useMemo(() => getIconCategories(), []);
   const results = useMemo(
@@ -47,6 +74,40 @@ export default function IconsPage() {
       }),
     [query, library, category]
   );
+
+  const loadSaved = async () => {
+    if (!canSave) return;
+    setLoadingSaved(true);
+    setSavedError(null);
+    try {
+      const res = await fetch("/api/design-assets?type=icon", { cache: "no-store" });
+      if (!res.ok) {
+        setSavedError("Couldn't load saved icons — try again in a minute.");
+        return;
+      }
+      const body = await res.json();
+      setSaved(body.assets || []);
+    } catch {
+      setSavedError("Network error.");
+    } finally {
+      setLoadingSaved(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSaved();
+  }, [canSave]);
+
+  const handleDelete = async (id: string) => {
+    const previous = saved;
+    setSaved((s) => s.filter((p) => p.id !== id));
+    try {
+      const res = await fetch(`/api/design-assets/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+    } catch {
+      setSaved(previous);
+    }
+  };
 
   const proConfig = getTierConfig("pro");
   const baseConfig = getTierConfig("base");
@@ -203,33 +264,80 @@ export default function IconsPage() {
         )}
       </section>
 
-      {/* ── Pro/Elite shell + Phase 5 stub ──────────────── */}
-      <section className="space-y-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500">Coming Soon</h2>
+      {/* ── Custom Icon Builder (Base+) ─────────────────── */}
+      <section>
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-3">
+          Custom Icon Builder
+        </h2>
+        <IconBuilder
+          userTier={userTier}
+          onRequestUpgrade={requestUpgrade}
+          onSaved={loadSaved}
+        />
+      </section>
 
-        {/* Custom Builder (Base+) — Phase 5 */}
-        <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-6 flex items-start gap-4 flex-wrap">
-          <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-            style={{ backgroundColor: `${baseConfig.color}20`, border: `1px solid ${baseConfig.color}40` }}
-          >
-            <Layers size={22} style={{ color: baseConfig.color }} />
-          </div>
-          <div className="flex-1 min-w-[200px]">
-            <div className="flex items-center gap-2 mb-1 flex-wrap">
-              <h3 className="text-lg font-bold text-white">Custom Icon Builder</h3>
-              <TierBadge tier="base" size="sm" />
-              <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FFCC11]/15 text-[#FFCC11] border border-[#FFCC11]/30">
-                Phase 5 — Coming
-              </span>
-            </div>
-            <p className="text-sm text-gray-300 leading-relaxed">
-              Compose your own icons from geometric primitives — circle, square, polygon, line,
-              path, star. Layer system, fill/stroke controls, SVG export. Up to 5 saved icons on
-              Base, 25 on Pro, unlimited on Elite.
-            </p>
+      {/* ── Saved icons (Base+) ─────────────────────────── */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500">
+            My Saved Icons
+          </h2>
+          <div className="flex items-center gap-2">
+            {canSave && (
+              <button
+                onClick={loadSaved}
+                className="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-zinc-800/50 transition"
+                aria-label="Refresh"
+              >
+                <RefreshCw size={14} className={loadingSaved ? "animate-spin" : ""} />
+              </button>
+            )}
+            <span className="text-xs text-gray-500">
+              {canSave
+                ? `${saved.length} saved · limit ${userTier === "elite" ? "∞" : userTier === "pro" ? 25 : 5}`
+                : "Base+"}
+            </span>
           </div>
         </div>
+
+        {!canSave ? (
+          <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-8 text-center">
+            <Lock size={28} className="text-gray-600 mx-auto mb-3" />
+            <p className="text-sm text-gray-400 mb-3">
+              Saving custom icons is a Base feature.
+            </p>
+            <button
+              onClick={() => requestUpgrade("Save Custom Icon", "base")}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30 hover:bg-[#10B981]/25 transition"
+            >
+              Upgrade to Base
+            </button>
+          </div>
+        ) : savedError ? (
+          <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-sm text-amber-200">
+            {savedError}
+          </div>
+        ) : saved.length === 0 ? (
+          <div className="bg-zinc-900/30 border border-dashed border-zinc-800 rounded-2xl p-8 text-center">
+            <Sparkles size={24} className="text-gray-600 mx-auto mb-2" />
+            <p className="text-sm text-gray-500">
+              No saved icons yet. Compose one above and hit Save.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {saved.map((s) => (
+              <SavedIconCard key={s.id} item={s} onDelete={() => handleDelete(s.id)} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* ── Pro/Elite shell ─────────────────────────────── */}
+      <section className="space-y-4">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500">
+          Pro / Elite
+        </h2>
 
         {/* OdinAI Icon Wizard (Pro/Elite) */}
         <div
@@ -292,6 +400,65 @@ export default function IconsPage() {
           />
         )}
       </AnimatePresence>
+
+      <UpgradeModal
+        isOpen={upgradeModal.isOpen}
+        onClose={() => setUpgradeModal((s) => ({ ...s, isOpen: false }))}
+        requiredTier={upgradeModal.requiredTier}
+        featureName={upgradeModal.featureName}
+      />
+    </div>
+  );
+}
+
+/* ── Saved-icon card ──────────────────────────────────── */
+function SavedIconCard({ item, onDelete }: { item: SavedIcon; onDelete: () => void }) {
+  const [confirming, setConfirming] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const onCopy = () => {
+    navigator.clipboard.writeText(item.config.svg);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
+  };
+
+  return (
+    <div className="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-3 hover:border-[#FFCC11]/30 transition">
+      <div
+        className="aspect-square bg-black/40 rounded-lg flex items-center justify-center mb-2 overflow-hidden"
+        dangerouslySetInnerHTML={{ __html: item.config.svg }}
+      />
+      <div className="text-xs text-white font-semibold truncate">{item.name}</div>
+      <div className="text-[9px] text-gray-500 mt-0.5">
+        {item.config.shapes.length} layer{item.config.shapes.length === 1 ? "" : "s"}
+      </div>
+      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition">
+        <button
+          onClick={onCopy}
+          className="p-1.5 rounded-md bg-zinc-900/90 border border-zinc-700 text-gray-400 hover:text-white hover:border-[#FFCC11]/40 transition"
+          aria-label="Copy SVG"
+          title="Copy SVG"
+        >
+          {copied ? <Check size={11} className="text-[#10B981]" /> : <Copy size={11} />}
+        </button>
+        <button
+          onClick={() => {
+            if (confirming) onDelete();
+            else {
+              setConfirming(true);
+              setTimeout(() => setConfirming(false), 3000);
+            }
+          }}
+          className={`p-1.5 rounded-md transition border ${
+            confirming
+              ? "bg-red-500/20 border-red-500/40 text-red-300"
+              : "bg-zinc-900/90 border-zinc-700 text-gray-400 hover:text-red-400 hover:border-red-500/40"
+          }`}
+          aria-label="Delete"
+        >
+          <Trash2 size={11} />
+        </button>
+      </div>
     </div>
   );
 }

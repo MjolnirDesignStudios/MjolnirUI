@@ -62,12 +62,22 @@ export interface TokenSetConfig {
   shadows?: Record<"sm" | "md" | "lg" | "xl", string>;
 }
 
+/** Shape kinds supported by the custom icon builder. Keep in sync with
+ *  ShapeKind in app/lib/iconBuilder.ts. */
+export type IconShapeKind =
+  | "circle"
+  | "square"
+  | "triangle"
+  | "polygon"
+  | "star"
+  | "line";
+
 export interface IconConfig {
   /** Generated SVG markup */
   svg: string;
   /** Composition recipe — shapes the user assembled */
   shapes: Array<{
-    type: "circle" | "square" | "polygon" | "line" | "path" | "star";
+    type: IconShapeKind;
     fill?: string;
     stroke?: string;
     strokeWidth?: number;
