@@ -5,7 +5,21 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { nextAuthOptions } from "@/lib/nextAuthOptions";
-import { getAsset, updateAsset, deleteAsset } from "@/lib/designAssets";
+import {
+  getAsset,
+  updateAsset,
+  deleteAsset,
+  type ColorPaletteConfig,
+  type TypeSystemConfig,
+  type TokenSetConfig,
+  type IconConfig,
+} from "@/lib/designAssets";
+
+type AnyAssetConfig =
+  | ColorPaletteConfig
+  | TypeSystemConfig
+  | TokenSetConfig
+  | IconConfig;
 
 export async function GET(
   _req: Request,
@@ -48,7 +62,11 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const patch: { name?: string; config?: object; is_default?: boolean } = {};
+  const patch: {
+    name?: string;
+    config?: AnyAssetConfig;
+    is_default?: boolean;
+  } = {};
   if (typeof body.name === "string") {
     if (body.name.length > 100) {
       return NextResponse.json({ error: "name max 100 chars" }, { status: 400 });
@@ -56,7 +74,9 @@ export async function PATCH(
     patch.name = body.name;
   }
   if (body.config && typeof body.config === "object") {
-    patch.config = body.config;
+    // Shape is validated client-side; we trust the discriminator in the
+    // existing row so runtime payload can be cast to the union here.
+    patch.config = body.config as AnyAssetConfig;
   }
   if (typeof body.is_default === "boolean") {
     patch.is_default = body.is_default;
