@@ -4,6 +4,29 @@
 - Build order: my call (proposed: Color → Typography → Tokens → Icons)
 - Ship Free/Base now, OdinAI Pro/Elite layer comes later
 - Per-user Supabase schema for saved assets (v1)
+- **Theme model: Asgard Dark (default) + Asgard Light + user saves.** No Bifrost/Storm/Valhalla theme variants (see clarification below).
+
+---
+
+## Theme model clarification — why only Asgard
+
+An earlier draft of this plan referenced 4 preset themes: Asgard, Bifrost, Storm, Valhalla. **Those are not themes.** They're scattered Norse vocabulary across the codebase serving different purposes:
+
+| Name | What it actually is | Where it lives |
+|---|---|---|
+| **Asgard** | Implicit brand identity (gold #FFCC11 + cyan #00f0ff + dark) — the brand itself | `app/globals.css` (default tokens), CLAUDE.md aesthetic |
+| **Storm** | A single dark gradient utility class | `globals.css` → `.storm-gradient` |
+| **Bifrost** | A visual effect family (rainbow gradients, shaders, animations) | `globals.css` BIFROST sections, `BifrostGradients.tsx`, Bifrost shader/background components |
+| **Valhalla** | Marketing copy + one shader name ("Valhalla Gates") | Hero copy, one shader component |
+
+None of these are full token-system theme variants (a complete swap of color/type/spacing tokens). Treating them as such would be inventing themes that don't exist.
+
+**What we ship instead:**
+- **Asgard Dark** — the default brand (current `globals.css`)
+- **Asgard Light** — auto-generated light variant of the brand
+- **User-saved themes** — created via Color + Typography pages
+
+If a "Bifrost theme" or similar makes sense later, it ships as a *decoration layer* (rainbow accents on top of the brand) — not a fork of base tokens.
 
 ## Build order — rationale
 
@@ -75,7 +98,7 @@ Tokens third (not first) because without saved Color + Type, the tokens page is 
 
 ### Base tier
 - **Compose** — pick a saved Color palette + saved Type system → preview them as a unified token set across 6 demo components (button, card, badge, input, modal-header, alert)
-- Switch between 4 preset themes: **Asgard** (gold + cyan), **Bifrost** (rainbow), **Storm** (electric blue/grey), **Valhalla** (gold + ember orange)
+- **Toggle Asgard Dark ↔ Asgard Light** — the brand in both modes (Light is auto-generated from Dark on first view; Pro will get OdinAI to refine it)
 - **Export panel** — `globals.css`, `tailwind.config.ts`, `tokens.json` (W3C spec), Figma tokens JSON
 - **Save token sets** — up to 3 per user (Supabase)
 
@@ -206,12 +229,9 @@ After all 4 ship, we layer OdinAI Pro/Elite features on top — agent-generated 
 
 ---
 
-## Open question before I start
+## Resolved questions (kept for reference)
 
-**Do the 4 preset themes (Asgard, Bifrost, Storm, Valhalla) exist in CSS yet, or do I define them?**
-
-Looking at `globals.css`, you have Asgard tokens but no Bifrost / Storm / Valhalla variants. The Tokens page demos require all 4. I can:
-- (a) Define the other 3 as new CSS var sets in globals.css (~30 min add to Phase 3)
-- (b) Use placeholder approximations now, you refine later
-
-Default plan: (a). Tell me if you'd rather me skip them or you want to define them yourself.
+- **Q: Do Bifrost/Storm/Valhalla preset themes exist?** A: No — they're effect names, not theme variants. Replaced with Asgard Dark + Asgard Light. See "Theme model clarification" above.
+- **Q: Tier save limits?** A: Free 0 / Base 3 / Pro 10 / Elite ∞ — confirmed.
+- **Q: Asset type names?** A: `color_palette`, `type_system`, `token_set`, `icon` — confirmed.
+- **Q: Per-user vs per-project storage?** A: Per-user for v1.
