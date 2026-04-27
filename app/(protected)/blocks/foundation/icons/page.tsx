@@ -477,12 +477,6 @@ function IconTile({
   color: string;
   onClick: () => void;
 }) {
-  const Component = icon.component as React.ComponentType<{
-    size?: number;
-    stroke?: number | string;
-    color?: string;
-    className?: string;
-  }>;
   return (
     <motion.button
       whileHover={{ scale: 1.04 }}
@@ -491,12 +485,41 @@ function IconTile({
       className="aspect-square flex flex-col items-center justify-center gap-1.5 p-2 rounded-xl bg-zinc-900/60 border border-zinc-800/50 hover:border-[#FFCC11]/30 hover:bg-zinc-900 transition group"
       title={`${icon.name} (${icon.library})`}
     >
-      <Component size={size} stroke={stroke} color={color} />
+      <RenderIcon icon={icon} size={size} stroke={stroke} color={color} />
       <span className="text-[9px] font-mono text-gray-500 group-hover:text-gray-300 truncate w-full text-center transition">
         {icon.name}
       </span>
     </motion.button>
   );
+}
+
+/* ── Library-aware icon renderer ──────────────────────── */
+/* Lucide: stroke = stroke COLOR, strokeWidth = thickness                    */
+/* Tabler: stroke = thickness (number), color = stroke COLOR                 */
+/* Passing the wrong prop to the wrong lib renders the icon as black-on-black.*/
+function RenderIcon({
+  icon,
+  size,
+  stroke,
+  color,
+}: {
+  icon: IconEntry;
+  size: number;
+  stroke: number;
+  color: string;
+}) {
+  const Component = icon.component as React.ComponentType<{
+    size?: number;
+    stroke?: number | string;
+    strokeWidth?: number | string;
+    color?: string;
+    className?: string;
+  }>;
+  if (icon.library === "lucide") {
+    return <Component size={size} strokeWidth={stroke} color={color} />;
+  }
+  // Tabler
+  return <Component size={size} stroke={stroke} color={color} />;
 }
 
 /* ── Detail modal ─────────────────────────────────────── */
@@ -514,12 +537,6 @@ function IconDetailModal({
   onClose: () => void;
 }) {
   const [copied, setCopied] = useState<string | null>(null);
-  const Component = icon.component as React.ComponentType<{
-    size?: number;
-    stroke?: number | string;
-    color?: string;
-    className?: string;
-  }>;
 
   const importStmt = getImportStatement(icon);
   const jsxSnippet = getJsxSnippet(icon, size);
@@ -555,7 +572,7 @@ function IconDetailModal({
 
         <div className="flex flex-col items-center gap-3 mb-6">
           <div className="w-32 h-32 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-            <Component size={size * 2.5} stroke={stroke} color={color} />
+            <RenderIcon icon={icon} size={size * 2.5} stroke={stroke} color={color} />
           </div>
           <div className="text-center">
             <h3 className="text-xl font-bold text-white">{icon.name}</h3>
