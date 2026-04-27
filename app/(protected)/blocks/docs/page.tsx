@@ -76,12 +76,13 @@ export default function DocumentationHub() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: idx * 0.05 }}
+              className="h-full"
             >
               <Link
                 href={card.href}
-                className="group relative block bg-linear-to-br from-zinc-900 to-black border border-zinc-800/60 hover:border-[#FFCC11]/40 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,204,17,0.12)]"
+                className="group relative flex h-full bg-linear-to-br from-zinc-900 to-black border border-zinc-800/60 hover:border-[#FFCC11]/40 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,204,17,0.12)]"
               >
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 w-full">
                   <div className="w-12 h-12 rounded-xl bg-[#FFCC11]/10 border border-[#FFCC11]/20 flex items-center justify-center shrink-0 group-hover:bg-[#FFCC11]/20 transition">
                     <card.icon size={22} className="text-[#FFCC11]" />
                   </div>
