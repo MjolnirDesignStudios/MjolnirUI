@@ -27,7 +27,7 @@ export default function BackgroundStudioLayout({
       </div>
 
       {/* Mobile layout — visible below md */}
-      <div className="md:hidden bg-black text-white min-h-screen">
+      <div className="md:hidden bg-black text-white min-h-screen w-full overflow-x-hidden">
         <MobileLayout>{children}</MobileLayout>
       </div>
 

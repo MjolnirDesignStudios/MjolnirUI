@@ -1,3 +1,11 @@
+/* Mobile horizontal-scroll guardrail — Day 1 redesign.
+ * Any descendant trying to push the page wider than 100vw
+ * gets clipped instead of producing an unwanted scrollbar. */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 /* Slim scrollbar for sidebar */
 .scrollbar-thin::-webkit-scrollbar {
   width: 4px;

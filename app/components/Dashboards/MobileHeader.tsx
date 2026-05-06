@@ -1,15 +1,22 @@
-// components/Dashboards/MobileHeader.tsx — Compact mobile header
+// components/Dashboards/MobileHeader.tsx
+// Sticky top bar for mobile: hamburger (left) + logo + tier badge + avatar (right).
+// Owns the open/close state for MobileDrawer; takes drawer toggles as props
+// from MobileLayout so a single drawer instance is shared.
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+
+import React, { useEffect, useRef, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogOut, ChevronUp } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { LogOut, ChevronUp, Menu } from "lucide-react";
 import { getTierConfig, type TierName } from "@/lib/tierConfig";
 import { TierBadge } from "./TierBadge";
 
-export function MobileHeader() {
+interface MobileHeaderProps {
+  onOpenDrawer: () => void;
+}
+
+export function MobileHeader({ onOpenDrawer }: MobileHeaderProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const userTier = (session?.user?.tier as TierName) || "free";
@@ -20,7 +27,7 @@ export function MobileHeader() {
   const userName = session?.user?.name || session?.user?.email || "User";
   const initial = userName.charAt(0).toUpperCase();
 
-  // Close menu on outside click
+  // Close avatar menu on outside click
   useEffect(() => {
     if (!menuOpen) return;
     function handleClick(e: MouseEvent) {
@@ -33,19 +40,28 @@ export function MobileHeader() {
   }, [menuOpen]);
 
   return (
-    <header className="flex items-center justify-between py-3 px-4 border-b border-zinc-800/50 bg-black/30 backdrop-blur-lg md:hidden">
-      {/* Left: Logo + Tier */}
-      <div className="flex items-center gap-2.5">
+    <header className="sticky top-0 z-40 flex items-center justify-between gap-2 py-3 px-4 border-b border-zinc-800/50 bg-black/80 backdrop-blur-lg md:hidden">
+      {/* Left: hamburger + logo */}
+      <div className="flex items-center gap-2 min-w-0">
+        <button
+          onClick={onOpenDrawer}
+          className="flex items-center justify-center w-10 h-10 -ml-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition shrink-0"
+          aria-label="Open navigation"
+        >
+          <Menu size={22} />
+        </button>
         <img
           src="/logos/MjolnirUI.png"
           alt="MjolnirUI"
-          className="h-7 object-contain"
+          className="h-7 object-contain shrink-0"
         />
-        <TierBadge tier={userTier} size="sm" />
+        <div className="hidden xs:block">
+          <TierBadge tier={userTier} size="sm" />
+        </div>
       </div>
 
-      {/* Right: Avatar */}
-      <div className="relative" ref={menuRef}>
+      {/* Right: avatar */}
+      <div className="relative shrink-0" ref={menuRef}>
         <button
           onClick={() => setMenuOpen((prev) => !prev)}
           className="flex items-center justify-center w-9 h-9 rounded-full text-sm font-bold transition-all border border-white/10 hover:border-white/20"
@@ -53,11 +69,11 @@ export function MobileHeader() {
             backgroundColor: `${tierConfig.color}20`,
             color: tierConfig.color,
           }}
+          aria-label="Account menu"
         >
           {initial}
         </button>
 
-        {/* Dropdown */}
         <AnimatePresence>
           {menuOpen && (
             <motion.div
@@ -67,7 +83,6 @@ export function MobileHeader() {
               transition={{ duration: 0.15 }}
               className="absolute right-0 top-12 w-56 rounded-xl border border-white/10 bg-black/90 backdrop-blur-xl shadow-2xl overflow-hidden z-50"
             >
-              {/* User Info */}
               <div className="px-4 py-3 border-b border-white/10">
                 <p className="text-sm font-semibold text-white truncate">
                   {userName}
@@ -77,7 +92,6 @@ export function MobileHeader() {
                 </div>
               </div>
 
-              {/* Actions */}
               <div className="p-2 space-y-1">
                 {userTier === "free" && (
                   <button

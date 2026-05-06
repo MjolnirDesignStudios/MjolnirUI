@@ -1,62 +1,31 @@
-// components/Dashboards/MobileLayout.tsx — Mobile layout wrapper that responds to sidebar position
+// components/Dashboards/MobileLayout.tsx
+// New mobile architecture (Day 1 redesign):
+// - No more permanent 56px icon rail eating viewport width
+// - Sticky top header with hamburger trigger
+// - Slide-in MobileDrawer overlay for navigation
+// - overflow-x-hidden at every level to prevent horizontal scroll bleed
+// - Children render full-width inside a padded main container
 "use client";
-import React, { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
-import { MobileSidebar } from "./MobileSidebar";
+
+import React, { useState } from "react";
+import { MobileDrawer } from "./MobileDrawer";
 import { MobileHeader } from "./MobileHeader";
 
-const POSITION_KEY = "mjolnir-sidebar-position";
-
 export function MobileLayout({ children }: { children: React.ReactNode }) {
-  const [position, setPosition] = useState<"left" | "right">("left");
-
-  useEffect(() => {
-    const saved = localStorage.getItem(POSITION_KEY);
-    if (saved === "left" || saved === "right") {
-      setPosition(saved);
-    }
-
-    // Listen for cross-tab storage changes
-    function handleStorage(e: StorageEvent) {
-      if (e.key === POSITION_KEY && (e.newValue === "left" || e.newValue === "right")) {
-        setPosition(e.newValue);
-      }
-    }
-
-    // Listen for same-tab custom event dispatched by MobileSidebar
-    function handlePositionChange(e: Event) {
-      const detail = (e as CustomEvent).detail;
-      if (detail === "left" || detail === "right") {
-        setPosition(detail);
-      }
-    }
-
-    window.addEventListener("storage", handleStorage);
-    window.addEventListener("mjolnir-sidebar-position", handlePositionChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorage);
-      window.removeEventListener("mjolnir-sidebar-position", handlePositionChange);
-    };
-  }, []);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen">
-      <MobileSidebar />
-      <div
-        className={cn(
-          "flex-1 flex flex-col min-w-0",
-          position === "left" ? "pl-14" : "pr-14"
-        )}
+    // w-full + overflow-x-hidden prevents any descendant from causing
+    // horizontal page scroll. This was the root cause of cards "spilling out".
+    <div className="flex flex-col min-h-screen w-full max-w-[100vw] overflow-x-hidden">
+      <MobileHeader onOpenDrawer={() => setDrawerOpen(true)} />
+      <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <main
+        className="flex-1 w-full overflow-x-hidden bg-linear-to-br from-zinc-950/50 via-black to-zinc-950/50 px-4 py-5"
+        style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.1) transparent" }}
       >
-        <MobileHeader />
-        <main
-          className="flex-1 p-4 bg-linear-to-br from-zinc-950/50 via-black to-zinc-950/50 overflow-auto"
-          style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.1) transparent" }}
-        >
-          {children}
-        </main>
-      </div>
+        {children}
+      </main>
     </div>
   );
 }
