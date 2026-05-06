@@ -9,6 +9,8 @@ Disallow: /api/
 Disallow: /blocks/
 Disallow: /admin/
 Disallow: /_next/
+Disallow: /sidebar-test
+Disallow: /test-nav
 
 # Sitemap
 Sitemap: https://www.mjolnirui.com/sitemap.xml

@@ -1,10 +1,11 @@
 import type { ComponentType } from "react";
 
-// navlinks
+// navlinks — anchor IDs must match section ids in the corresponding components.
+// About.tsx uses #about, Build.tsx #build, Demo.tsx #demo, Tech.tsx #tech, Pricing.tsx #pricing.
 export const navItems = [
   { name: "About", link: "/#about" },
-  { name: "Build", link: "/#blocks" },
-  { name: "Forge", link: "/#forge" },
+  { name: "Build", link: "/#build" },
+  { name: "Demo", link: "/#demo" },
   { name: "Pricing", link: "/#pricing" },
   { name: "Tech", link: "/#tech" },
 ];
@@ -140,9 +141,11 @@ export const footerLinks = {
     { name: "Roadmap", href: "/roadmap" },
   ],
   Designs: [
-    { name: "Animations", href: "/#animations" },
-    { name: "Components", href: "/#components" },
-    { name: "Templates", href: "/#templates" },
+    // Anchor links updated to match the actual section IDs that exist on the
+    // landing page (about.tsx, build.tsx, demo.tsx, tech.tsx).
+    { name: "Components", href: "/#build" },
+    { name: "Live Demo", href: "/#demo" },
+    { name: "Tech Stack", href: "/#tech" },
   ],
   Products: [
     { name: "Agentic AI", href: "/agent" },
@@ -150,6 +153,7 @@ export const footerLinks = {
     { name: "MjolnirUI Pro", href: "/pricing" },
   ],
   Support: [
+    // /docs redirects to /blocks/docs (sign-in wall handles unsigned visitors).
     { name: "Documentation", href: "/docs" },
     { name: "Help Center", href: "/help" },
     { name: "FAQ", href: "/faq" },
