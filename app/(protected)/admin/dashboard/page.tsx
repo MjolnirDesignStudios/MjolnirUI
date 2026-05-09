@@ -11,6 +11,7 @@ import {
   Users, CreditCard, Sparkles, DollarSign, TrendingUp,
   RefreshCw, Search, Crown, Shield, X, Save, Loader2,
   Palette, Type as TypeIcon, Layers, Image as ImageIcon,
+  Activity, Flame,
 } from "lucide-react";
 import { TierBadge } from "@/components/Dashboards/TierBadge";
 import { TIER_CONFIG, type TierName } from "@/lib/tierConfig";
@@ -49,6 +50,33 @@ interface RecentSave {
   user_name: string | null;
 }
 
+interface PopularTool {
+  tool: string;
+  label: string;
+  opens: number;
+  unique_users: number;
+}
+
+interface ActivityDay {
+  date: string;
+  page_view: number;
+  tool_open: number;
+  component_click: number;
+  save_asset: number;
+  export_action: number;
+  upgrade_click: number;
+  total: number;
+}
+
+interface MrrData {
+  mrr_cents: number;
+  arr_cents: number;
+  active_subscriptions: number;
+  currency: string;
+  source: "stripe" | "estimate";
+  note?: string;
+}
+
 const ASSET_TYPE_META: Record<
   string,
   { label: string; icon: React.ComponentType<{ size?: number; className?: string }> }
@@ -66,6 +94,9 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [recentSaves, setRecentSaves] = useState<RecentSave[]>([]);
+  const [popularTools, setPopularTools] = useState<PopularTool[]>([]);
+  const [activity, setActivity] = useState<ActivityDay[]>([]);
+  const [mrr, setMrr] = useState<MrrData | null>(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
@@ -76,23 +107,27 @@ export default function AdminDashboard() {
     setLoading(true);
     setErr(null);
     try {
-      const [statsRes, usersRes, savesRes] = await Promise.all([
-        fetch("/api/admin/stats", { cache: "no-store" }),
-        fetch("/api/admin/users?limit=50", { cache: "no-store" }),
-        fetch("/api/admin/recent-saves?limit=10", { cache: "no-store" }),
-      ]);
-      if (!statsRes.ok || !usersRes.ok || !savesRes.ok) {
+      // Fan out all reads in parallel; tolerate partial failure.
+      const [statsRes, usersRes, savesRes, toolsRes, actRes, mrrRes] =
+        await Promise.all([
+          fetch("/api/admin/stats", { cache: "no-store" }),
+          fetch("/api/admin/users?limit=50", { cache: "no-store" }),
+          fetch("/api/admin/recent-saves?limit=10", { cache: "no-store" }),
+          fetch("/api/admin/analytics/popular-tools?days=30", { cache: "no-store" }),
+          fetch("/api/admin/analytics/activity?days=30", { cache: "no-store" }),
+          fetch("/api/admin/mrr", { cache: "no-store" }),
+        ]);
+
+      if (statsRes.ok) setStats((await statsRes.json()).stats);
+      if (usersRes.ok) setUsers((await usersRes.json()).users || []);
+      if (savesRes.ok) setRecentSaves((await savesRes.json()).recentSaves || []);
+      if (toolsRes.ok) setPopularTools((await toolsRes.json()).tools || []);
+      if (actRes.ok) setActivity((await actRes.json()).series || []);
+      if (mrrRes.ok) setMrr(await mrrRes.json());
+
+      if (!statsRes.ok && !usersRes.ok) {
         setErr("Failed to load dashboard data");
-        return;
       }
-      const [statsBody, usersBody, savesBody] = await Promise.all([
-        statsRes.json(),
-        usersRes.json(),
-        savesRes.json(),
-      ]);
-      setStats(statsBody.stats);
-      setUsers(usersBody.users || []);
-      setRecentSaves(savesBody.recentSaves || []);
     } catch {
       setErr("Network error loading dashboard.");
     } finally {
@@ -173,15 +208,21 @@ export default function AdminDashboard() {
           />
           <KpiCard
             icon={DollarSign}
-            label="MRR (est.)"
+            label={mrr?.source === "stripe" ? "MRR (Stripe)" : "MRR (est.)"}
             value={
-              stats !== null
-                ? `$${(stats.mrrCents / 100).toLocaleString()}`
-                : undefined
+              mrr
+                ? `$${(mrr.mrr_cents / 100).toLocaleString()}`
+                : stats
+                  ? `$${(stats.mrrCents / 100).toLocaleString()}`
+                  : undefined
             }
             color="#F97316"
             loading={loading}
-            sub="from tier counts (Stripe Day 4)"
+            sub={
+              mrr?.source === "stripe"
+                ? `${mrr.active_subscriptions} active subs · ARR $${(mrr.arr_cents / 100).toLocaleString()}`
+                : "from tier counts (Stripe key not set)"
+            }
           />
           <KpiCard
             icon={TrendingUp}
@@ -197,6 +238,14 @@ export default function AdminDashboard() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <TierDistributionCard breakdown={stats?.tierBreakdown} loading={loading} />
         <SavesByTypeCard byType={stats?.savesByType} total={stats?.totalSaves} loading={loading} />
+      </section>
+
+      {/* ── Activity timeline + Popular tools ───────────── */}
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="lg:col-span-2">
+          <ActivityTimelineCard series={activity} loading={loading} />
+        </div>
+        <PopularToolsCard tools={popularTools} loading={loading} />
       </section>
 
       {/* ── Recent users table ──────────────────────────── */}
@@ -735,5 +784,132 @@ function RoleButton({
       <Icon size={14} />
       {label}
     </button>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   POPULAR TOOLS CARD
+   ═══════════════════════════════════════════════════════ */
+function PopularToolsCard({
+  tools,
+  loading,
+}: {
+  tools: PopularTool[];
+  loading: boolean;
+}) {
+  const max = tools.length > 0 ? Math.max(...tools.map((t) => t.opens), 1) : 1;
+  return (
+    <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-5 h-full">
+      <h3 className="text-sm font-bold text-white mb-3 flex items-center justify-between gap-2">
+        <span className="flex items-center gap-2">
+          <Flame size={14} className="text-orange-400" />
+          Popular tools
+        </span>
+        <span className="text-[10px] font-mono text-gray-500 uppercase tracking-wider">
+          last 30d
+        </span>
+      </h3>
+      {loading && tools.length === 0 ? (
+        <div className="text-xs text-gray-500 py-4 text-center">Loading…</div>
+      ) : tools.length === 0 ? (
+        <div className="text-xs text-gray-500 py-4 text-center">
+          No tool opens yet. Once users navigate the studios, this fills up.
+        </div>
+      ) : (
+        <div className="space-y-2.5">
+          {tools.slice(0, 8).map((t) => {
+            const widthPct = (t.opens / max) * 100;
+            return (
+              <div key={t.tool}>
+                <div className="flex items-baseline justify-between mb-1 gap-2">
+                  <span className="text-xs text-gray-300 truncate">{t.label}</span>
+                  <span className="text-[10px] font-mono text-gray-500 shrink-0">
+                    {t.opens.toLocaleString()} opens · {t.unique_users} users
+                  </span>
+                </div>
+                <div className="h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-linear-to-r from-orange-400 to-[#FFCC11]"
+                    style={{ width: `${widthPct}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   ACTIVITY TIMELINE CARD
+   Daily event totals as a CSS sparkline-style bar chart.
+   ═══════════════════════════════════════════════════════ */
+function ActivityTimelineCard({
+  series,
+  loading,
+}: {
+  series: ActivityDay[];
+  loading: boolean;
+}) {
+  const max = series.length > 0 ? Math.max(...series.map((d) => d.total), 1) : 1;
+  const totalEvents = series.reduce((sum, d) => sum + d.total, 0);
+
+  return (
+    <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-5 h-full">
+      <h3 className="text-sm font-bold text-white mb-3 flex items-center justify-between gap-2 flex-wrap">
+        <span className="flex items-center gap-2">
+          <Activity size={14} className="text-[#00f0ff]" />
+          Activity (events / day)
+        </span>
+        <span className="text-[10px] font-mono text-gray-500 uppercase tracking-wider">
+          {totalEvents.toLocaleString()} events · 30d
+        </span>
+      </h3>
+      {loading && series.length === 0 ? (
+        <div className="text-xs text-gray-500 py-8 text-center">Loading…</div>
+      ) : series.length === 0 ? (
+        <div className="text-xs text-gray-500 py-8 text-center">No activity yet.</div>
+      ) : (
+        <>
+          <div
+            className="flex items-end gap-px h-32 px-1"
+            style={{
+              backgroundImage:
+                "linear-gradient(to top, rgba(255,255,255,0.03) 1px, transparent 1px)",
+              backgroundSize: "100% 25%",
+            }}
+          >
+            {series.map((d) => {
+              const heightPct = (d.total / max) * 100;
+              const isWeekend = [0, 6].includes(new Date(d.date).getUTCDay());
+              return (
+                <div
+                  key={d.date}
+                  className="flex-1 flex flex-col justify-end group relative"
+                  title={`${d.date}: ${d.total} events`}
+                >
+                  <div
+                    className={`w-full rounded-t-sm transition-all ${
+                      isWeekend
+                        ? "bg-[#00f0ff]/40 hover:bg-[#00f0ff]/70"
+                        : "bg-[#00f0ff]/70 hover:bg-[#00f0ff]"
+                    }`}
+                    style={{
+                      height: d.total === 0 ? "1px" : `${Math.max(heightPct, 2)}%`,
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex items-center justify-between mt-2 text-[10px] font-mono text-gray-500">
+            <span>{series[0]?.date}</span>
+            <span>{series[series.length - 1]?.date}</span>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
