@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LogOut, ChevronUp, Menu } from "lucide-react";
 import { getTierConfig, type TierName } from "@/lib/tierConfig";
 import { TierBadge } from "./TierBadge";
+import { PortalSwitcher } from "./PortalSwitcher";
 
 interface MobileHeaderProps {
   onOpenDrawer: () => void;
@@ -93,6 +94,12 @@ export function MobileHeader({ onOpenDrawer }: MobileHeaderProps) {
               </div>
 
               <div className="p-2 space-y-1">
+                {/* Admin-only portal switcher */}
+                <PortalSwitcher
+                  variant="menu-item"
+                  onNavigate={() => setMenuOpen(false)}
+                />
+
                 {userTier === "free" && (
                   <button
                     onClick={() => {

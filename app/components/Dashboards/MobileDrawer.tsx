@@ -18,6 +18,7 @@ import { hasAccess, getTierConfig, type TierName } from "@/lib/tierConfig";
 import { sidebarSections, accountItems } from "./Sidebar";
 import { UpgradeModal } from "./UpgradeModal";
 import { TierBadge } from "./TierBadge";
+import { PortalSwitcher } from "./PortalSwitcher";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -151,6 +152,9 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
               className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 space-y-0.5"
               style={{ scrollbarWidth: "thin" }}
             >
+              {/* Admin-only portal switcher (hidden for non-admins) */}
+              <PortalSwitcher variant="menu-item" onNavigate={onClose} />
+
               {/* Dashboard quick link */}
               <Link
                 href="/blocks/dashboard"
