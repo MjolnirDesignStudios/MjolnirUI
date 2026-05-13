@@ -12,7 +12,12 @@ import { TIER_CONFIG, type TierName } from "@/lib/tierConfig";
    discriminated by `asset_type`.
    ═══════════════════════════════════════════════════════ */
 
-export type AssetType = "color_palette" | "type_system" | "token_set" | "icon";
+export type AssetType =
+  | "color_palette"
+  | "type_system"
+  | "token_set"
+  | "icon"
+  | "background_set";
 
 export interface ColorPaletteConfig {
   /** Brand seed color (hex) used to derive the rest */
@@ -88,18 +93,45 @@ export interface IconConfig {
   }>;
 }
 
+/**
+ * Background Studio config — the layered composer state shape.
+ * The full BackgroundLayer discriminated union lives in
+ * app/components/background-studio/studioTypes.ts.
+ * We keep it as `unknown[]` here to avoid a circular type import while still
+ * persisting the shape verbatim into the jsonb column.
+ */
+export interface BackgroundSetConfig {
+  /** User-editable name; mirrors top-level row.name but stored for export use too */
+  name: string;
+  /** Aspect ratio of the canvas (e.g. "16/9", "1/1", "9/16"). Drives PNG export resolution. */
+  canvasAspect: string;
+  /** Stack of layers, back→front. Shape: BackgroundLayer[] from studioTypes.ts */
+  layers: unknown[];
+  /** Optional metadata for editor UI rebuild */
+  meta?: {
+    activeLayerId?: string;
+    schemaVersion?: number;
+  };
+}
+
 export type AssetConfig =
   | { asset_type: "color_palette"; config: ColorPaletteConfig }
   | { asset_type: "type_system"; config: TypeSystemConfig }
   | { asset_type: "token_set"; config: TokenSetConfig }
-  | { asset_type: "icon"; config: IconConfig };
+  | { asset_type: "icon"; config: IconConfig }
+  | { asset_type: "background_set"; config: BackgroundSetConfig };
 
 export interface DesignAsset {
   id: string;
   user_id: string;
   asset_type: AssetType;
   name: string;
-  config: ColorPaletteConfig | TypeSystemConfig | TokenSetConfig | IconConfig;
+  config:
+    | ColorPaletteConfig
+    | TypeSystemConfig
+    | TokenSetConfig
+    | IconConfig
+    | BackgroundSetConfig;
   is_default: boolean;
   created_at: string;
   updated_at: string;
@@ -110,14 +142,15 @@ export interface DesignAsset {
    ═══════════════════════════════════════════════════════ */
 
 const TIER_SAVE_LIMITS: Record<TierName, Record<AssetType, number>> = {
-  free: { color_palette: 0, type_system: 0, token_set: 0, icon: 0 },
-  base: { color_palette: 3, type_system: 3, token_set: 3, icon: 5 },
-  pro: { color_palette: 10, type_system: 10, token_set: 10, icon: 25 },
+  free: { color_palette: 0, type_system: 0, token_set: 0, icon: 0, background_set: 0 },
+  base: { color_palette: 3, type_system: 3, token_set: 3, icon: 5, background_set: 3 },
+  pro: { color_palette: 10, type_system: 10, token_set: 10, icon: 25, background_set: 15 },
   elite: {
     color_palette: Infinity,
     type_system: Infinity,
     token_set: Infinity,
     icon: Infinity,
+    background_set: Infinity,
   },
 };
 
@@ -173,7 +206,12 @@ export async function createAsset(args: {
   tier: TierName;
   assetType: AssetType;
   name: string;
-  config: ColorPaletteConfig | TypeSystemConfig | TokenSetConfig | IconConfig;
+  config:
+    | ColorPaletteConfig
+    | TypeSystemConfig
+    | TokenSetConfig
+    | IconConfig
+    | BackgroundSetConfig;
   isDefault?: boolean;
 }): Promise<{ data?: DesignAsset; error?: string }> {
   // Tier-limit check
