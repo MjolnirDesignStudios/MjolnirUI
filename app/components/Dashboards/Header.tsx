@@ -27,8 +27,9 @@ export function MjolnirHeader() {
         )}
       </div>
       <div className="flex items-center gap-3">
-        {/* Admin-only portal switcher (hidden for non-admin users) */}
-        <PortalSwitcher variant="button" />
+        {/* Admin-only portal toggle (hidden for non-admin users).
+            Segmented pill: User | Admin — click the inactive side to switch. */}
+        <PortalSwitcher variant="toggle" />
         <button
           onClick={() => router.push('/blocks/account/profile')}
           className="w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-900 border border-zinc-700 text-gray-400 hover:text-white hover:border-zinc-500 transition"

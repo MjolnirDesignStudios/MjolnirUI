@@ -1,63 +1,120 @@
 // components/Dashboards/PortalSwitcher.tsx
-// Renders an "Admin Portal" / "User Portal" link based on the current
-// route — but only when the signed-in user has role === 'admin'.
-// Used in the desktop Header, MobileHeader dropdown, and MobileDrawer.
+// Segmented toggle between User Portal (/blocks/*) and Admin Portal (/admin/*).
+// Visible only when session.user.role === 'admin'. Returns null otherwise so
+// non-admin users never see any leakage of the admin surface.
 "use client";
 
 import React from "react";
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { Shield, LayoutGrid, ArrowRight } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Shield, LayoutGrid } from "lucide-react";
 
 interface PortalSwitcherProps {
-  /** Visual style — full button for header, simple link for menus */
-  variant?: "button" | "menu-item";
-  /** Optional callback for when the link is clicked (close a dropdown, etc.) */
+  /**
+   * "toggle"    — full segmented pill (default, used in headers)
+   * "menu-item" — single-line menu entry (used in dropdowns / drawer)
+   */
+  variant?: "toggle" | "menu-item";
+  /** Called after navigating (closes parent dropdown/drawer) */
   onNavigate?: () => void;
 }
 
-export function PortalSwitcher({ variant = "button", onNavigate }: PortalSwitcherProps) {
+export function PortalSwitcher({
+  variant = "toggle",
+  onNavigate,
+}: PortalSwitcherProps) {
   const { data: session } = useSession();
   const pathname = usePathname() || "";
+  const router = useRouter();
 
-  // Hide entirely if not admin — no leakage of admin surface for regular users.
+  // Strict admin-only — hide entirely for everyone else.
   const role = (session?.user as { role?: string } | undefined)?.role;
   if (role !== "admin") return null;
 
   const onAdmin = pathname.startsWith("/admin");
-  const targetHref = onAdmin ? "/blocks/dashboard" : "/admin/dashboard";
-  const Icon = onAdmin ? LayoutGrid : Shield;
-  const label = onAdmin ? "User Portal" : "Admin Portal";
+  const goTo = (target: "user" | "admin") => {
+    const href = target === "admin" ? "/admin/dashboard" : "/blocks/dashboard";
+    onNavigate?.();
+    router.push(href);
+  };
 
+  /* ─ Menu-item variant — for dropdowns / drawer ──────── */
   if (variant === "menu-item") {
+    const targetHref = onAdmin ? "/blocks/dashboard" : "/admin/dashboard";
+    const Icon = onAdmin ? LayoutGrid : Shield;
+    const label = onAdmin ? "Switch to User Portal" : "Switch to Admin Portal";
     return (
-      <Link
-        href={targetHref}
-        onClick={onNavigate}
+      <button
+        onClick={() => {
+          onNavigate?.();
+          router.push(targetHref);
+        }}
         className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-semibold text-[#FFCC11] hover:bg-[#FFCC11]/10 min-h-[44px] transition-all"
       >
         <Icon size={16} />
-        <span className="flex-1">{label}</span>
-        <ArrowRight size={14} className="opacity-60" />
-      </Link>
+        <span className="flex-1 text-left">{label}</span>
+      </button>
     );
   }
 
+  /* ─ Toggle variant — segmented pill ─────────────────── */
   return (
-    <Link
-      href={targetHref}
-      onClick={onNavigate}
-      className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-semibold transition"
+    <div
+      role="group"
+      aria-label="Portal switcher"
+      className="inline-flex items-center rounded-xl border p-0.5"
       style={{
-        backgroundColor: "rgba(255,204,17,0.10)",
-        borderColor: "rgba(255,204,17,0.35)",
-        color: "#FFCC11",
+        backgroundColor: "rgba(255,204,17,0.08)",
+        borderColor: "rgba(255,204,17,0.30)",
       }}
-      title={`Switch to ${label}`}
     >
-      <Icon size={14} />
-      <span>{label}</span>
-    </Link>
+      <PortalSegment
+        active={!onAdmin}
+        onClick={() => !onAdmin || goTo("user")}
+        icon={LayoutGrid}
+        label="User"
+      />
+      <PortalSegment
+        active={onAdmin}
+        onClick={() => onAdmin || goTo("admin")}
+        icon={Shield}
+        label="Admin"
+      />
+    </div>
+  );
+}
+
+function PortalSegment({
+  active,
+  onClick,
+  icon: Icon,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition"
+      style={{
+        backgroundColor: active ? "#FFCC11" : "transparent",
+        color: active ? "#000" : "#FFCC11",
+        opacity: active ? 1 : 0.75,
+      }}
+      onMouseEnter={(e) => {
+        if (!active) e.currentTarget.style.opacity = "1";
+      }}
+      onMouseLeave={(e) => {
+        if (!active) e.currentTarget.style.opacity = "0.75";
+      }}
+    >
+      <Icon size={12} />
+      {label}
+    </button>
   );
 }
