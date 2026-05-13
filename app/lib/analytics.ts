@@ -59,6 +59,8 @@ export const TOOL_SLUGS = {
   SHADER_TOOL: "shader-tool",
   BROWSE: "browse",
   DASHBOARD: "dashboard",
+  CANVAS_BACKGROUNDS: "canvas-backgrounds",
+  CANVAS_SHADERS: "canvas-shaders",
 } as const;
 
 /** Map a pathname → canonical tool slug if it represents a tool, else null. */
@@ -69,6 +71,8 @@ export function pathToToolSlug(pathname: string): string | null {
     [/^\/blocks\/foundation\/tokens/, TOOL_SLUGS.TOKENS],
     [/^\/blocks\/foundation\/icons/, TOOL_SLUGS.ICONS],
     [/^\/blocks\/animation\/text/, TOOL_SLUGS.ANIMATION_TEXT],
+    [/^\/blocks\/canvas\/backgrounds/, TOOL_SLUGS.CANVAS_BACKGROUNDS],
+    [/^\/blocks\/canvas\/shaders/, TOOL_SLUGS.CANVAS_SHADERS],
     [/^\/blocks\/background-studio/, TOOL_SLUGS.BACKGROUND_STUDIO],
     [/^\/blocks\/particle-engine/, TOOL_SLUGS.PARTICLE_ENGINE],
     [/^\/blocks\/shader-tool/, TOOL_SLUGS.SHADER_TOOL],
@@ -91,6 +95,8 @@ export const TOOL_LABELS: Record<string, string> = {
   [TOOL_SLUGS.SHADER_TOOL]: "Shader Tool",
   [TOOL_SLUGS.BROWSE]: "Component Browser",
   [TOOL_SLUGS.DASHBOARD]: "Dashboard",
+  [TOOL_SLUGS.CANVAS_BACKGROUNDS]: "Backgrounds",
+  [TOOL_SLUGS.CANVAS_SHADERS]: "Shader Backgrounds",
 };
 
 /**
