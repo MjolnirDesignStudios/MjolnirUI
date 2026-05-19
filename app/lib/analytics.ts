@@ -61,6 +61,9 @@ export const TOOL_SLUGS = {
   DASHBOARD: "dashboard",
   CANVAS_BACKGROUNDS: "canvas-backgrounds",
   CANVAS_SHADERS: "canvas-shaders",
+  LAYOUT_GRIDS: "layout-grids",
+  LAYOUT_SECTIONS: "layout-sections",
+  LAYOUT_TEMPLATES: "layout-templates",
 } as const;
 
 /** Map a pathname → canonical tool slug if it represents a tool, else null. */
@@ -73,6 +76,9 @@ export function pathToToolSlug(pathname: string): string | null {
     [/^\/blocks\/animation\/text/, TOOL_SLUGS.ANIMATION_TEXT],
     [/^\/blocks\/canvas\/backgrounds/, TOOL_SLUGS.CANVAS_BACKGROUNDS],
     [/^\/blocks\/canvas\/shaders/, TOOL_SLUGS.CANVAS_SHADERS],
+    [/^\/blocks\/layout\/grids/, TOOL_SLUGS.LAYOUT_GRIDS],
+    [/^\/blocks\/layout\/sections/, TOOL_SLUGS.LAYOUT_SECTIONS],
+    [/^\/blocks\/layout\/templates/, TOOL_SLUGS.LAYOUT_TEMPLATES],
     [/^\/blocks\/background-studio/, TOOL_SLUGS.BACKGROUND_STUDIO],
     [/^\/blocks\/particle-engine/, TOOL_SLUGS.PARTICLE_ENGINE],
     [/^\/blocks\/shader-tool/, TOOL_SLUGS.SHADER_TOOL],
@@ -97,6 +103,9 @@ export const TOOL_LABELS: Record<string, string> = {
   [TOOL_SLUGS.DASHBOARD]: "Dashboard",
   [TOOL_SLUGS.CANVAS_BACKGROUNDS]: "Backgrounds",
   [TOOL_SLUGS.CANVAS_SHADERS]: "Shader Backgrounds",
+  [TOOL_SLUGS.LAYOUT_GRIDS]: "Grid Systems",
+  [TOOL_SLUGS.LAYOUT_SECTIONS]: "Page Sections",
+  [TOOL_SLUGS.LAYOUT_TEMPLATES]: "Page Templates",
 };
 
 /**
