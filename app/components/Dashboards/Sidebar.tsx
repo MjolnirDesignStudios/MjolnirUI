@@ -17,6 +17,7 @@ import {
   Bot, Code2,
   User, Receipt, HelpCircle,
   ChevronDown, ChevronRight, LockKeyhole,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { hasAccess, getTierConfig, type TierName } from "@/lib/tierConfig";
@@ -33,6 +34,8 @@ export type SidebarItem = {
 export type SidebarSection = {
   title: string;
   items: SidebarItem[];
+  /** When true, the section is only rendered for session.user.role === "admin". */
+  adminOnly?: boolean;
 };
 
 export const sidebarSections: SidebarSection[] = [
@@ -126,6 +129,15 @@ export const sidebarSections: SidebarSection[] = [
       { name: "Particle Engine", href: "/blocks/particle-engine", icon: Sparkles, requiredTier: "pro" },
     ],
   },
+  /* Admin-only utility section — rendered only when session.user.role === "admin".
+     Filtered at render time in MjolnirSidebar + MobileDrawer. */
+  {
+    title: "DEV TOOLS",
+    adminOnly: true,
+    items: [
+      { name: "Mobile Preview", href: "/blocks/dev/mobile-preview", icon: Smartphone, requiredTier: "free" },
+    ],
+  },
 ];
 
 export const accountItems: SidebarItem[] = [
@@ -138,6 +150,11 @@ export function MjolnirSidebar() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const userTier = (session?.user?.tier as TierName) || 'free';
+  const userRole = (session?.user as { role?: string } | undefined)?.role;
+  // Filter adminOnly sections out for non-admin users.
+  const visibleSections = sidebarSections.filter(
+    (s) => !s.adminOnly || userRole === "admin"
+  );
 
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(sidebarSections.map(s => s.title))
@@ -216,7 +233,7 @@ export function MjolnirSidebar() {
             <span>Browse All (34)</span>
           </Link>
 
-          {sidebarSections.map((section) => {
+          {visibleSections.map((section) => {
             const isExpanded = expandedSections.has(section.title);
             return (
               <div key={section.title}>

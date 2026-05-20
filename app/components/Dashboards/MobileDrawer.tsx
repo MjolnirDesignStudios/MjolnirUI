@@ -74,7 +74,15 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const { data: session } = useSession();
   const pathname = usePathname();
   const userTier = (session?.user?.tier as TierName) || "free";
+  const userRole = (session?.user as { role?: string } | undefined)?.role;
   const tierConfig = getTierConfig(userTier);
+
+  // Sections visible to this user — admin-only sections (e.g. DEV TOOLS)
+  // are filtered out for everyone except role === "admin".
+  const visibleSections = useMemo(
+    () => sidebarSections.filter((s) => !s.adminOnly || userRole === "admin"),
+    [userRole]
+  );
 
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState("");
@@ -93,7 +101,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   // Auto-expand the section containing the current route on first mount.
   useEffect(() => {
     if (!pathname) return;
-    for (const section of sidebarSections) {
+    for (const section of visibleSections) {
       const hasActive = section.items.some(
         (item) => pathname === item.href || pathname.startsWith(item.href + "/")
       );
@@ -141,7 +149,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
     const q = query.trim().toLowerCase();
     if (!q) return [];
     const hits: Array<{ section: string; item: SidebarItem }> = [];
-    for (const section of sidebarSections) {
+    for (const section of visibleSections) {
       for (const item of section.items) {
         if (
           item.name.toLowerCase().includes(q) ||
@@ -153,7 +161,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
       }
     }
     return hits;
-  }, [query]);
+  }, [query, visibleSections]);
 
   /* ── Resolve recent paths to sidebar items for display ── */
   const recentItems = useMemo(() => {
@@ -361,7 +369,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                   </Link>
 
                   {/* ── Collapsible sections ────────────── */}
-                  {sidebarSections.map((section) => {
+                  {visibleSections.map((section) => {
                     const isExpanded = expandedSections.has(section.title);
                     return (
                       <div key={section.title} className="mt-2">
