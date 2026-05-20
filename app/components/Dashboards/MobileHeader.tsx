@@ -6,12 +6,13 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogOut, ChevronUp, Menu } from "lucide-react";
 import { getTierConfig, type TierName } from "@/lib/tierConfig";
 import { TierBadge } from "./TierBadge";
 import { PortalSwitcher } from "./PortalSwitcher";
+import { useSafeSessionUser } from "@/lib/devPreview";
 
 interface MobileHeaderProps {
   onOpenDrawer: () => void;
@@ -20,12 +21,19 @@ interface MobileHeaderProps {
 export function MobileHeader({ onOpenDrawer }: MobileHeaderProps) {
   const { data: session } = useSession();
   const router = useRouter();
+  const pathname = usePathname() || "";
   const userTier = (session?.user?.tier as TierName) || "free";
   const tierConfig = getTierConfig(userTier);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const userName = session?.user?.name || session?.user?.email || "User";
+  // Admin routes render real PII (admin context). User-side routes mask
+  // name/email when in preview iframe.
+  const isAdminRoute = pathname.startsWith("/admin");
+  const viewer = useSafeSessionUser(session?.user);
+  const userName = isAdminRoute
+    ? session?.user?.name || session?.user?.email || "User"
+    : viewer.name || viewer.email || "User";
   const initial = userName.charAt(0).toUpperCase();
 
   // Close avatar menu on outside click

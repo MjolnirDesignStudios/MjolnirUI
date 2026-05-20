@@ -4,13 +4,17 @@ import { useSession } from "next-auth/react";
 import { User, Mail, Save, MessageSquare, CheckCircle } from "lucide-react";
 import { type TierName } from "@/lib/tierConfig";
 import { TierBadge } from "@/components/Dashboards/TierBadge";
+import { useSafeSessionUser } from "@/lib/devPreview";
 
 export default function ProfilePage() {
   const { data: session } = useSession();
-  const userTier = (session?.user?.tier as TierName) || "free";
+  // Mask name + email when this page is rendered inside the Mobile Preview
+  // iframe (or with ?demo=1). User profile pages MUST NEVER display real PII.
+  const viewer = useSafeSessionUser(session?.user);
+  const userTier = (viewer.tier as TierName) || "free";
 
-  const [displayName, setDisplayName] = useState(session?.user?.name || "");
-  const [email] = useState(session?.user?.email || "");
+  const [displayName, setDisplayName] = useState(viewer.name);
+  const [email] = useState(viewer.email);
   const [bio, setBio] = useState("");
   const [theme, setTheme] = useState<"dark" | "light" | "system">("dark");
   const [notifyUpdates, setNotifyUpdates] = useState(true);
@@ -35,7 +39,7 @@ export default function ProfilePage() {
     setTimeout(() => setFeedbackSent(false), 4000);
   };
 
-  const initials = (session?.user?.name || "U")
+  const initials = (viewer.name || "U")
     .split(" ")
     .map((n) => n[0])
     .join("")
@@ -58,8 +62,8 @@ export default function ProfilePage() {
             {initials}
           </div>
           <div>
-            <h3 className="text-white font-bold text-lg">{session?.user?.name || "User"}</h3>
-            <p className="text-gray-500 text-sm">{session?.user?.email}</p>
+            <h3 className="text-white font-bold text-lg">{viewer.name || "User"}</h3>
+            <p className="text-gray-500 text-sm">{viewer.email}</p>
             <button className="mt-2 text-xs text-[#FFCC11] hover:text-[#FFD700] font-semibold transition">
               Upload Avatar
             </button>

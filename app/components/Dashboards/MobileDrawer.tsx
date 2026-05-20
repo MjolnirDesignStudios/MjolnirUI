@@ -27,6 +27,7 @@ import { sidebarSections, accountItems, type SidebarItem } from "./Sidebar";
 import { UpgradeModal } from "./UpgradeModal";
 import { TierBadge } from "./TierBadge";
 import { PortalSwitcher } from "./PortalSwitcher";
+import { useSafeSessionUser } from "@/lib/devPreview";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -170,7 +171,14 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
       .filter((it): it is SidebarItem => Boolean(it));
   }, [recents]);
 
-  const userName = session?.user?.name || session?.user?.email || "User";
+  // Mask name/email in preview mode unless we're on an admin route — the
+  // mobile drawer renders only on user-side surfaces today, but we gate
+  // defensively in case it gets reused under /admin in the future.
+  const isAdminRoute = (pathname || "").startsWith("/admin");
+  const viewer = useSafeSessionUser(session?.user);
+  const userName = isAdminRoute
+    ? session?.user?.name || session?.user?.email || "User"
+    : viewer.name || viewer.email || "User";
   const accountIconMap = { Profile: User, Subscription: Receipt, Support: HelpCircle };
 
   /* Handle click on a search/recent/section item — gates locked items */

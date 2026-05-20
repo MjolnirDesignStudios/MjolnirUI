@@ -2,12 +2,15 @@
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Send, Bot, Calendar, Clock, BookOpen, HelpCircle, CheckCircle } from "lucide-react";
+import { useSafeSessionUser } from "@/lib/devPreview";
 
 export default function SupportPage() {
   const { data: session } = useSession();
+  // Mask in preview mode — user-facing forms must never pre-fill with real PII.
+  const viewer = useSafeSessionUser(session?.user);
 
-  const [name, setName] = useState(session?.user?.name || "");
-  const [email, setEmail] = useState(session?.user?.email || "");
+  const [name, setName] = useState(viewer.name);
+  const [email, setEmail] = useState(viewer.email);
   const [category, setCategory] = useState("general");
   const [priority, setPriority] = useState("medium");
   const [subject, setSubject] = useState("");

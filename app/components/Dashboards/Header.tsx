@@ -2,15 +2,24 @@
 "use client";
 import React from "react";
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { User } from "lucide-react";
 import { TierBadge } from "./TierBadge";
 import { PortalSwitcher } from "./PortalSwitcher";
 import { type TierName } from "@/lib/tierConfig";
+import { useSafeSessionUser } from "@/lib/devPreview";
 
 export function MjolnirHeader() {
   const { data: session } = useSession();
   const router = useRouter();
+  const pathname = usePathname() || "";
+  // Admin routes always render real PII. User-side routes (/blocks/*) mask
+  // PII when in preview mode via useSafeSessionUser().
+  const isAdminRoute = pathname.startsWith("/admin");
+  const viewer = useSafeSessionUser(session?.user);
+  const displayName = isAdminRoute
+    ? session?.user?.name || session?.user?.email || ""
+    : viewer.name || viewer.email || "";
   const userTier = (session?.user?.tier as TierName) || 'free';
 
   return (
@@ -21,7 +30,7 @@ export function MjolnirHeader() {
         </div>
         {session?.user && (
           <div className="flex items-center gap-3 text-sm text-gray-400">
-            <span>{session.user.name || session.user.email}</span>
+            <span>{displayName}</span>
             <TierBadge tier={userTier} size="sm" />
           </div>
         )}

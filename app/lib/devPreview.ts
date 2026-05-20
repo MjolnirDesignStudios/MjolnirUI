@@ -48,6 +48,63 @@ export function useInPreviewMode(): boolean {
 }
 
 /* ═══════════════════════════════════════════════════════
+   FICTIONAL VIEWER (used to mask the *current* user)
+   When a user-facing surface is rendered in preview, every "your name /
+   your email" surface MUST resolve to this persona instead of the real
+   session.user. NEVER let the real user's identity hit the DOM.
+   ═══════════════════════════════════════════════════════ */
+
+export const DEMO_VIEWER = {
+  name: "Thor Odinson",
+  email: "thor.odinson@example.test",
+  image: null as string | null,
+  tier: "elite" as const,
+  role: "user" as const,
+};
+
+export interface SafeSessionUser {
+  name: string;
+  email: string;
+  image: string | null;
+  tier: string;
+  role: string;
+}
+
+/**
+ * Returns either the real session user or the fictional DEMO_VIEWER
+ * depending on preview mode. Use this on every page / component that
+ * displays the *current* viewer's name, email, avatar initials, etc.
+ *
+ * Admin surfaces (/admin/*) should NOT use this — admins are expected
+ * to see real data. This hook is for the user-side dashboard only.
+ */
+export function useSafeSessionUser(realUser: {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  tier?: string | null;
+  role?: string | null;
+} | null | undefined): SafeSessionUser {
+  const inPreview = useInPreviewMode();
+  if (inPreview) {
+    return {
+      name: DEMO_VIEWER.name,
+      email: DEMO_VIEWER.email,
+      image: DEMO_VIEWER.image,
+      tier: DEMO_VIEWER.tier,
+      role: DEMO_VIEWER.role,
+    };
+  }
+  return {
+    name: realUser?.name ?? "",
+    email: realUser?.email ?? "",
+    image: realUser?.image ?? null,
+    tier: realUser?.tier ?? "free",
+    role: realUser?.role ?? "user",
+  };
+}
+
+/* ═══════════════════════════════════════════════════════
    DUMMY USERS (Norse-themed, completely fictional)
    These IDs / emails / names exist only in this file. No real human
    should ever appear here.
