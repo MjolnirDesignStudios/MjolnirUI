@@ -15,6 +15,13 @@ import {
 } from "lucide-react";
 import { TierBadge } from "@/components/Dashboards/TierBadge";
 import { TIER_CONFIG, type TierName } from "@/lib/tierConfig";
+import {
+  useInPreviewMode,
+  DEMO_USERS,
+  DEMO_RECENT_SAVES,
+  DEMO_STATS,
+  DEMO_MRR,
+} from "@/lib/devPreview";
 
 /* ═══════════════════════════════════════════════════════
    TYPES (mirror API responses)
@@ -103,9 +110,28 @@ export default function AdminDashboard() {
   const [search, setSearch] = useState("");
   const [activeUser, setActiveUser] = useState<AdminUser | null>(null);
 
+  /* When the page is rendered inside the Mobile Preview dev tool iframe
+     (or with `?demo=1`), we MUST NOT load real user data — substitute
+     Norse-themed dummy data instead. Real PII can never appear in any
+     preview / screenshot context. */
+  const inPreview = useInPreviewMode();
+
   const loadAll = async () => {
     setLoading(true);
     setErr(null);
+
+    // Preview mode short-circuits the live fetch — render dummy data only.
+    if (inPreview) {
+      setStats(DEMO_STATS);
+      setUsers(DEMO_USERS as AdminUser[]);
+      setRecentSaves(DEMO_RECENT_SAVES as RecentSave[]);
+      setMrr(DEMO_MRR);
+      // popularTools + activity stay empty in demo mode — their own cards
+      // render their own "no data yet" states gracefully.
+      setLoading(false);
+      return;
+    }
+
     try {
       // Fan out all reads in parallel; tolerate partial failure.
       const [statsRes, usersRes, savesRes, toolsRes, actRes, mrrRes] =
@@ -137,7 +163,10 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     loadAll();
-  }, []);
+    // Re-run when preview mode resolves on hydration so we never show real
+    // data even for a frame.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inPreview]);
 
   const filteredUsers = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -155,12 +184,23 @@ export default function AdminDashboard() {
       {/* ── Header ──────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-3xl md:text-4xl font-black mb-2 bg-linear-to-r from-white via-cyan-300 to-emerald-400 bg-clip-text text-transparent">
-            Admin Dashboard
-          </h1>
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <h1 className="text-3xl md:text-4xl font-black bg-linear-to-r from-white via-cyan-300 to-emerald-400 bg-clip-text text-transparent">
+              Admin Dashboard
+            </h1>
+            {inPreview && (
+              <span
+                className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/40"
+                title="Page is being rendered inside the Mobile Preview iframe or with ?demo=1 — all user data is fictional."
+              >
+                Demo data
+              </span>
+            )}
+          </div>
           <p className="text-sm text-gray-400">
-            Revenue, users, and activity across MjolnirUI. Stripe MRR + click
-            analytics arrive in the Day 4 build.
+            {inPreview
+              ? "Preview mode — all users, saves, and revenue numbers below are fictional. Real PII is never rendered in preview / demo contexts."
+              : "Revenue, users, and activity across MjolnirUI. Stripe MRR + click analytics arrive in the Day 4 build."}
           </p>
         </div>
         <button
