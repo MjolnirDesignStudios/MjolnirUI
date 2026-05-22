@@ -1,18 +1,20 @@
 // Component Studio — React Bits-style live preview + customization panel
 "use client";
 
-import React, { useState, useMemo, useCallback, use } from "react";
+import React, { useState, useMemo, useCallback, useEffect, use } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
   ArrowLeft, ChevronDown, RotateCcw, Copy, Check, Code2, Eye, LockKeyhole,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { COMPONENT_REGISTRY, getComponentById, type ComponentMeta } from "@/lib/componentRegistry";
 import { COMPONENT_PROPS, type PropConfig } from "@/lib/componentProps";
 import { hasAccess, getTierConfig, type TierName } from "@/lib/tierConfig";
 import { UpgradeModal } from "@/components/Dashboards/UpgradeModal";
+import { useFreeTrialUnlocks } from "@/lib/freeTrialUnlocks";
 
 /* ── Dynamic component map — explicit imports for Next.js ─ */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -315,6 +317,7 @@ export default function ComponentStudioPage({ params }: { params: Promise<{ id: 
   const router = useRouter();
   const { data: session } = useSession();
   const userTier = (session?.user?.tier as TierName) || "free";
+  const trial = useFreeTrialUnlocks();
 
   const component = getComponentById(id);
   const propsConfig = COMPONENT_PROPS[id];
@@ -324,6 +327,19 @@ export default function ComponentStudioPage({ params }: { params: Promise<{ id: 
     requiredTier: TierName;
     featureName: string;
   }>({ isOpen: false, requiredTier: "base", featureName: "" });
+
+  /* Free-tier soft paywall — when a Free user lands on a Base-tier
+     component, auto-spend one of their 5 trial unlocks (if available).
+     The hook is no-op for already-unlocked components and refuses to
+     unlock past the cap, so this is safe to fire on every mount. We
+     wait for trial.ready so we don't double-grant on first paint. */
+  useEffect(() => {
+    if (!trial.ready) return;
+    if (!trial.isEligible) return;
+    if (!component) return;
+    if (component.requiredTier !== "base") return;
+    trial.tryUnlock(id);
+  }, [trial.ready, trial.isEligible, component, id, trial]);
 
   // Build initial state from props config
   const initialValues = useMemo(() => {
@@ -379,7 +395,19 @@ export default function ComponentStudioPage({ params }: { params: Promise<{ id: 
   }
 
   const tierConfig = getTierConfig(component.requiredTier);
-  const isLocked = !hasAccess(userTier, component.requiredTier);
+  /* Effective gate logic:
+       Pro / Elite gates stay strict — hasAccess decides.
+       Base-tier on Free user: a trial unlock grants access. If the user
+         has unlocked this exact componentId, it counts as access; if
+         they've already used all 5 unlocks AND this one isn't in the
+         set, lock them out the standard way.
+       Free-tier items are always unlocked for everybody. */
+  const isTrialAccess =
+    trial.isEligible &&
+    component.requiredTier === "base" &&
+    trial.isComponentUnlocked(id);
+  const isLocked =
+    !hasAccess(userTier, component.requiredTier) && !isTrialAccess;
   const PreviewComponent = COMPONENT_MAP[id];
 
   return (
@@ -439,6 +467,24 @@ export default function ComponentStudioPage({ params }: { params: Promise<{ id: 
           )}
         </button>
       </div>
+
+      {/* ── Free-trial banner — Free user on a Base-tier component ──
+            Shows X of 5 unlocks used, with a prominent upgrade nudge once
+            the cap is reached. Hidden once the user upgrades or for any
+            non-base component. */}
+      {trial.isEligible && component.requiredTier === "base" && (
+        <FreeTrialBanner
+          trial={trial}
+          isCurrentUnlocked={isTrialAccess}
+          onUpgrade={() =>
+            setUpgradeModal({
+              isOpen: true,
+              requiredTier: "base",
+              featureName: component.name,
+            })
+          }
+        />
+      )}
 
       {/* ── Main Content: Controls + Preview ────────── */}
       <div className="flex-1 flex min-h-0">
@@ -560,6 +606,85 @@ export default function ComponentStudioPage({ params }: { params: Promise<{ id: 
         requiredTier={upgradeModal.requiredTier}
         featureName={upgradeModal.featureName}
       />
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   FREE TRIAL BANNER
+   Slim strip showing "X of 5 trial unlocks used" with state-aware copy:
+     - Within the cap + current unlocked: green/celebratory ("unlocked!")
+     - Within the cap + not-yet-unlocked: neutral progress
+     - Cap reached + not unlocked: amber paywall nudge
+   ═══════════════════════════════════════════════════════ */
+function FreeTrialBanner({
+  trial,
+  isCurrentUnlocked,
+  onUpgrade,
+}: {
+  trial: ReturnType<typeof useFreeTrialUnlocks>;
+  isCurrentUnlocked: boolean;
+  onUpgrade: () => void;
+}) {
+  const remaining = trial.MAX - trial.count;
+  const atCap = !isCurrentUnlocked && !trial.canStillUnlock;
+
+  const accent = atCap ? "#F59E0B" : isCurrentUnlocked ? "#10B981" : "#FFCC11";
+  const bg = atCap
+    ? "bg-amber-500/8 border-amber-500/30"
+    : isCurrentUnlocked
+      ? "bg-emerald-500/8 border-emerald-500/25"
+      : "bg-zinc-900/50 border-zinc-800/50";
+
+  return (
+    <div
+      className={`shrink-0 flex items-center gap-3 px-4 py-2 border-b ${bg}`}
+    >
+      <Sparkles size={13} style={{ color: accent }} />
+      <div className="flex-1 min-w-0 text-xs">
+        {atCap ? (
+          <span className="text-amber-200">
+            You&apos;ve used all <strong>5</strong> free trial unlocks. Upgrade
+            to <strong>Base</strong> to unlock the rest of the library.
+          </span>
+        ) : isCurrentUnlocked ? (
+          <span className="text-emerald-200">
+            Unlocked via free trial · <strong>{remaining}</strong> of{" "}
+            <strong>{trial.MAX}</strong> remaining
+          </span>
+        ) : (
+          <span className="text-gray-400">
+            Free trial · <strong>{trial.count}</strong> of{" "}
+            <strong>{trial.MAX}</strong> unlocks used
+          </span>
+        )}
+      </div>
+
+      {/* Progress dots */}
+      <div className="flex items-center gap-1 shrink-0">
+        {Array.from({ length: trial.MAX }).map((_, i) => (
+          <div
+            key={i}
+            className="w-1.5 h-1.5 rounded-full transition"
+            style={{
+              backgroundColor: i < trial.count ? accent : "#3f3f46",
+              opacity: i < trial.count ? 1 : 0.6,
+            }}
+          />
+        ))}
+      </div>
+
+      <button
+        onClick={onUpgrade}
+        className="ml-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border transition shrink-0"
+        style={{
+          color: accent,
+          borderColor: `${accent}80`,
+          background: `${accent}15`,
+        }}
+      >
+        Upgrade
+      </button>
     </div>
   );
 }
