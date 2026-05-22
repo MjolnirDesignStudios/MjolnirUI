@@ -58,6 +58,9 @@ export const metadata: Metadata = {
 		statusBarStyle: "black-translucent",
 	},
 	// ─── OpenGraph (Facebook, Instagram, Meta, iMessage, SMS, LinkedIn, Discord) ───
+	// NOTE: the `images` array is auto-populated by Next.js from
+	// app/opengraph-image.tsx — do NOT add a manual `images:` entry here
+	// or you'll override the generated PNG with a broken static URL.
 	openGraph: {
 		type: "website",
 		locale: "en_US",
@@ -66,24 +69,9 @@ export const metadata: Metadata = {
 		title: "MjolnirUI — Premium React Component Library",
 		description:
 			"Asgardian-grade UI/UX design system. Components, shaders, 3D tools, and AI-powered design by Mjolnir Design Studios.",
-		images: [
-			{
-				url: "/og-image.jpg",
-				width: 1200,
-				height: 630,
-				alt: "MjolnirUI – Asgardian-Grade UI/UX Design System",
-				type: "image/jpeg",
-			},
-			{
-				url: "/og-image-square.jpg",
-				width: 1200,
-				height: 1200,
-				alt: "MjolnirUI Logo – Mjolnir Design Studios",
-				type: "image/jpeg",
-			},
-		],
 	},
 	// ─── Twitter / X ───────────────────────────────────────
+	// NOTE: image is auto-populated from app/twitter-image.tsx.
 	twitter: {
 		card: "summary_large_image",
 		site: "@MjolnirDesignsX",
@@ -91,10 +79,6 @@ export const metadata: Metadata = {
 		title: "MjolnirUI — Premium React Component Library",
 		description:
 			"Asgardian-grade UI/UX design system. Components, shaders, 3D tools, and AI-powered design.",
-		images: {
-			url: "/og-image.jpg",
-			alt: "MjolnirUI – Asgardian-Grade UI/UX Design System",
-		},
 	},
 	// ─── Icons & Favicons ──────────────────────────────────
 	icons: {
@@ -111,9 +95,12 @@ export const metadata: Metadata = {
 	// ─── Manifest (PWA-ready) ──────────────────────────────
 	manifest: "/manifest.json",
 	// ─── Google Search Console ─────────────────────────────
-	verification: {
-		google: "your-google-site-verification",
-	},
+	// Pulls from GOOGLE_SITE_VERIFICATION env var (set in Vercel project
+	// settings). When unset, the verification tag is simply omitted —
+	// no '<meta name=google-site-verification content=placeholder>' leaks.
+	...(process.env.GOOGLE_SITE_VERIFICATION
+		? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+		: {}),
 	// ─── Additional structured hints ───────────────────────
 	other: {
 		"msapplication-TileColor": "#020617",

@@ -3,6 +3,7 @@ import Navbar_V2 from '@/components/Navigation/Navbar_V2';
 import { FloatingNav } from '@/components/Navigation/FloatingNav';
 import Footer from '@/components/Footer';
 import Hero from '@/components/Hero';
+import About from '@/components/About';
 import Build from '@/components/Build';
 import Demo from '@/components/Demo';
 import Pricing from '@/components/Pricing';
@@ -29,6 +30,9 @@ export default function Home() {
 				<div className="bg-transparent w-full">
 					{/* Hero Section */}
 					<Hero />
+
+					{/* About Section — BentoGrid feature highlights */}
+					<About />
 
 					{/* Build Section — Founder's Kit */}
 					<Build />
