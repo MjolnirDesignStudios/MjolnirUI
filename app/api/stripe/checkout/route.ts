@@ -53,7 +53,11 @@ export async function POST(req: Request) {
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${process.env.NEXTAUTH_URL}/blocks/dashboard?upgraded=true`,
       cancel_url: `${process.env.NEXTAUTH_URL}/#pricing`,
+      // Defense in depth — keep userId in both metadata and client_reference_id.
+      // The webhook reads metadata first and falls back to client_reference_id
+      // so we recover if one is missing for any reason.
       metadata: { userId: session.user.id },
+      client_reference_id: session.user.id,
     };
 
     // Reuse existing customer or pre-fill email for new customers
