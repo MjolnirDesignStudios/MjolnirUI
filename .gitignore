@@ -37,6 +37,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# Allow the template through — it documents required keys with no real
+# secret values.
+!.env.example
 
 # vercel
 .vercel

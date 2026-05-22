@@ -8,12 +8,16 @@ import { motion } from "framer-motion";
 import ElectricBorder from "@/components/ui/ElectricBorder";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { TIER_CONFIG, type TierName } from "@/lib/tierConfig";
 
-interface Tier {
-  name: string;
+/**
+ * Marketing copy for each tier. Price IDs, monthly/annual amounts, and
+ * canonical tier names are pulled from TIER_CONFIG so this file never
+ * drifts out of sync with the rest of the app.
+ */
+interface TierCopy {
+  tierKey: TierName;
   subtitle: string;
-  monthly: number;
-  annual: number;
   description: string;
   features: string[];
   buttonText: string;
@@ -21,16 +25,24 @@ interface Tier {
   buttonGradient: string;
   popular?: boolean;
   isFree?: boolean;
+}
+
+interface Tier extends TierCopy {
+  /** Display name from TIER_CONFIG (e.g. "MjolnirUI Pro") */
+  name: string;
+  /** Monthly USD from TIER_CONFIG */
+  monthly: number;
+  /** Annual USD from TIER_CONFIG */
+  annual: number;
+  /** Stripe price IDs from TIER_CONFIG (empty for free) */
   stripePriceIdMonthly: string;
   stripePriceIdAnnual: string;
 }
 
-const tiers: Tier[] = [
+const tierCopy: TierCopy[] = [
   {
-    name: "MjolnirUI Free",
+    tierKey: "free",
     subtitle: "For Explorers",
-    monthly: 0,
-    annual: 0,
     description: "",
     features: [
       "Browse Component Library",
@@ -43,14 +55,10 @@ const tiers: Tier[] = [
     electricColor: "#3B82F6",
     buttonGradient: "from-blue-400 to-blue-600",
     isFree: true,
-    stripePriceIdMonthly: "",
-    stripePriceIdAnnual: "",
   },
   {
-    name: "MjolnirUI Base",
+    tierKey: "base",
     subtitle: "For Creators",
-    monthly: 10,
-    annual: 100,
     description: "",
     features: [
       "Full Component Library",
@@ -62,14 +70,10 @@ const tiers: Tier[] = [
     buttonText: "Unlock Base",
     electricColor: "#10B981",
     buttonGradient: "from-emerald-400 to-emerald-600",
-    stripePriceIdMonthly: "price_1TBIjFFxkFUD7EnZqANuPLav",
-    stripePriceIdAnnual: "price_1TBIjFFxkFUD7EnZsDQ2WVgH",
   },
   {
-    name: "MjolnirUI Pro",
+    tierKey: "pro",
     subtitle: "For Professionals",
-    monthly: 25,
-    annual: 250,
     description: "",
     features: [
       "Everything in Base",
@@ -82,14 +86,10 @@ const tiers: Tier[] = [
     electricColor: "#EAB308",
     buttonGradient: "from-yellow-400 to-yellow-600",
     popular: true,
-    stripePriceIdMonthly: "price_1TBIltFxkFUD7EnZI5cxamBR",
-    stripePriceIdAnnual: "price_1TBIltFxkFUD7EnZ1DFBq6gN",
   },
   {
-    name: "MjolnirUI Elite",
+    tierKey: "elite",
     subtitle: "For Agencies",
-    monthly: 50,
-    annual: 500,
     description: "",
     features: [
       "Everything in Pro",
@@ -101,10 +101,22 @@ const tiers: Tier[] = [
     buttonText: "Elite Company",
     electricColor: "#F97316",
     buttonGradient: "from-orange-400 to-orange-600",
-    stripePriceIdMonthly: "price_1TBIuCFxkFUD7EnZlAYMZOEO",
-    stripePriceIdAnnual: "price_1TBIslFxkFUD7EnZb9TDuHYF",
   },
 ];
+
+// Merge marketing copy with the canonical config in TIER_CONFIG. Single
+// source of truth for prices + Stripe IDs.
+const tiers: Tier[] = tierCopy.map((copy) => {
+  const cfg = TIER_CONFIG[copy.tierKey];
+  return {
+    ...copy,
+    name: cfg.name,
+    monthly: cfg.monthlyPrice,
+    annual: cfg.annualPrice,
+    stripePriceIdMonthly: cfg.stripePriceIdMonthly,
+    stripePriceIdAnnual: cfg.stripePriceIdAnnual,
+  };
+});
 
 export default function Pricing() {
   const [isAnnual, setIsAnnual] = useState(false);
