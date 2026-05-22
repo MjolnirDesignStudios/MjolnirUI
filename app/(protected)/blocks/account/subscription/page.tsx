@@ -1,11 +1,26 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Zap, Crown, CreditCard, Loader2, ExternalLink } from "lucide-react";
+import {
+  Zap, Crown, CreditCard, Loader2, ExternalLink,
+  Calendar, AlertTriangle,
+} from "lucide-react";
 import { type TierName } from "@/lib/tierConfig";
 import { TierBadge } from "@/components/Dashboards/TierBadge";
 import ElectricBorder from "@/components/ui/ElectricBorder";
+
+interface SubscriptionDetails {
+  id: string;
+  status: string;
+  cancel_at_period_end: boolean;
+  current_period_end: number | null;
+  amount: number;
+  currency: string;
+  interval: string;
+  card_brand: string | null;
+  card_last4: string | null;
+}
 
 const tiers: {
   name: string;
@@ -89,6 +104,36 @@ export default function SubscriptionPage() {
 
   const [portalLoading, setPortalLoading] = useState(false);
   const [portalError, setPortalError] = useState<string | null>(null);
+  const [details, setDetails] = useState<SubscriptionDetails | null>(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+
+  // Fetch live billing details from Stripe for paid users — next billing
+  // date, card on file, amount, status. Free users skip this entirely.
+  useEffect(() => {
+    if (!isPaid) {
+      setDetails(null);
+      return;
+    }
+    let cancelled = false;
+    setDetailsLoading(true);
+    fetch("/api/stripe/subscription-details", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((body) => {
+        if (cancelled) return;
+        setDetails(body.subscription ?? null);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setDetails(null);
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setDetailsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isPaid]);
 
   /** Open the Stripe Billing Portal in the same tab. Paid users only. */
   const openBillingPortal = async () => {
@@ -146,6 +191,15 @@ export default function SubscriptionPage() {
           </div>
         )}
       </div>
+
+      {/* ── Billing details (paid users only) ─────────────── */}
+      {isPaid && (
+        <BillingDetailsCard
+          loading={detailsLoading}
+          details={details}
+          onManageBilling={openBillingPortal}
+        />
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
         {tiers.map((t) => {
@@ -288,4 +342,156 @@ export default function SubscriptionPage() {
       </div>
     </div>
   );
+}
+
+/* ═══════════════════════════════════════════════════════
+   BILLING DETAILS CARD
+   Shows the user exactly what they're paying for and when.
+   Reads from GET /api/stripe/subscription-details.
+   ═══════════════════════════════════════════════════════ */
+function BillingDetailsCard({
+  loading,
+  details,
+  onManageBilling,
+}: {
+  loading: boolean;
+  details: SubscriptionDetails | null;
+  onManageBilling: () => void;
+}) {
+  if (loading) {
+    return (
+      <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-5 flex items-center gap-3 text-sm text-gray-500">
+        <Loader2 size={14} className="animate-spin" />
+        Loading billing details…
+      </div>
+    );
+  }
+
+  if (!details) {
+    // Paid tier in session but no Stripe sub on file — webhook hasn't caught
+    // up yet, or the user is on a comped tier. Show a minimal helpful state.
+    return (
+      <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-5 text-sm text-gray-500">
+        Billing details are syncing. If this doesn&apos;t update within a few
+        minutes,{" "}
+        <button
+          onClick={onManageBilling}
+          className="text-[#FFCC11] hover:text-[#FFD700] font-semibold transition"
+        >
+          open the billing portal
+        </button>{" "}
+        to verify your subscription.
+      </div>
+    );
+  }
+
+  const formatAmount = () => {
+    const dollars = details.amount / 100;
+    const symbol = details.currency === "USD" ? "$" : `${details.currency} `;
+    return `${symbol}${dollars.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    })}`;
+  };
+
+  const formatDate = (ts: number | null) =>
+    ts
+      ? new Date(ts * 1000).toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : "—";
+
+  const isPastDue =
+    details.status === "past_due" || details.status === "unpaid";
+  const isCanceling = details.cancel_at_period_end;
+
+  return (
+    <div
+      className={`relative rounded-2xl border p-5 ${
+        isPastDue
+          ? "bg-red-500/5 border-red-500/30"
+          : isCanceling
+            ? "bg-amber-500/5 border-amber-500/30"
+            : "bg-zinc-900/40 border-zinc-800/60"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex-1 min-w-0">
+          {(isPastDue || isCanceling) && (
+            <div
+              className={`flex items-center gap-1.5 mb-2 text-xs font-semibold ${
+                isPastDue ? "text-red-300" : "text-amber-300"
+              }`}
+            >
+              <AlertTriangle size={12} />
+              {isPastDue
+                ? "Payment past due — update your card to keep your plan."
+                : `Your plan will cancel on ${formatDate(details.current_period_end)}.`}
+            </div>
+          )}
+
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">
+            Current Billing
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            <Stat
+              label={isCanceling ? "Access ends" : "Next billing"}
+              icon={Calendar}
+              value={formatDate(details.current_period_end)}
+            />
+            <Stat
+              label="Amount"
+              icon={Zap}
+              value={`${formatAmount()} / ${details.interval}`}
+            />
+            <Stat
+              label="Payment"
+              icon={CreditCard}
+              value={
+                details.card_brand && details.card_last4
+                  ? `${capitalize(details.card_brand)} •••• ${details.card_last4}`
+                  : "—"
+              }
+            />
+          </div>
+        </div>
+
+        <button
+          onClick={onManageBilling}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-gray-300 hover:text-white hover:border-[#FFCC11]/40 transition shrink-0"
+        >
+          <CreditCard size={12} />
+          Update
+          <ExternalLink size={10} className="text-gray-500" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+}) {
+  return (
+    <div>
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-0.5">
+        <Icon size={11} />
+        {label}
+      </div>
+      <div className="text-sm font-semibold text-white">{value}</div>
+    </div>
+  );
+}
+
+function capitalize(s: string) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
