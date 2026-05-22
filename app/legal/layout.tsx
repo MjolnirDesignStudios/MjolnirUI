@@ -35,10 +35,11 @@ export default function LegalLayout({
 
         <div className="mt-16 pt-8 border-t border-zinc-800 text-xs text-gray-500 flex items-center justify-between flex-wrap gap-3">
           <span>© {new Date().getFullYear()} Mjolnir Design Studios.</span>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <Link href="/legal/privacy" className="hover:text-gray-300 transition">Privacy</Link>
             <Link href="/legal/terms" className="hover:text-gray-300 transition">Terms</Link>
             <Link href="/legal/cookies" className="hover:text-gray-300 transition">Cookies</Link>
+            <Link href="/legal/commercial-license" className="hover:text-gray-300 transition">License</Link>
           </div>
         </div>
       </div>
