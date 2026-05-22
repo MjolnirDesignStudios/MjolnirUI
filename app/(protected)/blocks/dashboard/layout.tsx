@@ -2,6 +2,7 @@ import { Toaster } from "sonner";
 import { MjolnirSidebar } from "@/components/Dashboards/Sidebar";
 import { MjolnirHeader } from "@/components/Dashboards/Header";
 import { MobileLayout } from "@/components/Dashboards/MobileLayout";
+import { OnboardingFlow } from "@/components/Onboarding/OnboardingFlow";
 
 export const metadata = {
   title: "MjolnirUI Pro • Dashboard",
@@ -35,6 +36,10 @@ export default function DashboardLayout({
       </div>
 
       <Toaster position="bottom-right" richColors theme="dark" />
+
+      {/* First-run welcome modal + 4-step popover tour for new signups.
+          Self-suppresses via localStorage flag after first run. */}
+      <OnboardingFlow />
     </>
   );
 }

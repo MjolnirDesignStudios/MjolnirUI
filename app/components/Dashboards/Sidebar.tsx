@@ -29,6 +29,9 @@ export type SidebarItem = {
   href: string;
   icon: React.ComponentType<{ className?: string; size?: number }>;
   requiredTier: TierName;
+  /** When set, the Link receives a data-onboarding="<id>" attribute so the
+   *  OnboardingFlow tour can anchor a popover to this row. */
+  onboardingId?: string;
 };
 
 export type SidebarSection = {
@@ -46,7 +49,7 @@ export const sidebarSections: SidebarSection[] = [
       { name: "Installation", href: "/blocks/docs/install", icon: Download, requiredTier: "free" },
       { name: "CLI Reference", href: "/blocks/docs/cli", icon: Terminal, requiredTier: "free" },
       { name: "MCP / AI Agent", href: "/blocks/docs/mcp", icon: Cpu, requiredTier: "pro" },
-      { name: "Documentation", href: "/blocks/docs", icon: BookOpen, requiredTier: "free" },
+      { name: "Documentation", href: "/blocks/docs", icon: BookOpen, requiredTier: "free", onboardingId: "docs" },
     ],
   },
   {
@@ -63,7 +66,7 @@ export const sidebarSections: SidebarSection[] = [
     items: [
       { name: "Backgrounds", href: "/blocks/canvas/backgrounds", icon: Image, requiredTier: "base" },
       { name: "Shader Backgrounds", href: "/blocks/canvas/shaders", icon: Sparkles, requiredTier: "pro" },
-      { name: "Background Studio", href: "/blocks/background-studio", icon: Layers, requiredTier: "base" },
+      { name: "Background Studio", href: "/blocks/background-studio", icon: Layers, requiredTier: "base", onboardingId: "background-studio" },
     ],
   },
   {
@@ -142,7 +145,7 @@ export const sidebarSections: SidebarSection[] = [
 
 export const accountItems: SidebarItem[] = [
   { name: "Profile", href: "/blocks/account/profile", icon: User, requiredTier: "free" },
-  { name: "Subscription", href: "/blocks/account/subscription", icon: Receipt, requiredTier: "free" },
+  { name: "Subscription", href: "/blocks/account/subscription", icon: Receipt, requiredTier: "free", onboardingId: "subscription" },
   { name: "Support", href: "/blocks/account/support", icon: HelpCircle, requiredTier: "free" },
 ];
 
@@ -222,6 +225,7 @@ export function MjolnirSidebar() {
           {/* Browse All Components */}
           <Link
             href="/blocks/browse"
+            data-onboarding="browse"
             className={cn(
               "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all mb-2",
               pathname === "/blocks/browse"
@@ -255,6 +259,7 @@ export function MjolnirSidebar() {
                         <Link
                           key={item.name}
                           href={item.href}
+                          data-onboarding={item.onboardingId}
                           onClick={(e) => handleItemClick(item, e)}
                           className={cn(
                             "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all group",
@@ -292,6 +297,7 @@ export function MjolnirSidebar() {
                   <Link
                     key={item.name}
                     href={item.href}
+                    data-onboarding={item.onboardingId}
                     className={cn(
                       "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all",
                       isActive
