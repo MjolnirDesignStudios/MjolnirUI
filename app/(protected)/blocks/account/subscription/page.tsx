@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Zap, Crown } from "lucide-react";
+import { Zap, Crown, CreditCard, Loader2, ExternalLink } from "lucide-react";
 import { type TierName } from "@/lib/tierConfig";
 import { TierBadge } from "@/components/Dashboards/TierBadge";
 import ElectricBorder from "@/components/ui/ElectricBorder";
@@ -85,14 +85,66 @@ export default function SubscriptionPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const userTier = (session?.user?.tier as TierName) || "free";
+  const isPaid = userTier !== "free";
+
+  const [portalLoading, setPortalLoading] = useState(false);
+  const [portalError, setPortalError] = useState<string | null>(null);
+
+  /** Open the Stripe Billing Portal in the same tab. Paid users only. */
+  const openBillingPortal = async () => {
+    if (portalLoading) return;
+    setPortalLoading(true);
+    setPortalError(null);
+    try {
+      const res = await fetch("/api/stripe/portal", { method: "POST" });
+      const body = await res.json();
+      if (!res.ok || !body.url) {
+        throw new Error(body.error || "Could not open billing portal");
+      }
+      window.location.href = body.url;
+    } catch (e: unknown) {
+      setPortalError(
+        e instanceof Error ? e.message : "Could not open billing portal"
+      );
+      setPortalLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-3xl font-black text-white mb-1">Your Subscription</h1>
-        <p className="text-gray-400 flex items-center gap-2">
-          You&apos;re currently on the <TierBadge tier={userTier} size="md" /> plan
-        </p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-3xl font-black text-white mb-1">Your Subscription</h1>
+          <p className="text-gray-400 flex items-center gap-2">
+            You&apos;re currently on the <TierBadge tier={userTier} size="md" /> plan
+          </p>
+        </div>
+        {/* Manage Billing — paid users only. Opens Stripe Customer Portal where
+            they can update card, cancel, view invoices. */}
+        {isPaid && (
+          <div className="flex flex-col items-end gap-1">
+            <button
+              onClick={openBillingPortal}
+              disabled={portalLoading}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm font-semibold hover:border-[#FFCC11]/40 hover:text-[#FFCC11] transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {portalLoading ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <CreditCard size={14} />
+              )}
+              {portalLoading ? "Opening…" : "Manage Billing"}
+              {!portalLoading && (
+                <ExternalLink size={12} className="text-gray-500" />
+              )}
+            </button>
+            {portalError && (
+              <span className="text-[11px] text-amber-400 max-w-xs text-right">
+                {portalError}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
@@ -200,8 +252,39 @@ export default function SubscriptionPage() {
         })}
       </div>
 
-      <div className="text-center text-sm text-gray-500 pt-4">
-        Need to cancel or change your billing? <button onClick={() => router.push("/blocks/account/support")} className="text-[#FFCC11] hover:text-[#FFD700] font-semibold transition">Contact Support</button>
+      <div className="text-center text-sm text-gray-500 pt-4 space-y-1">
+        {isPaid ? (
+          <>
+            <p>
+              Need to cancel, change card, or download an invoice?{" "}
+              <button
+                onClick={openBillingPortal}
+                className="text-[#FFCC11] hover:text-[#FFD700] font-semibold transition"
+              >
+                Open Billing Portal
+              </button>
+            </p>
+            <p className="text-[11px] text-gray-600">
+              Anything else?{" "}
+              <button
+                onClick={() => router.push("/blocks/account/support")}
+                className="underline hover:text-gray-400 transition"
+              >
+                Contact support
+              </button>
+            </p>
+          </>
+        ) : (
+          <p>
+            Questions about pricing?{" "}
+            <button
+              onClick={() => router.push("/blocks/account/support")}
+              className="text-[#FFCC11] hover:text-[#FFD700] font-semibold transition"
+            >
+              Contact Support
+            </button>
+          </p>
+        )}
       </div>
     </div>
   );
