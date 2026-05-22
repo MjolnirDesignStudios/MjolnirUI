@@ -22,13 +22,20 @@ interface SubscriptionDetails {
   card_last4: string | null;
 }
 
+interface TierFeature {
+  text: string;
+  comingSoon?: boolean;
+}
+
 const tiers: {
   name: string;
   tier: TierName;
   price: string;
   period: string;
   color: string;
-  features: string[];
+  features: TierFeature[];
+  /** Whole-tier coming-soon flag — disables 'Upgrade' button, shows badge. */
+  comingSoonBadge?: string;
 }[] = [
   {
     name: "Free",
@@ -37,11 +44,11 @@ const tiers: {
     period: "forever",
     color: "#3B82F6",
     features: [
-      "Browse Component Library",
-      "Preview All Tools",
-      "Community Access",
-      "3 Free Components",
-      "Design Token Reference",
+      { text: "Browse Component Library" },
+      { text: "Preview All Tools" },
+      { text: "Community Access" },
+      { text: "5 Free + Base Components" },
+      { text: "Design Token Reference" },
     ],
   },
   {
@@ -51,13 +58,13 @@ const tiers: {
     period: "/month",
     color: "#10B981",
     features: [
-      "Full Component Library",
-      "Background Studio",
-      "Basic Animations",
-      "Electric Effects",
-      "Animated Orbs",
-      "Email Support 24/7",
-      "Lifetime Updates",
+      { text: "Full Component Library" },
+      { text: "Background Studio" },
+      { text: "Basic Animations" },
+      { text: "Electric Effects" },
+      { text: "Animated Orbs" },
+      { text: "Email Support 24/7" },
+      { text: "Lifetime Updates" },
     ],
   },
   {
@@ -67,13 +74,14 @@ const tiers: {
     period: "/month",
     color: "#EAB308",
     features: [
-      "Everything in Base",
-      "Advanced GSAP Animations",
-      "Shader Engine",
-      "3D Forge Pro",
-      "Dashboard Builder",
-      "Custom Components",
-      "Commercial License",
+      { text: "Everything in Base" },
+      { text: "Shader Engine" },
+      { text: "Particle Engine" },
+      { text: "Advanced GSAP Animations", comingSoon: true },
+      { text: "3D Forge Pro", comingSoon: true },
+      { text: "Dashboard Builder", comingSoon: true },
+      { text: "Custom Components", comingSoon: true },
+      { text: "Commercial License" },
     ],
   },
   {
@@ -83,14 +91,15 @@ const tiers: {
     period: "/month",
     color: "#F97316",
     features: [
-      "Everything in Pro",
-      "OdinAI Design Agent",
-      "Asgardian Shader Engine",
-      "3D Forge Elite",
-      "Custom Development",
-      "Full Source Code Access",
-      "Beta Test New Features",
+      { text: "Everything in Pro" },
+      { text: "OdinAI Design Agent", comingSoon: true },
+      { text: "Asgardian Shader Engine", comingSoon: true },
+      { text: "3D Forge Elite", comingSoon: true },
+      { text: "Custom Development", comingSoon: true },
+      { text: "Full Source Code Access", comingSoon: true },
+      { text: "Beta Test New Features", comingSoon: true },
     ],
+    comingSoonBadge: "Coming Q3 2026",
   },
 ];
 
@@ -206,6 +215,7 @@ export default function SubscriptionPage() {
           const isCurrent = t.tier === userTier;
           const isHigher = tierOrder[t.tier] > tierOrder[userTier];
           const isLower = tierOrder[t.tier] < tierOrder[userTier];
+          const isLocked = Boolean(t.comingSoonBadge);
 
           const cardContent = (
             <div
@@ -226,7 +236,9 @@ export default function SubscriptionPage() {
                 style={{ backgroundColor: t.color }}
               />
 
-              {/* Current Plan badge — inside card, top-right */}
+              {/* Current Plan badge — inside card, top-right. When the tier
+                  is locked (e.g. Elite Coming Q3 2026), show that badge in
+                  the same slot. */}
               {isCurrent ? (
                 <div className="flex justify-end pt-2 mb-1">
                   <div
@@ -234,6 +246,15 @@ export default function SubscriptionPage() {
                     style={{ backgroundColor: `${t.color}20`, color: t.color, border: `1px solid ${t.color}40` }}
                   >
                     <Crown size={10} /> Current Plan
+                  </div>
+                </div>
+              ) : isLocked ? (
+                <div className="flex justify-end pt-2 mb-1">
+                  <div
+                    className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                    style={{ backgroundColor: `${t.color}20`, color: t.color, border: `1px solid ${t.color}40` }}
+                  >
+                    {t.comingSoonBadge}
                   </div>
                 </div>
               ) : (
@@ -249,12 +270,39 @@ export default function SubscriptionPage() {
                 </div>
               </div>
 
-              {/* Features — lightning bolt icons */}
+              {/* Features — lightning bolt icons. Coming-soon items render
+                  with a dim icon, gray text, and an inline "Soon" chip so
+                  users see what is and isn't deliverable on launch day. */}
               <ul className="space-y-2.5 flex-1 mb-6">
                 {t.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-gray-300">
-                    <Zap size={14} className="shrink-0 mt-0.5" style={{ color: t.color }} />
-                    <span>{f}</span>
+                  <li
+                    key={f.text}
+                    className={`flex items-start gap-2 text-sm ${
+                      f.comingSoon ? "text-gray-400" : "text-gray-300"
+                    }`}
+                  >
+                    <Zap
+                      size={14}
+                      className="shrink-0 mt-0.5"
+                      style={{
+                        color: f.comingSoon ? "#71717a" : t.color,
+                        opacity: f.comingSoon ? 0.55 : 1,
+                      }}
+                    />
+                    <span className="flex-1">{f.text}</span>
+                    {f.comingSoon && (
+                      <span
+                        className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border whitespace-nowrap shrink-0"
+                        style={{
+                          color: t.color,
+                          borderColor: `${t.color}60`,
+                          background: `${t.color}10`,
+                        }}
+                        title="This feature isn't ready yet — it ships post-launch."
+                      >
+                        Soon
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -267,6 +315,13 @@ export default function SubscriptionPage() {
                 >
                   Your Current Plan
                 </div>
+              ) : isLocked ? (
+                <button
+                  disabled
+                  className="w-full py-3 rounded-xl font-bold text-sm text-gray-400 border border-zinc-700 bg-zinc-900/60 cursor-not-allowed"
+                >
+                  {t.comingSoonBadge}
+                </button>
               ) : isHigher ? (
                 <button
                   onClick={() => router.push("/#pricing")}

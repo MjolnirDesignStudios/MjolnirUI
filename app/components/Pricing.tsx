@@ -14,17 +14,35 @@ import { TIER_CONFIG, type TierName } from "@/lib/tierConfig";
  * Marketing copy for each tier. Price IDs, monthly/annual amounts, and
  * canonical tier names are pulled from TIER_CONFIG so this file never
  * drifts out of sync with the rest of the app.
+ *
+ * Features can be:
+ *   - A plain string for shipped, deliverable features
+ *   - An object { text, comingSoon: true } for features that aren't
+ *     deliverable on launch day — rendered with an inline "Coming Soon"
+ *     chip so paying users know exactly what to expect.
+ *
+ * comingSoonBadge: when set, the entire tier is gated — the price
+ * placeholder displays the badge instead, and checkout is disabled.
+ * Used for Elite (Coming Q3 2026) until OdinAI ships.
  */
+interface Feature {
+  text: string;
+  comingSoon?: boolean;
+}
+
 interface TierCopy {
   tierKey: TierName;
   subtitle: string;
   description: string;
-  features: string[];
+  features: Feature[];
   buttonText: string;
   electricColor: string;
   buttonGradient: string;
   popular?: boolean;
   isFree?: boolean;
+  /** Top-of-card badge replacing the price block when the tier isn't
+   *  available for purchase yet (e.g. "Coming Q3 2026"). */
+  comingSoonBadge?: string;
 }
 
 interface Tier extends TierCopy {
@@ -37,6 +55,8 @@ interface Tier extends TierCopy {
   /** Stripe price IDs from TIER_CONFIG (empty for free) */
   stripePriceIdMonthly: string;
   stripePriceIdAnnual: string;
+  /** True when this tier can't be purchased today (drives UI + checkout gate) */
+  isLocked: boolean;
 }
 
 const tierCopy: TierCopy[] = [
@@ -45,11 +65,11 @@ const tierCopy: TierCopy[] = [
     subtitle: "For Explorers",
     description: "",
     features: [
-      "Browse Component Library",
-      "Preview All Tools",
-      "Community Access",
-      "3 Free Components",
-      "Lifetime Updates",
+      { text: "Browse Component Library" },
+      { text: "Preview All Tools" },
+      { text: "Community Access" },
+      { text: "5 Free + Base Components" },
+      { text: "Lifetime Updates" },
     ],
     buttonText: "Join Free",
     electricColor: "#3B82F6",
@@ -61,11 +81,11 @@ const tierCopy: TierCopy[] = [
     subtitle: "For Creators",
     description: "",
     features: [
-      "Full Component Library",
-      "Basic Animations & Effects",
-      "Background Studio",
-      "Email Support 24/7",
-      "Lifetime Updates",
+      { text: "Full Component Library" },
+      { text: "Basic Animations & Effects" },
+      { text: "Background Studio" },
+      { text: "Email Support 24/7" },
+      { text: "Lifetime Updates" },
     ],
     buttonText: "Unlock Base",
     electricColor: "#10B981",
@@ -76,11 +96,13 @@ const tierCopy: TierCopy[] = [
     subtitle: "For Professionals",
     description: "",
     features: [
-      "Everything in Base",
-      "Advanced GSAP Animations",
-      "3D Forge & Shader Engine",
-      "Custom Component Requests",
-      "Commercial License",
+      { text: "Everything in Base" },
+      { text: "Shader Engine" },
+      { text: "Particle Engine" },
+      { text: "Advanced GSAP Animations", comingSoon: true },
+      { text: "3D Forge", comingSoon: true },
+      { text: "Custom Component Requests", comingSoon: true },
+      { text: "Commercial License" },
     ],
     buttonText: "Upgrade to Pro",
     electricColor: "#EAB308",
@@ -92,15 +114,16 @@ const tierCopy: TierCopy[] = [
     subtitle: "For Agencies",
     description: "",
     features: [
-      "Everything in Pro",
-      "OdinAI Design Agent",
-      "End-to-End Design",
-      "Custom Development",
-      "Source Code Access",
+      { text: "Everything in Pro" },
+      { text: "OdinAI Design Agent", comingSoon: true },
+      { text: "End-to-End Design", comingSoon: true },
+      { text: "Custom Development", comingSoon: true },
+      { text: "Source Code Access", comingSoon: true },
     ],
-    buttonText: "Elite Company",
+    buttonText: "Notify Me",
     electricColor: "#F97316",
     buttonGradient: "from-orange-400 to-orange-600",
+    comingSoonBadge: "Coming Q3 2026",
   },
 ];
 
@@ -115,6 +138,9 @@ const tiers: Tier[] = tierCopy.map((copy) => {
     annual: cfg.annualPrice,
     stripePriceIdMonthly: cfg.stripePriceIdMonthly,
     stripePriceIdAnnual: cfg.stripePriceIdAnnual,
+    // A tier is "locked" if it has a coming-soon badge — its CTA is
+    // disabled and checkout calls short-circuit.
+    isLocked: Boolean(copy.comingSoonBadge),
   };
 });
 
@@ -128,6 +154,9 @@ export default function Pricing() {
   };
 
   const handleStripeCheckout = async (tier: Tier) => {
+    // Locked tiers (Elite, until Q3 2026) cannot be purchased — guard server
+    // route is auth-gated anyway, but no point even firing the request.
+    if (tier.isLocked) return;
     const priceId = isAnnual ? tier.stripePriceIdAnnual : tier.stripePriceIdMonthly;
     if (!priceId) return;
 
@@ -197,8 +226,23 @@ export default function Pricing() {
                     MOST POPULAR
                   </div>
                 )}
+                {tier.comingSoonBadge && (
+                  <div
+                    className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full text-xs font-bold z-60 backdrop-blur-md border"
+                    style={{
+                      background: `${tier.electricColor}25`,
+                      color: tier.electricColor,
+                      borderColor: `${tier.electricColor}80`,
+                    }}
+                  >
+                    {tier.comingSoonBadge.toUpperCase()}
+                  </div>
+                )}
                 <ElectricBorder color={tier.electricColor} speed={1} chaos={0.12} borderRadius={24} className="absolute inset-0 z-50">
-                  <div className="relative h-full p-6 rounded-3xl bg-black/40 backdrop-blur-xl border border-white/10 transition-all duration-300 group-hover:border-white/20 flex flex-col">
+                  <div className={cn(
+                    "relative h-full p-6 rounded-3xl bg-black/40 backdrop-blur-xl border border-white/10 transition-all duration-300 group-hover:border-white/20 flex flex-col",
+                    tier.isLocked && "opacity-90"
+                  )}>
                     <div className="text-center mb-8">
                       <h3 className="text-2xl lg:text-3xl font-heading font-black text-white">{tier.name}</h3>
                       <p className="text-gray-400 text-sm mt-1">{tier.subtitle}</p>
@@ -210,6 +254,13 @@ export default function Pricing() {
                           <div className="text-5xl font-black text-white">Free</div>
                           <div className="text-gray-500 text-sm">Forever</div>
                         </>
+                      ) : tier.isLocked ? (
+                        <>
+                          <div className="text-3xl font-black text-white opacity-60">${price}</div>
+                          <div className="text-gray-500 text-xs uppercase tracking-wider mt-1">
+                            est. /{period} at launch
+                          </div>
+                        </>
                       ) : (
                         <>
                           <div className="text-5xl font-black text-white">${price}</div>
@@ -220,44 +271,82 @@ export default function Pricing() {
 
                     <ul className="space-y-3 mb-10 flex-1">
                       {tier.features.map((f) => (
-                        <li key={f} className="flex items-center gap-3 text-gray-300 text-sm">
-                          <Zap className="w-4 h-4 shrink-0" style={{ color: tier.electricColor }} />
-                          <span>{f}</span>
+                        <li
+                          key={f.text}
+                          className={cn(
+                            "flex items-center gap-3 text-sm",
+                            f.comingSoon ? "text-gray-400" : "text-gray-300"
+                          )}
+                        >
+                          <Zap
+                            className="w-4 h-4 shrink-0"
+                            style={{
+                              color: f.comingSoon ? "#71717a" : tier.electricColor,
+                              opacity: f.comingSoon ? 0.6 : 1,
+                            }}
+                          />
+                          <span className="flex-1">{f.text}</span>
+                          {f.comingSoon && (
+                            <span
+                              className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border whitespace-nowrap shrink-0"
+                              style={{
+                                color: tier.electricColor,
+                                borderColor: `${tier.electricColor}60`,
+                                background: `${tier.electricColor}10`,
+                              }}
+                              title="This feature isn't ready yet — it ships post-launch."
+                            >
+                              Soon
+                            </span>
+                          )}
                         </li>
                       ))}
                     </ul>
 
                     <div className="relative z-50 mt-auto">
                       <motion.button
-                        onClick={() => tier.isFree ? handleFreeSignup() : handleStripeCheckout(tier)}
-                        disabled={loading === tier.name}
+                        onClick={() => {
+                          if (tier.isLocked) return; // Locked = no-op for now.
+                          tier.isFree ? handleFreeSignup() : handleStripeCheckout(tier);
+                        }}
+                        disabled={loading === tier.name || tier.isLocked}
                         className={cn(
-                          "group/btn relative w-full py-4 rounded-2xl font-bold text-black text-xl overflow-hidden",
-                          "bg-linear-to-r",
-                          tier.buttonGradient,
-                          "shadow-[0_4px_0_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.25)]",
-                          "hover:shadow-[0_6px_0_rgba(0,0,0,0.3),0_12px_32px_rgba(0,0,0,0.3)]",
-                          "hover:translate-y-[-2px]",
-                          "active:shadow-[0_1px_0_rgba(0,0,0,0.3),0_2px_8px_rgba(0,0,0,0.2)]",
-                          "active:translate-y-[1px]",
+                          "group/btn relative w-full py-4 rounded-2xl font-bold text-xl overflow-hidden",
+                          tier.isLocked
+                            ? "bg-zinc-800/60 text-gray-400 cursor-not-allowed border border-zinc-700"
+                            : cn(
+                                "text-black bg-linear-to-r",
+                                tier.buttonGradient,
+                                "shadow-[0_4px_0_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.25)]",
+                                "hover:shadow-[0_6px_0_rgba(0,0,0,0.3),0_12px_32px_rgba(0,0,0,0.3)]",
+                                "hover:translate-y-[-2px]",
+                                "active:shadow-[0_1px_0_rgba(0,0,0,0.3),0_2px_8px_rgba(0,0,0,0.2)]",
+                                "active:translate-y-[1px]"
+                              ),
                           "transition-all duration-200"
                         )}
                       >
-                        {/* Shimmer sweep on hover */}
-                        <div
-                          className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out"
-                          style={{
-                            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
-                          }}
-                        />
-                        {/* Subtle top highlight */}
-                        <div className="absolute inset-x-0 top-0 h-px bg-white/30 rounded-t-2xl" />
+                        {!tier.isLocked && (
+                          <>
+                            {/* Shimmer sweep on hover (only on purchasable tiers) */}
+                            <div
+                              className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out"
+                              style={{
+                                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+                              }}
+                            />
+                            {/* Subtle top highlight */}
+                            <div className="absolute inset-x-0 top-0 h-px bg-white/30 rounded-t-2xl" />
+                          </>
+                        )}
                         <span className="relative z-10 flex items-center justify-center gap-3">
                           {loading === tier.name ? (
                             <>
                               <Zap className="animate-pulse w-5 h-5" />
                               Charging...
                             </>
+                          ) : tier.isLocked ? (
+                            <span className="tracking-wide">{tier.buttonText}</span>
                           ) : (
                             <>
                               <span className="tracking-wide">{tier.buttonText}</span>
