@@ -1,8 +1,12 @@
+// proxy.ts (Next.js 16 — file-convention rename from middleware.ts)
+// Auth-gates /(protected)/* routes. Same logic as the prior middleware.ts;
+// only the function + file name changes per Next.js 16's deprecation:
+//   https://nextjs.org/docs/messages/middleware-to-proxy
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = request.nextUrl;
 

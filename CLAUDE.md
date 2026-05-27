@@ -63,7 +63,7 @@ app/
 ├── layout.tsx                        # Root layout (fonts, metadata)
 ├── globals.css                       # Design tokens, animations, utility classes
 ├── provider.tsx                      # SessionProvider + ThemeProvider
-├── (protected)/                      # Auth-gated routes (middleware.ts)
+├── (protected)/                      # Auth-gated routes (proxy.ts at root)
 │   ├── admin/dashboard/              # Admin dashboard
 │   └── blocks/dashboard/             # Component library dashboard
 ├── api/
@@ -144,7 +144,7 @@ app/
 - Providers: Google, GitHub (Twitter ready but commented out)
 - Supabase adapter for user persistence
 - Session extends `next-auth` with `tier` and `role` fields
-- Middleware protects `/(protected)/*` routes
+- Proxy (`proxy.ts` at repo root) protects `/(protected)/*` routes
 - Paywall component gates content by tier
 
 ## Environment Variables Required
