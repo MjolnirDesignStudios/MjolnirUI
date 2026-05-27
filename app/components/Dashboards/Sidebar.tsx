@@ -17,7 +17,7 @@ import {
   Bot, Code2,
   User, Receipt, HelpCircle,
   ChevronDown, ChevronRight, LockKeyhole,
-  Shield,
+  Shield, Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { hasAccess, getTierConfig, type TierName } from "@/lib/tierConfig";
@@ -32,6 +32,9 @@ export type SidebarItem = {
   /** When set, the Link receives a data-onboarding="<id>" attribute so the
    *  OnboardingFlow tour can anchor a popover to this row. */
   onboardingId?: string;
+  /** Renders a small "NEW" chip next to the label. Used to highlight
+   *  recently-launched components so users discover them. */
+  isNew?: boolean;
 };
 
 export type SidebarSection = {
@@ -42,6 +45,21 @@ export type SidebarSection = {
 };
 
 export const sidebarSections: SidebarSection[] = [
+  /* Highlights the most recent component launches so users immediately
+     see what's new. Each href deep-links straight into the browse detail
+     for that component. Curated — only the launch-week drops. */
+  {
+    title: "NEW THIS WEEK",
+    items: [
+      { name: "Mjolnir Button", href: "/blocks/browse/mjolnir-button", icon: Zap, requiredTier: "free", isNew: true },
+      { name: "Mjolnir Modal", href: "/blocks/browse/mjolnir-modal", icon: MessageSquare, requiredTier: "base", isNew: true },
+      { name: "Mjolnir Forms", href: "/blocks/browse/mjolnir-input", icon: FormInput, requiredTier: "free", isNew: true },
+      { name: "Stat Card", href: "/blocks/browse/stat-card", icon: BarChart3, requiredTier: "free", isNew: true },
+      { name: "Glass Card", href: "/blocks/browse/glass-card", icon: CreditCard, requiredTier: "free", isNew: true },
+      { name: "Badge", href: "/blocks/browse/badge", icon: Tag, requiredTier: "free", isNew: true },
+      { name: "Rune Loader", href: "/blocks/browse/rune-loader", icon: Loader2, requiredTier: "free", isNew: true },
+    ],
+  },
   {
     title: "GET STARTED",
     items: [
@@ -88,19 +106,23 @@ export const sidebarSections: SidebarSection[] = [
   },
   {
     title: "COMPONENTS",
+    /* Each item deep-links into /blocks/browse with a search filter pre-
+       applied, so clicking lands the user on a filtered catalog of the
+       matching components — not a stub category page. */
     items: [
-      { name: "Buttons", href: "/blocks/components/buttons", icon: MousePointer, requiredTier: "free" },
-      { name: "Cards", href: "/blocks/components/cards", icon: CreditCard, requiredTier: "free" },
-      { name: "Badges", href: "/blocks/components/badges", icon: Tag, requiredTier: "free" },
-      { name: "Inputs & Forms", href: "/blocks/components/inputs", icon: FormInput, requiredTier: "base" },
-      { name: "Modals & Dialogs", href: "/blocks/components/modals", icon: MessageSquare, requiredTier: "base" },
-      { name: "Data Display", href: "/blocks/components/data", icon: BarChart3, requiredTier: "base" },
+      { name: "Buttons", href: "/blocks/browse?category=ui&search=button", icon: MousePointer, requiredTier: "free", isNew: true },
+      { name: "Cards", href: "/blocks/browse?category=ui&search=card", icon: CreditCard, requiredTier: "free", isNew: true },
+      { name: "Badges", href: "/blocks/browse?category=ui&search=badge", icon: Tag, requiredTier: "free", isNew: true },
+      { name: "Inputs & Forms", href: "/blocks/browse?category=ui&search=input", icon: FormInput, requiredTier: "free", isNew: true },
+      { name: "Modals & Dialogs", href: "/blocks/browse?category=ui&search=modal", icon: MessageSquare, requiredTier: "base", isNew: true },
+      { name: "Stats & Data", href: "/blocks/browse?category=ui&search=stat", icon: BarChart3, requiredTier: "free", isNew: true },
+      { name: "Loaders", href: "/blocks/browse?category=ui&search=loader", icon: Loader2, requiredTier: "free", isNew: true },
     ],
   },
   {
     title: "ANIMATION",
     items: [
-      { name: "Text Effects", href: "/blocks/animation/text", icon: AlignLeft, requiredTier: "free" },
+      { name: "Text Effects", href: "/blocks/browse?category=ui&search=text", icon: AlignLeft, requiredTier: "free", isNew: true },
       { name: "Transitions", href: "/blocks/animation/transitions", icon: ArrowRightLeft, requiredTier: "free" },
       { name: "Framer Motion", href: "/blocks/animation/framer", icon: Clapperboard, requiredTier: "base" },
       { name: "GSAP Animations", href: "/blocks/animation/gsap", icon: Wand2, requiredTier: "pro" },
@@ -245,7 +267,16 @@ export function MjolnirSidebar() {
                   onClick={() => toggleSection(section.title)}
                   className="w-full flex items-center justify-between px-3 py-2 text-xs font-black text-[#FFCC11] uppercase tracking-widest hover:text-[#FFD700] transition-colors"
                 >
-                  {section.title}
+                  <span className="flex items-center gap-1.5">
+                    {section.title === "NEW THIS WEEK" && (
+                      <span
+                        className="w-1.5 h-1.5 rounded-full bg-[#FFCC11] animate-pulse"
+                        style={{ boxShadow: "0 0 6px #FFCC11" }}
+                        aria-hidden
+                      />
+                    )}
+                    {section.title}
+                  </span>
                   {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                 </button>
                 {isExpanded && (
@@ -273,6 +304,11 @@ export function MjolnirSidebar() {
                         >
                           <item.icon size={16} className={cn(isLocked && "opacity-40")} />
                           <span className={cn("flex-1", isLocked && "opacity-40")}>{item.name}</span>
+                          {item.isNew && !isLocked && (
+                            <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#FFCC11]/15 text-[#FFCC11] border border-[#FFCC11]/30">
+                              New
+                            </span>
+                          )}
                           {isLocked && (
                             <LockKeyhole size={12} style={{ color: tierConfig.color }} className="opacity-60" />
                           )}

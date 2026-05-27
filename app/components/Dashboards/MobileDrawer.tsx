@@ -347,6 +347,11 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                               <span className={cn("flex-1 truncate text-xs", isLocked && "opacity-50")}>
                                 {item.name}
                               </span>
+                              {item.isNew && !isLocked && (
+                                <span className="text-[8px] font-bold uppercase tracking-wider px-1 py-0.5 rounded bg-[#FFCC11]/15 text-[#FFCC11] border border-[#FFCC11]/30 shrink-0">
+                                  New
+                                </span>
+                              )}
                               {isLocked && (
                                 <LockKeyhole
                                   size={10}
@@ -430,6 +435,11 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                                       >
                                         {item.name}
                                       </span>
+                                      {item.isNew && !isLocked && (
+                                        <span className="text-[8px] font-bold uppercase tracking-wider px-1 py-0.5 rounded bg-[#FFCC11]/15 text-[#FFCC11] border border-[#FFCC11]/30 shrink-0">
+                                          New
+                                        </span>
+                                      )}
                                       {isLocked && (
                                         <LockKeyhole
                                           size={11}

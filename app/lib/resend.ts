@@ -15,7 +15,12 @@ import { render } from "@react-email/components";
 import WelcomePro, { type WelcomeProEmailProps } from "@/emails/WelcomePro";
 import { TIER_CONFIG, type TierName } from "@/lib/tierConfig";
 
-const FROM_ADDRESS = process.env.RESEND_FROM_ADDRESS || "MjolnirUI <hello@mjolnirui.com>";
+// Default From: uses contact@mjolnirdesignstudios.com — that's the verified
+// inbox we already have on file. Override via RESEND_FROM_ADDRESS env var
+// once a dedicated mjolnirui.com address is in place.
+const FROM_ADDRESS =
+  process.env.RESEND_FROM_ADDRESS ||
+  "MjolnirUI <contact@mjolnirdesignstudios.com>";
 const APP_URL = process.env.NEXTAUTH_URL || "https://www.mjolnirui.com";
 
 let _client: Resend | null | undefined;

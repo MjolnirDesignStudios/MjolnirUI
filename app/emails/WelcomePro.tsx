@@ -37,7 +37,7 @@ export interface WelcomeProEmailProps {
   dashboardUrl?: string;
   /** Absolute URL of the docs CTA. */
   docsUrl?: string;
-  /** Optional support email. Defaults to support@mjolnirui.com. */
+  /** Optional support email. Defaults to contact@mjolnirdesignstudios.com. */
   supportEmail?: string;
 }
 
@@ -47,7 +47,7 @@ export default function WelcomePro({
   tierColor = "#EAB308",
   dashboardUrl = "https://www.mjolnirui.com/blocks/dashboard",
   docsUrl = "https://www.mjolnirui.com/blocks/docs",
-  supportEmail = "support@mjolnirui.com",
+  supportEmail = "contact@mjolnirdesignstudios.com",
 }: WelcomeProEmailProps) {
   const preview = `Welcome to MjolnirUI ${tierLabel}, ${firstName} — your arsenal is forged.`;
 

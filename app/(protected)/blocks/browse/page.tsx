@@ -2,9 +2,9 @@
 // Sidebar: category filters, search, tier filter
 // Main: component cards with live preview thumbnails, tier badges, tech tags
 "use client";
-import React, { useState, useMemo, Suspense, lazy } from "react";
+import React, { useState, useMemo, useEffect, Suspense, lazy } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, Filter, Grid3X3, List, LockKeyhole, Flame, Sparkles,
@@ -185,14 +185,42 @@ function ComponentCard({
    MAIN BROWSER PAGE
    ═══════════════════════════════════════════════════════ */
 export default function ComponentBrowserPage() {
+  return (
+    <Suspense fallback={null}>
+      <ComponentBrowserInner />
+    </Suspense>
+  );
+}
+
+function ComponentBrowserInner() {
   const { data: session } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const userTier = (session?.user?.tier as TierName) || "free";
 
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<ComponentCategory | "all">("all");
-  const [activeTier, setActiveTier] = useState<TierName | "all">("all");
+  // Read initial filters from URL query params so sidebar deep-links into
+  // the right view. ?category=ui · ?search=button · ?tier=base
+  const initialCategory = (searchParams.get("category") || "all") as
+    | ComponentCategory
+    | "all";
+  const initialSearch = searchParams.get("search") || "";
+  const initialTier = (searchParams.get("tier") || "all") as TierName | "all";
+
+  const [search, setSearch] = useState(initialSearch);
+  const [activeCategory, setActiveCategory] = useState<ComponentCategory | "all">(initialCategory);
+  const [activeTier, setActiveTier] = useState<TierName | "all">(initialTier);
   const [sortBy, setSortBy] = useState<"name" | "tier" | "popular">("popular");
+
+  // When the user navigates via a sidebar link with different params, sync
+  // our state. (useSearchParams returns a stable Object reference per-render.)
+  useEffect(() => {
+    const cat = (searchParams.get("category") || "all") as ComponentCategory | "all";
+    const q = searchParams.get("search") || "";
+    const tier = (searchParams.get("tier") || "all") as TierName | "all";
+    setActiveCategory(cat);
+    setSearch(q);
+    setActiveTier(tier);
+  }, [searchParams]);
 
   const [upgradeModal, setUpgradeModal] = useState<{
     isOpen: boolean;
