@@ -20,6 +20,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { supabaseAdmin, supabaseAuthAdmin } from '@/lib/supabaseAdmin';
 import { PRICE_TO_TIER } from '@/lib/tierConfig';
+import { sendWelcomePro } from '@/lib/resend';
 
 // Lazy-init Stripe inside the handler — module-load instantiation breaks the
 // build when STRIPE_SECRET_KEY isn't available during page data collection.
@@ -104,8 +105,9 @@ export async function POST(req: Request) {
         const priceId = sub.items.data[0].price.id;
         const tier = PRICE_TO_TIER[priceId] || 'free';
 
-        // Update user in Supabase
-        await supabaseAuthAdmin
+        // Update user in Supabase + pull display name / email for the
+        // welcome email send.
+        const { data: updatedUser } = await supabaseAuthAdmin
           .from('users')
           .update({
             tier,
@@ -113,9 +115,26 @@ export async function POST(req: Request) {
             stripe_subscription_id: subscriptionId,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', userId);
+          .eq('id', userId)
+          .select('email, name')
+          .single();
 
         console.log(`User ${userId} upgraded to ${tier}`);
+
+        // Fire-and-forget welcome email. Failures are logged but do NOT
+        // block the webhook 200 response (Stripe would retry → double-
+        // process the upgrade). RESEND_API_KEY-less environments skip
+        // gracefully.
+        if (updatedUser?.email && tier !== 'free') {
+          const firstName = updatedUser.name
+            ? String(updatedUser.name).split(' ')[0]
+            : undefined;
+          sendWelcomePro({
+            to: updatedUser.email,
+            firstName,
+            tier,
+          }).catch((e) => console.error('[webhook] welcome email failed:', e));
+        }
         break;
       }
 
