@@ -36,11 +36,11 @@ export interface ComponentMeta {
 }
 
 /* ═══════════════════════════════════════════════════════
-   COMPONENT REGISTRY — 49 Components
+   COMPONENT REGISTRY — 50 Components
      · 1 3D
      · 11 animations
      · 16 backgrounds
-     · 21 UI (incl. text effects, buttons, cards, badges, loaders)
+     · 22 UI (incl. text effects, buttons, cards, badges, loaders, stats)
    ═══════════════════════════════════════════════════════ */
 export const COMPONENT_REGISTRY: ComponentMeta[] = [
   // ── 3D (1) ──────────────────────────────────────────
@@ -95,6 +95,7 @@ export const COMPONENT_REGISTRY: ComponentMeta[] = [
   { id: "neon-glow-text", name: "Neon Glow Text", description: "Cyberpunk neon-tube text with electric glow and color variants", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/NeonGlowText", hasCSS: false, isNew: true },
   { id: "rune-loader", name: "Rune Loader", description: "Norse Elder Futhark rune spinner — 9 runes, 6 colors, 4 sizes", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/RuneLoader", hasCSS: false, isNew: true },
   { id: "shimmer-button", name: "Shimmer Button", description: "Premium shimmer gradient buttons in gold, silver, bronze variants", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/Buttons/ShimmerButton", hasCSS: false, isPopular: true },
+  { id: "stat-card", name: "Stat Card", description: "KPI display with label, value, delta indicator, and 5 accent variants", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/StatCard", hasCSS: false, isNew: true },
   { id: "shiny-text", name: "Shiny Text", description: "Lustrous text with travelling specular highlight", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/ShinyText", hasCSS: false, isNew: true },
   { id: "text-reveal", name: "Text Reveal", description: "Character-by-character text reveal with blur effects", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/TextReveal", hasCSS: false },
   { id: "typewriter-text", name: "Typewriter Text", description: "Character-by-character typing with blinking cursor and string cycling", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/TypewriterText", hasCSS: false, isNew: true },

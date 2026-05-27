@@ -286,6 +286,52 @@ const LightningEffectDemo = dyn(() =>
   }))
 );
 
+const StatCardDemo = dyn(() =>
+  Promise.all([
+    import("@/components/ui/StatCard"),
+    import("lucide-react"),
+  ]).then(([mod, icons]) => ({
+    default: () => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl p-8">
+        <mod.StatCard
+          label="Total Users"
+          value={1247}
+          icon={icons.Users}
+          delta={12.4}
+          deltaLabel="vs last week"
+          variant="storm"
+        />
+        <mod.StatCard
+          label="MRR"
+          value="$8,420"
+          icon={icons.DollarSign}
+          delta={8.1}
+          deltaLabel="MoM"
+          variant="thunder"
+          sub="58 active subs"
+        />
+        <mod.StatCard
+          label="Components Used"
+          value={49}
+          icon={icons.Sparkles}
+          delta={-3.2}
+          deltaLabel="this hour"
+          variant="bifrost"
+        />
+        <mod.StatCard
+          label="Errors"
+          value={4}
+          icon={icons.AlertTriangle}
+          delta={-50}
+          deltaLabel="resolved"
+          invertDelta
+          variant="forge"
+        />
+      </div>
+    ),
+  }))
+);
+
 // Map component IDs to their dynamic imports
 COMPONENT_MAP["color-halo"] = ColorHalo;
 COMPONENT_MAP["prism"] = Prism;
@@ -338,6 +384,7 @@ COMPONENT_MAP["decrypt-text"] = DecryptTextDemo;
 COMPONENT_MAP["colorful-text"] = ColorfulTextDemo;
 COMPONENT_MAP["glowing-effect"] = GlowingEffectDemo;
 COMPONENT_MAP["lightning-effect"] = LightningEffectDemo;
+COMPONENT_MAP["stat-card"] = StatCardDemo;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 /* ── Controls Panel ─────────────────────────────────── */
