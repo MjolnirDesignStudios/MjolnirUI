@@ -7,8 +7,9 @@ import { motion } from "framer-motion";
 import {
   Sparkles, Image, Layers, MousePointer, Palette,
   Box, Hammer, Bot, Code2, Wrench, Gauge, Zap,
-  LockKeyhole,
+  LockKeyhole, ArrowRight, BookOpen, Library, Wand2,
 } from "lucide-react";
+import Link from "next/link";
 import { TierBadge } from "@/components/Dashboards/TierBadge";
 import { UpgradeModal } from "@/components/Dashboards/UpgradeModal";
 import { hasAccess, getTierConfig, type TierName } from "@/lib/tierConfig";
@@ -90,6 +91,10 @@ function DashboardContent() {
         </p>
       </div>
 
+      {/* Quick Start — 3 contextual CTAs. Tier-aware: Free users see an
+          upgrade tile, paid users see a third "studio" tile. */}
+      <QuickStart userTier={userTier} />
+
       {/* Feature Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {featureCards.map((card, index) => {
@@ -167,12 +172,32 @@ function DashboardContent() {
         <h2 className="text-2xl font-bold text-white mb-3">
           {userTier === 'free' ? 'Unlock the Full Arsenal' : 'Your Design Arsenal'}
         </h2>
-        <p className="text-gray-400 max-w-2xl mx-auto">
+        <p className="text-gray-400 max-w-2xl mx-auto mb-5">
           {userTier === 'free'
             ? 'Upgrade to Base to access the full component library, Background Studio, and electric effects.'
-            : 'Browse the sidebar to explore all your unlocked tools and components.'
+            : userTier === 'base'
+              ? 'Upgrade to Pro to unlock the Shader Engine, Particle Engine, and commercial license.'
+              : 'Every tool is yours. Save your first asset to get started.'
           }
         </p>
+        <div className="flex items-center justify-center gap-2 flex-wrap">
+          {userTier !== 'pro' && userTier !== 'elite' && (
+            <Link
+              href="/#pricing"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FFCC11] text-black font-bold text-sm hover:bg-[#FFD700] transition"
+            >
+              <Zap size={14} />
+              Compare plans
+            </Link>
+          )}
+          <Link
+            href="/blocks/docs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white font-semibold text-sm hover:border-zinc-500 transition"
+          >
+            <BookOpen size={14} />
+            Read the docs
+          </Link>
+        </div>
       </div>
 
       <UpgradeModal
@@ -182,5 +207,123 @@ function DashboardContent() {
         featureName={upgradeModal.featureName}
       />
     </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   QUICK START — 3-tile contextual onboarding strip
+   Sits between the welcome header and the feature grid. Acts as the
+   dashboard's empty-state UX for new signups: instead of staring at a
+   tier-locked feature catalog, they see three concrete first actions.
+   Tier-aware: Free users get an upgrade tile; paid users get a third
+   studio tile pitched at their tier.
+   ═══════════════════════════════════════════════════════ */
+function QuickStart({ userTier }: { userTier: TierName }) {
+  const isPaid = userTier !== "free";
+  const tiles: Array<{
+    title: string;
+    body: string;
+    cta: string;
+    href: string;
+    icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>;
+    accent: string;
+  }> = [
+    {
+      title: "Browse the library",
+      body: "49 premium components — backgrounds, animations, UI primitives, 3D scenes. Copy-paste or install via CLI.",
+      cta: "Open browser",
+      href: "/blocks/browse",
+      icon: Library,
+      accent: "#FFCC11",
+    },
+    {
+      title: "Open Background Studio",
+      body: isPaid
+        ? "Compose multi-layer animated backgrounds with shaders, particles, and meshes."
+        : "Preview the studio — full save + export ships with Base tier and above.",
+      cta: isPaid ? "Start composing" : "Preview studio",
+      href: "/blocks/background-studio",
+      icon: Wand2,
+      accent: "#00f0ff",
+    },
+    isPaid
+      ? {
+          title: "Read the docs",
+          body: "Installation, CLI reference, customization recipes, and best-practice patterns.",
+          cta: "Read docs",
+          href: "/blocks/docs",
+          icon: BookOpen,
+          accent: "#10B981",
+        }
+      : {
+          title: "Unlock the rest",
+          body: "Pro adds the Shader Engine, Particle Engine, GSAP animations, and commercial license.",
+          cta: "Compare plans",
+          href: "/#pricing",
+          icon: Zap,
+          accent: "#10B981",
+        },
+  ];
+
+  return (
+    <section>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#FFCC11]">
+          Start here
+        </h2>
+        <span className="text-[10px] text-gray-600 font-mono uppercase tracking-wider">
+          3 quick actions
+        </span>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {tiles.map((tile) => (
+          <Link
+            key={tile.title}
+            href={tile.href}
+            className="group relative overflow-hidden rounded-2xl bg-linear-to-br from-zinc-900/60 to-black border border-zinc-800/60 p-5 transition-all duration-200 hover:border-zinc-600"
+            style={
+              {
+                ["--accent" as string]: tile.accent,
+              } as React.CSSProperties
+            }
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.boxShadow = `0 0 18px ${tile.accent}25, 0 0 36px ${tile.accent}10`)
+            }
+            onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+          >
+            <div
+              className="absolute top-0 inset-x-6 h-px"
+              style={{
+                background: `linear-gradient(90deg, transparent, ${tile.accent}, transparent)`,
+              }}
+            />
+            <div className="flex items-start gap-3 mb-3">
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                style={{ backgroundColor: `${tile.accent}18`, border: `1px solid ${tile.accent}30` }}
+              >
+                <tile.icon size={16} style={{ color: tile.accent }} />
+              </div>
+              <h3 className="text-base font-bold text-white pt-1.5">
+                {tile.title}
+              </h3>
+            </div>
+            <p className="text-xs text-gray-400 leading-relaxed mb-4">
+              {tile.body}
+            </p>
+            <div
+              className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider transition-colors"
+              style={{ color: tile.accent }}
+            >
+              {tile.cta}
+              <ArrowRight
+                size={12}
+                className="transition-transform group-hover:translate-x-0.5"
+              />
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
