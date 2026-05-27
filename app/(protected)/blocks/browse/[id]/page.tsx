@@ -286,6 +286,127 @@ const LightningEffectDemo = dyn(() =>
   }))
 );
 
+const MjolnirInputDemo = dyn(() =>
+  import("@/components/ui/MjolnirForm").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-8">
+        <div className="w-full max-w-sm space-y-4">
+          <m.MjolnirInput
+            label="Display name"
+            placeholder="Thor Odinson"
+            required
+            variant="thunder"
+            helper="Visible on your public profile."
+          />
+          <m.MjolnirInput
+            label="Email"
+            type="email"
+            placeholder="hello@asgard.io"
+            variant="storm"
+          />
+          <m.MjolnirTextarea
+            label="Bio"
+            placeholder="Wielder of Mjolnir. Builder of UIs."
+            rows={3}
+            variant="bifrost"
+          />
+        </div>
+      </div>
+    ),
+  }))
+);
+
+const MjolnirSelectDemo = dyn(() =>
+  import("@/components/ui/MjolnirForm").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-8">
+        <div className="w-full max-w-sm space-y-4">
+          <m.MjolnirSelect
+            label="Tier"
+            variant="thunder"
+            defaultValue="pro"
+            options={[
+              { label: "Free — Explorers", value: "free" },
+              { label: "Base — Creators", value: "base" },
+              { label: "Pro — Professionals", value: "pro" },
+              { label: "Elite — Agencies (Coming Q3 2026)", value: "elite", disabled: true },
+            ]}
+            helper="Switch plans any time via the billing portal."
+          />
+          <m.MjolnirSelect
+            label="Realm"
+            variant="bifrost"
+            placeholder="Choose your realm"
+            options={[
+              { label: "Asgard", value: "asgard" },
+              { label: "Midgard", value: "midgard" },
+              { label: "Vanaheim", value: "vanaheim" },
+              { label: "Jotunheim", value: "jotunheim" },
+            ]}
+          />
+        </div>
+      </div>
+    ),
+  }))
+);
+
+// Modal needs to be dynamically imported but with the component type
+// preserved — declare a typed dynamic shell so `<Modal {...}>` typechecks.
+const MjolnirModalLazy = dyn(() =>
+  import("@/components/ui/MjolnirModal").then((m) => ({ default: m.MjolnirModal }))
+) as unknown as React.ComponentType<
+  import("@/components/ui/MjolnirModal").MjolnirModalProps
+>;
+
+function MjolnirModalDemo() {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div className="flex items-center justify-center w-full h-full p-8">
+      <div className="flex flex-col items-center gap-4">
+        <button
+          onClick={() => setOpen(true)}
+          className="px-5 py-2.5 rounded-xl bg-[#FFCC11] text-black font-bold text-sm hover:bg-[#FFD700] transition"
+        >
+          Open Mjolnir Modal
+        </button>
+        <p className="text-xs text-gray-500 max-w-xs text-center">
+          Backdrop click, ESC key, or the X button all close. Body scroll
+          locks while the modal is open.
+        </p>
+        <MjolnirModalLazy
+          open={open}
+          onClose={() => setOpen(false)}
+          variant="thunder"
+          title="Forge the rune?"
+          description="This will permanently bind the component to your project."
+          footer={
+            <div className="flex items-center justify-end gap-2">
+              <button
+                onClick={() => setOpen(false)}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => setOpen(false)}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FFCC11] text-black hover:bg-[#FFD700] transition"
+              >
+                Forge it
+              </button>
+            </div>
+          }
+        >
+          <p className="text-gray-300">
+            Mjolnir Modal supports five accent variants, four sizes, ESC-to-
+            close, scroll lock, and arbitrary title / description / body /
+            footer slots.
+          </p>
+        </MjolnirModalLazy>
+      </div>
+    </div>
+  );
+}
+
 const StatCardDemo = dyn(() =>
   Promise.all([
     import("@/components/ui/StatCard"),
@@ -385,6 +506,9 @@ COMPONENT_MAP["colorful-text"] = ColorfulTextDemo;
 COMPONENT_MAP["glowing-effect"] = GlowingEffectDemo;
 COMPONENT_MAP["lightning-effect"] = LightningEffectDemo;
 COMPONENT_MAP["stat-card"] = StatCardDemo;
+COMPONENT_MAP["mjolnir-input"] = MjolnirInputDemo;
+COMPONENT_MAP["mjolnir-select"] = MjolnirSelectDemo;
+COMPONENT_MAP["mjolnir-modal"] = MjolnirModalDemo;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 /* ── Controls Panel ─────────────────────────────────── */

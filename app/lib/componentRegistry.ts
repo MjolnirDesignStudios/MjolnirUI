@@ -36,11 +36,12 @@ export interface ComponentMeta {
 }
 
 /* ═══════════════════════════════════════════════════════
-   COMPONENT REGISTRY — 50 Components
+   COMPONENT REGISTRY — 53 Components
      · 1 3D
      · 11 animations
      · 16 backgrounds
-     · 22 UI (incl. text effects, buttons, cards, badges, loaders, stats)
+     · 25 UI (text effects, buttons, cards, badges, loaders, stats,
+            forms, modals)
    ═══════════════════════════════════════════════════════ */
 export const COMPONENT_REGISTRY: ComponentMeta[] = [
   // ── 3D (1) ──────────────────────────────────────────
@@ -92,6 +93,9 @@ export const COMPONENT_REGISTRY: ComponentMeta[] = [
   { id: "gradient-text", name: "Gradient Text", description: "Animated gradient text with yoyo and directional flow", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/GradientText", hasCSS: false },
   { id: "lightning-effect", name: "Lightning Effect", description: "Branching lightning bolt overlay for buttons, cards, and emphasis", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/Animations/LightningEffect", hasCSS: false, isNew: true },
   { id: "mjolnir-button", name: "Mjolnir Button", description: "Premium branded button with 5 variants (storm, thunder, bifrost, void, forge) and lightning-strike click effect", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/MjolnirButton", hasCSS: false, isNew: true, isPopular: true },
+  { id: "mjolnir-input", name: "Mjolnir Input", description: "Branded text input + textarea with label / helper / error states and 4 variant accents", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/MjolnirForm", hasCSS: false, isNew: true },
+  { id: "mjolnir-modal", name: "Mjolnir Modal", description: "Branded dialog with backdrop blur, spring entrance, ESC + scroll-lock, and 5 accent variants", category: "ui", requiredTier: "base", tech: ["framer-motion"], importPath: "@/components/ui/MjolnirModal", hasCSS: false, isNew: true },
+  { id: "mjolnir-select", name: "Mjolnir Select", description: "Branded dropdown select with custom chevron, label / helper / error states", category: "ui", requiredTier: "base", tech: ["css"], importPath: "@/components/ui/MjolnirForm", hasCSS: false, isNew: true },
   { id: "neon-glow-text", name: "Neon Glow Text", description: "Cyberpunk neon-tube text with electric glow and color variants", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/NeonGlowText", hasCSS: false, isNew: true },
   { id: "rune-loader", name: "Rune Loader", description: "Norse Elder Futhark rune spinner — 9 runes, 6 colors, 4 sizes", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/RuneLoader", hasCSS: false, isNew: true },
   { id: "shimmer-button", name: "Shimmer Button", description: "Premium shimmer gradient buttons in gold, silver, bronze variants", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/Buttons/ShimmerButton", hasCSS: false, isPopular: true },
