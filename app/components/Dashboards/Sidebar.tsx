@@ -234,7 +234,7 @@ export function MjolnirSidebar() {
             )}
           >
             <Layers size={16} />
-            <span>Browse All (34)</span>
+            <span>Browse All (49)</span>
           </Link>
 
           {visibleSections.map((section) => {

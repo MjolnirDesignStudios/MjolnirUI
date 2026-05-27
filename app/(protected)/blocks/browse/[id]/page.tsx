@@ -76,6 +76,216 @@ const AccordionPlaceholder = () => <div className="flex items-center justify-cen
 // 3D
 const AnimatedOrb = dyn(() => import("@/components/ui/AnimatedOrb"));
 
+/* ── New UI primitives (Sprint A — 2026-05-27) ──────────────────── */
+/* These primitives all need a parent that supplies content. We render
+   them inside small demo wrappers that pass sensible Mjolnir-themed
+   sample content so the preview canvas has something visual to show. */
+
+const MjolnirButtonDemo = dyn(() =>
+  import("@/components/ui/MjolnirButton").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full gap-3 flex-wrap p-6">
+        <m.MjolnirButton variant="storm">Storm</m.MjolnirButton>
+        <m.MjolnirButton variant="thunder">Thunder</m.MjolnirButton>
+        <m.MjolnirButton variant="bifrost">Bifrost</m.MjolnirButton>
+        <m.MjolnirButton variant="void">Void</m.MjolnirButton>
+        <m.MjolnirButton variant="forge">Forge</m.MjolnirButton>
+      </div>
+    ),
+  }))
+);
+
+const BadgeDemo = dyn(() =>
+  import("@/components/ui/Badge").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full gap-2 flex-wrap p-6 max-w-md">
+        <m.Badge variant="default">Default</m.Badge>
+        <m.Badge variant="success">Active</m.Badge>
+        <m.Badge variant="warning">Pending</m.Badge>
+        <m.Badge variant="error">Failed</m.Badge>
+        <m.Badge variant="info">Info</m.Badge>
+        <m.Badge variant="electric">Electric</m.Badge>
+        <m.Badge variant="gold">Gold</m.Badge>
+        <m.Badge variant="forge">Forge</m.Badge>
+        <m.Badge variant="bifrost">Bifrost</m.Badge>
+        <m.Badge variant="pro">Pro</m.Badge>
+        <m.Badge variant="elite">Elite</m.Badge>
+      </div>
+    ),
+  }))
+);
+
+const GlassCardDemo = dyn(() =>
+  import("@/components/ui/GlassCard").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-8">
+        <m.GlassCard variant="storm" className="max-w-sm p-6">
+          <h3 className="text-lg font-bold text-white mb-1">
+            Wield the storm
+          </h3>
+          <p className="text-sm text-gray-400">
+            Frosted glass card with mouse-tracking glow. Hover to see the
+            electric trail follow your cursor.
+          </p>
+        </m.GlassCard>
+      </div>
+    ),
+  }))
+);
+
+const CountUpDemo = dyn(() =>
+  import("@/components/ui/CountUp").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full">
+        <div className="text-6xl font-black text-[#FFCC11]">
+          <m.CountUp to={2026} duration={2} separator="" trigger="mount" />
+        </div>
+      </div>
+    ),
+  }))
+);
+
+const RuneLoaderDemo = dyn(() =>
+  import("@/components/ui/RuneLoader").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full gap-6 flex-wrap">
+        <m.RuneLoader size="md" color="electric" />
+        <m.RuneLoader size="md" color="gold" />
+        <m.RuneLoader size="md" color="bifrost" />
+      </div>
+    ),
+  }))
+);
+
+const TypewriterTextDemo = dyn(() =>
+  import("@/components/ui/TypewriterText").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full">
+        <m.TypewriterText
+          text={[
+            "Forged in Asgard.",
+            "Wielded by builders.",
+            "Powered by lightning.",
+          ]}
+          className="text-3xl font-bold text-white"
+        />
+      </div>
+    ),
+  }))
+);
+
+const GlitchTextDemo = dyn(() =>
+  import("@/components/ui/GlitchText").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full">
+        <m.GlitchText intensity="medium" trigger="always" className="text-5xl font-black">
+          MJOLNIR
+        </m.GlitchText>
+      </div>
+    ),
+  }))
+);
+
+const NeonGlowTextDemo = dyn(() =>
+  import("@/components/ui/NeonGlowText").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full">
+        <m.NeonGlowText className="text-5xl font-black">
+          MjolnirUI
+        </m.NeonGlowText>
+      </div>
+    ),
+  }))
+);
+
+const ShinyTextDemo = dyn(() =>
+  import("@/components/ui/ShinyText").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full">
+        <m.ShinyText className="text-5xl font-black text-white">
+          Asgardian Tech
+        </m.ShinyText>
+      </div>
+    ),
+  }))
+);
+
+const WaveTextDemo = dyn(() =>
+  import("@/components/ui/WaveText").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full">
+        <m.WaveText className="text-5xl font-black text-[#00f0ff]">
+          BIFROST
+        </m.WaveText>
+      </div>
+    ),
+  }))
+);
+
+const DecryptTextDemo = dyn(() =>
+  import("@/components/ui/DecryptText").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full">
+        <m.DecryptText className="text-5xl font-black text-emerald-400 font-mono">
+          UNLOCKED
+        </m.DecryptText>
+      </div>
+    ),
+  }))
+);
+
+const ColorfulTextDemo = dyn(() =>
+  import("@/components/ui/TextEffects/ColorfulText").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full">
+        <m.ColorfulText
+          text="Rainbow Bridge"
+          className="text-5xl font-black"
+        />
+      </div>
+    ),
+  }))
+);
+
+const GlowingEffectDemo = dyn(() =>
+  import("@/components/ui/Animations/GlowingEffect").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-8">
+        <m.GlowingEffect>
+          <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-8 max-w-sm">
+            <h3 className="text-lg font-bold text-white mb-1">
+              Glowing wrapper
+            </h3>
+            <p className="text-sm text-gray-400">
+              Drop this around any container to add a soft animated halo
+              that follows the user&apos;s cursor.
+            </p>
+          </div>
+        </m.GlowingEffect>
+      </div>
+    ),
+  }))
+);
+
+const LightningEffectDemo = dyn(() =>
+  import("@/components/ui/Animations/LightningEffect").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-8">
+        <div className="relative overflow-hidden rounded-2xl bg-black border border-cyan-500/30 p-8 max-w-sm">
+          <m.default />
+          <h3 className="text-lg font-bold text-white mb-1 relative z-10">
+            Lightning overlay
+          </h3>
+          <p className="text-sm text-gray-400 relative z-10">
+            Branching bolts streak across any container — buttons, cards,
+            emphasis blocks.
+          </p>
+        </div>
+      </div>
+    ),
+  }))
+);
+
 // Map component IDs to their dynamic imports
 COMPONENT_MAP["color-halo"] = ColorHalo;
 COMPONENT_MAP["prism"] = Prism;
@@ -112,6 +322,22 @@ COMPONENT_MAP["shimmer-button"] = ShimmerButton;
 COMPONENT_MAP["flip-card"] = FlipCardDemo;
 COMPONENT_MAP["accordion"] = AccordionPlaceholder;
 COMPONENT_MAP["animated-orb"] = AnimatedOrb;
+
+// Sprint A — newly registered UI primitives
+COMPONENT_MAP["mjolnir-button"] = MjolnirButtonDemo;
+COMPONENT_MAP["badge"] = BadgeDemo;
+COMPONENT_MAP["glass-card"] = GlassCardDemo;
+COMPONENT_MAP["count-up"] = CountUpDemo;
+COMPONENT_MAP["rune-loader"] = RuneLoaderDemo;
+COMPONENT_MAP["typewriter-text"] = TypewriterTextDemo;
+COMPONENT_MAP["glitch-text"] = GlitchTextDemo;
+COMPONENT_MAP["neon-glow-text"] = NeonGlowTextDemo;
+COMPONENT_MAP["shiny-text"] = ShinyTextDemo;
+COMPONENT_MAP["wave-text"] = WaveTextDemo;
+COMPONENT_MAP["decrypt-text"] = DecryptTextDemo;
+COMPONENT_MAP["colorful-text"] = ColorfulTextDemo;
+COMPONENT_MAP["glowing-effect"] = GlowingEffectDemo;
+COMPONENT_MAP["lightning-effect"] = LightningEffectDemo;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 /* ── Controls Panel ─────────────────────────────────── */

@@ -36,7 +36,11 @@ export interface ComponentMeta {
 }
 
 /* ═══════════════════════════════════════════════════════
-   COMPONENT REGISTRY — 34 Components
+   COMPONENT REGISTRY — 49 Components
+     · 1 3D
+     · 11 animations
+     · 16 backgrounds
+     · 21 UI (incl. text effects, buttons, cards, badges, loaders)
    ═══════════════════════════════════════════════════════ */
 export const COMPONENT_REGISTRY: ComponentMeta[] = [
   // ── 3D (1) ──────────────────────────────────────────
@@ -73,14 +77,28 @@ export const COMPONENT_REGISTRY: ComponentMeta[] = [
   { id: "stars-bg", name: "Stars Background", description: "Three.js starfield with camera depth and parallax", category: "backgrounds", requiredTier: "base", tech: ["three"], importPath: "@/components/mjolnirui/backgrounds/stars/StarsBackground", hasCSS: false },
   { id: "vortex", name: "Vortex", description: "Spiraling vortex with particle acceleration", category: "backgrounds", requiredTier: "pro", tech: ["three"], importPath: "@/components/mjolnirui/backgrounds/vortex/Vortex", hasCSS: false, isNew: true },
 
-  // ── UI COMPONENTS (7) — A-Z ───────────────────────────
+  // ── UI COMPONENTS (21) — A-Z ──────────────────────────
   { id: "accordion", name: "Accordion", description: "Expandable accordion sections with smooth transitions", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/mjolnirui/accordion/Accordion", hasCSS: false },
   { id: "aurora-text", name: "Aurora Text", description: "Animated gradient text with flowing aurora colors", category: "ui", requiredTier: "free", tech: ["css", "framer-motion"], importPath: "@/components/ui/AuroraText", hasCSS: false },
+  { id: "badge", name: "Badge", description: "Pill badge with 13 brand variants — status, tier, and Mjolnir-themed", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/Badge", hasCSS: false, isNew: true, isPopular: true },
+  { id: "colorful-text", name: "Colorful Text", description: "Multi-hue animated text with smooth color cycling", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/TextEffects/ColorfulText", hasCSS: false, isNew: true },
+  { id: "count-up", name: "Count Up", description: "Animated number counter with elastic easing and intersection trigger", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/CountUp", hasCSS: false, isNew: true },
+  { id: "decrypt-text", name: "Decrypt Text", description: "Matrix-style scramble-to-reveal text decode animation", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/DecryptText", hasCSS: false, isNew: true },
   { id: "electric-border", name: "Electric Border", description: "Canvas perlin noise animated border with hover states", category: "ui", requiredTier: "free", tech: ["canvas"], importPath: "@/components/ui/ElectricBorder", hasCSS: false, isPopular: true },
   { id: "flip-card", name: "Flip Card", description: "3D flip card with lightning strike overlay effect", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/Cards/FlipCard", hasCSS: false },
+  { id: "glass-card", name: "Glass Card", description: "Frosted glass card with mouse-tracking glow and 5 brand variants", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/GlassCard", hasCSS: false, isNew: true, isPopular: true },
+  { id: "glitch-text", name: "Glitch Text", description: "Norse electric glitch distortion with hover and interval triggers", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/GlitchText", hasCSS: false, isNew: true },
+  { id: "glowing-effect", name: "Glowing Effect", description: "Soft animated glow halo wrapper for any content", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/Animations/GlowingEffect", hasCSS: false, isNew: true },
   { id: "gradient-text", name: "Gradient Text", description: "Animated gradient text with yoyo and directional flow", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/GradientText", hasCSS: false },
+  { id: "lightning-effect", name: "Lightning Effect", description: "Branching lightning bolt overlay for buttons, cards, and emphasis", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/Animations/LightningEffect", hasCSS: false, isNew: true },
+  { id: "mjolnir-button", name: "Mjolnir Button", description: "Premium branded button with 5 variants (storm, thunder, bifrost, void, forge) and lightning-strike click effect", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/MjolnirButton", hasCSS: false, isNew: true, isPopular: true },
+  { id: "neon-glow-text", name: "Neon Glow Text", description: "Cyberpunk neon-tube text with electric glow and color variants", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/NeonGlowText", hasCSS: false, isNew: true },
+  { id: "rune-loader", name: "Rune Loader", description: "Norse Elder Futhark rune spinner — 9 runes, 6 colors, 4 sizes", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/RuneLoader", hasCSS: false, isNew: true },
   { id: "shimmer-button", name: "Shimmer Button", description: "Premium shimmer gradient buttons in gold, silver, bronze variants", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/Buttons/ShimmerButton", hasCSS: false, isPopular: true },
+  { id: "shiny-text", name: "Shiny Text", description: "Lustrous text with travelling specular highlight", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/ShinyText", hasCSS: false, isNew: true },
   { id: "text-reveal", name: "Text Reveal", description: "Character-by-character text reveal with blur effects", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/TextReveal", hasCSS: false },
+  { id: "typewriter-text", name: "Typewriter Text", description: "Character-by-character typing with blinking cursor and string cycling", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/TypewriterText", hasCSS: false, isNew: true },
+  { id: "wave-text", name: "Wave Text", description: "Wavy text with per-character sinusoidal motion", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/WaveText", hasCSS: false, isNew: true },
 ];
 
 /* ── Helpers ─────────────────────────────────────────── */
