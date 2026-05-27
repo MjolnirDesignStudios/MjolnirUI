@@ -97,18 +97,29 @@ app/
 
 ## Core Features (Product Offerings)
 
-### Shipped / In-Progress
-1. **Component Libraries** — Premium React components with ElectricBorder, ShimmerButton, AuroraText, TextReveal, GradientText, AnimatedOrb
-2. **Shader Engine Tool** — GLSL shader backgrounds (Bifrost tunnel, perlin noise), ShaderBG_Type1/Type2
-3. **3D Animations** — React Three Fiber scenes, AnimatedOrb, WebGL showcase
+### Shipped (Pro launch 2026-06-01)
+1. **Component Library — 49 components** across 4 categories
+   - 21 UI primitives (MjolnirButton, Badge, GlassCard, CountUp, RuneLoader, TypewriterText, GlitchText, NeonGlowText, ShinyText, WaveText, DecryptText, ColorfulText, GlowingEffect, LightningEffect, AuroraText, ElectricBorder, FlipCard, GradientText, ShimmerButton, TextReveal, Accordion)
+   - 16 backgrounds (Color Halo, Prism, SilkyLines, StarField, Neural Network, Atomic, Smoke, Stars, Accretion, Bifrost, Dark Veil, Vortex, Liquid Ribbons, Gravity Lens, Liquid Ether, Singularity)
+   - 11 animations (Lightning, Matrix Rain, RippleGrid, Atmosphere, AuraWaves, LightPillar, BlackHole, LaserFlow, SwirlingGas, Globe, Hyperspeed)
+   - 1 3D (AnimatedOrb)
+2. **Layout Catalog** — 23 patterns (8 grids, 10 sections, 5 page templates)
+3. **Design Tools** — Background Studio (Pro), Particle Engine (Pro), Shader Tool (Pro), Foundation pages (Colors, Typography, Tokens, Icons)
+4. **Admin Dashboard** — KPIs, tier distribution, recent users, popular tools, MRR (Stripe)
+5. **Mobile Preview Dev Tool** — admin-only iframe-based mobile QA
+6. **Onboarding** — welcome modal + 4-step popover tour for new signups
+7. **Free-tier Trial** — 5 Base components unlockable before paywall (localStorage + Supabase hybrid)
+8. **Stripe** — Checkout, Customer Portal, hardened webhook (idempotency + invoice.payment_failed handler)
 
-### To Build / Enhance
-4. **3D Modeler Tool** — 3D model viewer/editor (referenced in Pro tier as "3D Model and Printing Forge")
-5. **Background Studio** — Customizable background generator using shader engine
-6. **Dashboard Designer** — Visual dashboard builder for users
-7. **Icon/Logo Design Studio** — SVG icon/logo creation tool
-8. **Website Tuner** — Site optimization/theming tool
-9. **Remotion Video Tool** — Social media video generation for MjolnirDesignStudios promotion + potential user-facing feature
+### Post-launch backlog
+- **3D Forge** — 3D model viewer/editor (Pro tier — currently "Coming Soon" chip)
+- **OdinAI Design Agent** — Elite tier (currently "Coming Q3 2026" badge)
+- **Dashboard Builder** — visual dashboard composer
+- **GSAP Animations** — Pro tier ("Coming Soon" chip)
+- **Custom Component Requests** — Pro tier intake form
+- **Remotion Video Pipeline** — packages installed, no components built
+- **HubSpot CRM integration** — not implemented; shared account ready
+- **Welcome email via Resend** — see /api/webhooks/stripe
 
 ## Subscription Tiers & Stripe Integration
 
@@ -122,10 +133,10 @@ app/
 **Tier Config:** Centralized in `app/lib/tierConfig.ts` — colors, price IDs, access levels, icons.
 
 **Tier Access Model:**
-- Free: Browse library, preview tools, 3 free components, community access
+- Free: Browse library, preview tools, **5 Free + Base components via trial**, community access
 - Base: Full component library, backgrounds, animations, email support
-- Pro: + GSAP, Shader Engine, 3D Forge, Dashboard Builder, commercial license
-- Elite: + OdinAI Agent, Shader Designer, dedicated engineer, source code access
+- Pro: + Shader Engine (live), Particle Engine (live), commercial license. **Coming Soon**: GSAP, 3D Forge, Custom Component Requests
+- Elite: + OdinAI Agent, source code access — **Coming Q3 2026** (locked card on pricing)
 
 ## Authentication Flow
 
@@ -138,49 +149,73 @@ app/
 
 ## Environment Variables Required
 
+See `.env.example` for the full annotated template. Categories:
+
 ```
-# Supabase
+# Supabase (required)
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 
-# NextAuth
+# NextAuth (required)
 NEXTAUTH_SECRET=
 NEXTAUTH_URL=
 
-# OAuth Providers
+# OAuth Providers (required for sign-in)
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GITHUB_CLIENT_ID=
 GITHUB_CLIENT_SECRET=
 
-# Stripe
+# Stripe (required for paid tiers)
 STRIPE_SECRET_KEY=
 STRIPE_PUBLISHABLE_KEY=
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_WEBHOOK_SECRET=
+STRIPE_PRODUCT_BASE=
+STRIPE_PRODUCT_PRO=
+STRIPE_PRODUCT_ELITE=
 
-# Resend (Email)
+# Resend transactional email (optional — welcome email skips when unset)
 RESEND_API_KEY=
+
+# Google Search Console (optional — verification meta tag omitted when unset)
+GOOGLE_SITE_VERIFICATION=
+
+# HubSpot CRM (optional — not yet integrated)
+HUBSPOT_API_KEY=
+HUBSPOT_PORTAL_ID=
+
+# Meshy 3D (optional — future 3D Forge tool)
+MESHY_API_KEY=
 ```
 
-## Critical Gaps (Pre-Launch)
+## Static Assets
 
-### Implemented ✅
-1. ~~`/api/stripe/checkout` route~~ — **DONE** (Stripe Checkout Sessions)
-2. ~~Stripe webhook handler~~ — **DONE** (`/api/webhooks/stripe` with signature verification)
-3. ~~Dashboard product display~~ — **DONE** (Tier-aware feature grid with upgrade modals)
-4. ~~User tier sync~~ — **DONE** (JWT callback fetches tier from Supabase)
-5. ~~`.env.example`~~ — **DONE**
-6. ~~Middleware fix~~ — **DONE** (Protects `/blocks/*` and `/admin/*`)
+- **Tech icons** live at `/public/SVGs/*.svg` (NOT `/public/Icons/Technologies/` — that path was a stale reference in earlier docs). 18 icons in use, ~14 extra available.
+- **Brand logos** at `/public/logos/` — multiple variants including animated MP4.
+- **Favicons** at `/public/favicon/`.
+- **OG image** generated at build time via `app/opengraph-image.tsx` (Edge runtime) — no static `/og-image.jpg` file.
 
-### Still Needed
-7. ~~Real Stripe price IDs for Pro/Elite~~ — **DONE** (all 6 IDs live)
-8. **OG image** (`/public/og-image.jpg`) — 1200×630 MjolnirUI branding image
-9. **SVG tech icons** — 30 icons needed in `/public/Icons/Technologies/`
-10. **Supabase schema** — Ensure `users` table has `tier`, `role`, `stripe_customer_id`, `stripe_subscription_id` columns
-11. **HubSpot integration** — Not implemented, shared account ready
-12. **Account management page** — Route exists in sidebar but page not built
-13. **Remotion video pipeline** — Packages installed, no components built
+## Launch Readiness (Pro launch 2026-06-01)
+
+### Money path (✅ production-ready)
+- Stripe Checkout, Customer Portal (`/api/stripe/portal`)
+- Hardened webhook with `invoice.payment_failed` handler + event-ID idempotency
+- Live billing details on subscription page (next billing, card, amount)
+- Schema migrations version-controlled: `users_billing_columns`, `stripe_webhook_events`, `free_trial_unlocks`
+
+### UX flows (✅ shipped)
+- First-run welcome modal + 4-step popover tour
+- Free-tier 5-component soft paywall (hybrid localStorage + Supabase)
+- PII guard system for the Mobile Preview dev tool
+- Mobile responsive (BottomNav + Drawer + MobileHeader)
+- Portal switcher (admin can toggle between admin/user dashboards)
+
+### Pre-launch dependencies (manual setup needed)
+- Activate Stripe Customer Portal in Stripe Dashboard
+- Subscribe webhook endpoint to `invoice.payment_failed` + `invoice.payment_succeeded`
+- Set `GOOGLE_SITE_VERIFICATION` env var in Vercel from Search Console
 
 ## Development Commands
 
