@@ -1,6 +1,6 @@
 // components/Dashboards/Sidebar.tsx — Sequential Design System Workflow
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -32,10 +32,55 @@ export type SidebarItem = {
   /** When set, the Link receives a data-onboarding="<id>" attribute so the
    *  OnboardingFlow tour can anchor a popover to this row. */
   onboardingId?: string;
-  /** Renders a small "NEW" chip next to the label. Used to highlight
-   *  recently-launched components so users discover them. */
-  isNew?: boolean;
+  /** ISO date when this item shipped. Auto-promoted into the "NEW FEATURES"
+   *  section while age < NEW_FEATURE_DAYS, then automatically removed from
+   *  the sidebar once it expires (item stays browseable via /blocks/browse).
+   *  The "NEW" chip + section membership are both derived from this. */
+  releasedAt?: string;
 };
+
+/** Items younger than this many days appear in the auto-generated
+ *  "NEW FEATURES" sidebar section. Tune up for slower content cadence,
+ *  down for faster turnover. */
+export const NEW_FEATURE_DAYS = 10;
+
+/** Returns true if the item's releasedAt is within the last
+ *  NEW_FEATURE_DAYS. Falsy or invalid releasedAt → false. */
+export function isItemNew(item: SidebarItem, now: number = Date.now()): boolean {
+  if (!item.releasedAt) return false;
+  const t = new Date(item.releasedAt).getTime();
+  if (Number.isNaN(t)) return false;
+  return now - t < NEW_FEATURE_DAYS * 24 * 60 * 60 * 1000;
+}
+
+/**
+ * Recently-shipped components surface here.
+ *
+ * USAGE:
+ *   - Adding a new component? Append a row with today's ISO date as
+ *     releasedAt. It will auto-appear in the "NEW FEATURES" sidebar
+ *     section and auto-fall-out after 10 days.
+ *   - No cron job required. The clock is just JavaScript's Date.now().
+ *   - Items always remain browseable via /blocks/browse — only the
+ *     dedicated sidebar row expires.
+ *
+ * Keep this list curated to the past few weeks. Older expired items
+ * can be cleaned out manually whenever convenient (no harm in leaving
+ * them — they just don't render).
+ */
+export const NEW_LAUNCHES: SidebarItem[] = [
+  // ── 2026-05-27 launch wave ──────────────────────────────────────
+  { name: "Mjolnir Button", href: "/blocks/browse/mjolnir-button", icon: Zap, requiredTier: "free", releasedAt: "2026-05-27" },
+  { name: "Mjolnir Modal", href: "/blocks/browse/mjolnir-modal", icon: MessageSquare, requiredTier: "base", releasedAt: "2026-05-27" },
+  { name: "Mjolnir Forms", href: "/blocks/browse/mjolnir-input", icon: FormInput, requiredTier: "free", releasedAt: "2026-05-27" },
+  { name: "Stat Card", href: "/blocks/browse/stat-card", icon: BarChart3, requiredTier: "free", releasedAt: "2026-05-27" },
+  { name: "Glass Card", href: "/blocks/browse/glass-card", icon: CreditCard, requiredTier: "free", releasedAt: "2026-05-27" },
+  { name: "Badge", href: "/blocks/browse/badge", icon: Tag, requiredTier: "free", releasedAt: "2026-05-27" },
+  { name: "Rune Loader", href: "/blocks/browse/rune-loader", icon: Loader2, requiredTier: "free", releasedAt: "2026-05-27" },
+  { name: "Wireframe Hammer", href: "/blocks/browse/wireframe-hammer", icon: Hammer, requiredTier: "free", releasedAt: "2026-05-27" },
+  { name: "Wireframe Orb", href: "/blocks/browse/wireframe-orb", icon: Orbit, requiredTier: "free", releasedAt: "2026-05-27" },
+  { name: "Wireframe Grid", href: "/blocks/browse/wireframe-grid", icon: LayoutGrid, requiredTier: "free", releasedAt: "2026-05-27" },
+];
 
 export type SidebarSection = {
   title: string;
@@ -45,24 +90,9 @@ export type SidebarSection = {
 };
 
 export const sidebarSections: SidebarSection[] = [
-  /* Highlights the most recent component launches so users immediately
-     see what's new. Each href deep-links straight into the browse detail
-     for that component. Curated — only the launch-week drops. */
-  {
-    title: "NEW THIS WEEK",
-    items: [
-      { name: "Mjolnir Button", href: "/blocks/browse/mjolnir-button", icon: Zap, requiredTier: "free", isNew: true },
-      { name: "Mjolnir Modal", href: "/blocks/browse/mjolnir-modal", icon: MessageSquare, requiredTier: "base", isNew: true },
-      { name: "Mjolnir Forms", href: "/blocks/browse/mjolnir-input", icon: FormInput, requiredTier: "free", isNew: true },
-      { name: "Stat Card", href: "/blocks/browse/stat-card", icon: BarChart3, requiredTier: "free", isNew: true },
-      { name: "Glass Card", href: "/blocks/browse/glass-card", icon: CreditCard, requiredTier: "free", isNew: true },
-      { name: "Badge", href: "/blocks/browse/badge", icon: Tag, requiredTier: "free", isNew: true },
-      { name: "Rune Loader", href: "/blocks/browse/rune-loader", icon: Loader2, requiredTier: "free", isNew: true },
-      { name: "Wireframe Hammer", href: "/blocks/browse/wireframe-hammer", icon: Hammer, requiredTier: "free", isNew: true },
-      { name: "Wireframe Orb", href: "/blocks/browse/wireframe-orb", icon: Orbit, requiredTier: "free", isNew: true },
-      { name: "Wireframe Grid", href: "/blocks/browse/wireframe-grid", icon: LayoutGrid, requiredTier: "free", isNew: true },
-    ],
-  },
+  /* "NEW FEATURES" is NOT defined here — it's auto-generated at render
+     time from NEW_LAUNCHES (above), filtered to items younger than
+     NEW_FEATURE_DAYS. See MjolnirSidebar for the merge logic. */
   {
     title: "GET STARTED",
     items: [
@@ -109,23 +139,25 @@ export const sidebarSections: SidebarSection[] = [
   },
   {
     title: "COMPONENTS",
-    /* Each item deep-links into /blocks/browse with a search filter pre-
-       applied, so clicking lands the user on a filtered catalog of the
-       matching components — not a stub category page. */
+    /* Permanent navigation — each item deep-links into /blocks/browse
+       with a search filter pre-applied. These aren't "launches"; they're
+       category entry points. New components show up in NEW FEATURES
+       (auto-generated) for 10 days, then settle into these filtered
+       category views indefinitely. */
     items: [
-      { name: "Buttons", href: "/blocks/browse?category=ui&search=button", icon: MousePointer, requiredTier: "free", isNew: true },
-      { name: "Cards", href: "/blocks/browse?category=ui&search=card", icon: CreditCard, requiredTier: "free", isNew: true },
-      { name: "Badges", href: "/blocks/browse?category=ui&search=badge", icon: Tag, requiredTier: "free", isNew: true },
-      { name: "Inputs & Forms", href: "/blocks/browse?category=ui&search=input", icon: FormInput, requiredTier: "free", isNew: true },
-      { name: "Modals & Dialogs", href: "/blocks/browse?category=ui&search=modal", icon: MessageSquare, requiredTier: "base", isNew: true },
-      { name: "Stats & Data", href: "/blocks/browse?category=ui&search=stat", icon: BarChart3, requiredTier: "free", isNew: true },
-      { name: "Loaders", href: "/blocks/browse?category=ui&search=loader", icon: Loader2, requiredTier: "free", isNew: true },
+      { name: "Buttons", href: "/blocks/browse?category=ui&search=button", icon: MousePointer, requiredTier: "free" },
+      { name: "Cards", href: "/blocks/browse?category=ui&search=card", icon: CreditCard, requiredTier: "free" },
+      { name: "Badges", href: "/blocks/browse?category=ui&search=badge", icon: Tag, requiredTier: "free" },
+      { name: "Inputs & Forms", href: "/blocks/browse?category=ui&search=input", icon: FormInput, requiredTier: "free" },
+      { name: "Modals & Dialogs", href: "/blocks/browse?category=ui&search=modal", icon: MessageSquare, requiredTier: "base" },
+      { name: "Stats & Data", href: "/blocks/browse?category=ui&search=stat", icon: BarChart3, requiredTier: "free" },
+      { name: "Loaders", href: "/blocks/browse?category=ui&search=loader", icon: Loader2, requiredTier: "free" },
     ],
   },
   {
     title: "ANIMATION",
     items: [
-      { name: "Text Effects", href: "/blocks/browse?category=ui&search=text", icon: AlignLeft, requiredTier: "free", isNew: true },
+      { name: "Text Effects", href: "/blocks/browse?category=ui&search=text", icon: AlignLeft, requiredTier: "free" },
       { name: "Transitions", href: "/blocks/animation/transitions", icon: ArrowRightLeft, requiredTier: "free" },
       { name: "Framer Motion", href: "/blocks/animation/framer", icon: Clapperboard, requiredTier: "base" },
       { name: "GSAP Animations", href: "/blocks/animation/gsap", icon: Wand2, requiredTier: "pro" },
@@ -134,10 +166,11 @@ export const sidebarSections: SidebarSection[] = [
   },
   {
     title: "3D & WEBGL",
+    /* Permanent 3D nav. Wireframe Hammer / Orb / Grid live in
+       NEW FEATURES for their 10-day window — they don't get duplicated
+       here. They remain browseable via /blocks/browse forever. */
     items: [
-      { name: "Wireframe Hammer", href: "/blocks/browse/wireframe-hammer", icon: Hammer, requiredTier: "free", isNew: true },
-      { name: "Wireframe Orb", href: "/blocks/browse/wireframe-orb", icon: Orbit, requiredTier: "free", isNew: true },
-      { name: "Wireframe Grid", href: "/blocks/browse/wireframe-grid", icon: LayoutGrid, requiredTier: "free", isNew: true },
+      { name: "Wireframes", href: "/blocks/browse?category=3d&search=wireframe", icon: Box, requiredTier: "free" },
       { name: "Animated Orbs", href: "/blocks/browse/animated-orb", icon: Orbit, requiredTier: "base" },
       { name: "3D Showcase", href: "/blocks/3d/showcase", icon: Box, requiredTier: "pro" },
       { name: "3D Forge", href: "/blocks/3d/forge", icon: Hammer, requiredTier: "pro" },
@@ -182,13 +215,36 @@ export function MjolnirSidebar() {
   const pathname = usePathname();
   const userTier = (session?.user?.tier as TierName) || 'free';
   const userRole = (session?.user as { role?: string } | undefined)?.role;
-  // Filter adminOnly sections out for non-admin users.
-  const visibleSections = sidebarSections.filter(
-    (s) => !s.adminOnly || userRole === "admin"
-  );
+  /* Build the live sidebar:
+       1. Filter the static section list by adminOnly role gate.
+       2. Compute which NEW_LAUNCHES are still "fresh" (< NEW_FEATURE_DAYS
+          old). If any exist, prepend a virtual "NEW FEATURES" section.
+       3. Re-render when the clock crosses the 10-day boundary by reading
+          Date.now() inside a useMemo gated on the day-resolution time.
+
+     Items expire automatically — once an entry's age exceeds NEW_FEATURE_DAYS,
+     it stops appearing in NEW FEATURES (and isn't duplicated anywhere else in
+     the sidebar). The component remains browseable via /blocks/browse forever.
+  */
+  // Day-resolution clock so the useMemo only re-runs when the day rolls
+  // over, not on every render.
+  const todayBucket = Math.floor(Date.now() / (24 * 60 * 60 * 1000));
+
+  const visibleSections = useMemo(() => {
+    const now = todayBucket * 24 * 60 * 60 * 1000;
+    const adminFiltered = sidebarSections.filter(
+      (s) => !s.adminOnly || userRole === "admin"
+    );
+    const liveNewItems = NEW_LAUNCHES.filter((item) => isItemNew(item, now));
+    if (liveNewItems.length === 0) return adminFiltered;
+    return [
+      { title: "NEW FEATURES", items: liveNewItems } as SidebarSection,
+      ...adminFiltered,
+    ];
+  }, [userRole, todayBucket]);
 
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(sidebarSections.map(s => s.title))
+    new Set([...sidebarSections.map((s) => s.title), "NEW FEATURES"])
   );
   const [upgradeModal, setUpgradeModal] = useState<{
     isOpen: boolean;
@@ -274,7 +330,7 @@ export function MjolnirSidebar() {
                   className="w-full flex items-center justify-between px-3 py-2 text-xs font-black text-[#FFCC11] uppercase tracking-widest hover:text-[#FFD700] transition-colors"
                 >
                   <span className="flex items-center gap-1.5">
-                    {section.title === "NEW THIS WEEK" && (
+                    {section.title === "NEW FEATURES" && (
                       <span
                         className="w-1.5 h-1.5 rounded-full bg-[#FFCC11] animate-pulse"
                         style={{ boxShadow: "0 0 6px #FFCC11" }}
@@ -310,7 +366,7 @@ export function MjolnirSidebar() {
                         >
                           <item.icon size={16} className={cn(isLocked && "opacity-40")} />
                           <span className={cn("flex-1", isLocked && "opacity-40")}>{item.name}</span>
-                          {item.isNew && !isLocked && (
+                          {isItemNew(item) && !isLocked && (
                             <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#FFCC11]/15 text-[#FFCC11] border border-[#FFCC11]/30">
                               New
                             </span>

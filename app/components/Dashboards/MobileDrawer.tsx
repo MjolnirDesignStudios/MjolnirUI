@@ -23,7 +23,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { hasAccess, getTierConfig, type TierName } from "@/lib/tierConfig";
-import { sidebarSections, accountItems, type SidebarItem } from "./Sidebar";
+import {
+  sidebarSections,
+  accountItems,
+  isItemNew,
+  NEW_LAUNCHES,
+  type SidebarItem,
+  type SidebarSection,
+} from "./Sidebar";
 import { UpgradeModal } from "./UpgradeModal";
 import { TierBadge } from "./TierBadge";
 import { PortalSwitcher } from "./PortalSwitcher";
@@ -62,8 +69,12 @@ function readRecents(): string[] {
   }
 }
 
-/** Find a SidebarItem matching a given href. Returns undefined if no match. */
+/** Find a SidebarItem matching a given href. Returns undefined if no match.
+ *  Searches NEW_LAUNCHES first so a recent visit to a fresh component
+ *  resolves to the launch entry (with releasedAt date intact). */
 function findItemByHref(href: string): SidebarItem | undefined {
+  const fromNew = NEW_LAUNCHES.find((it) => it.href === href);
+  if (fromNew) return fromNew;
   for (const section of sidebarSections) {
     const m = section.items.find((it) => it.href === href);
     if (m) return m;
@@ -79,11 +90,22 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const tierConfig = getTierConfig(userTier);
 
   // Sections visible to this user — admin-only sections (e.g. DEV TOOLS)
-  // are filtered out for everyone except role === "admin".
-  const visibleSections = useMemo(
-    () => sidebarSections.filter((s) => !s.adminOnly || userRole === "admin"),
-    [userRole]
-  );
+  // are filtered out for everyone except role === "admin". Also injects
+  // a dynamic "NEW FEATURES" section at the top containing any
+  // NEW_LAUNCHES that are still within the 10-day window.
+  const todayBucket = Math.floor(Date.now() / (24 * 60 * 60 * 1000));
+  const visibleSections = useMemo(() => {
+    const now = todayBucket * 24 * 60 * 60 * 1000;
+    const adminFiltered = sidebarSections.filter(
+      (s) => !s.adminOnly || userRole === "admin"
+    );
+    const liveNewItems = NEW_LAUNCHES.filter((item) => isItemNew(item, now));
+    if (liveNewItems.length === 0) return adminFiltered;
+    return [
+      { title: "NEW FEATURES", items: liveNewItems } as SidebarSection,
+      ...adminFiltered,
+    ];
+  }, [userRole, todayBucket]);
 
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState("");
@@ -347,7 +369,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                               <span className={cn("flex-1 truncate text-xs", isLocked && "opacity-50")}>
                                 {item.name}
                               </span>
-                              {item.isNew && !isLocked && (
+                              {isItemNew(item) && !isLocked && (
                                 <span className="text-[8px] font-bold uppercase tracking-wider px-1 py-0.5 rounded bg-[#FFCC11]/15 text-[#FFCC11] border border-[#FFCC11]/30 shrink-0">
                                   New
                                 </span>
@@ -435,7 +457,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                                       >
                                         {item.name}
                                       </span>
-                                      {item.isNew && !isLocked && (
+                                      {isItemNew(item) && !isLocked && (
                                         <span className="text-[8px] font-bold uppercase tracking-wider px-1 py-0.5 rounded bg-[#FFCC11]/15 text-[#FFCC11] border border-[#FFCC11]/30 shrink-0">
                                           New
                                         </span>
