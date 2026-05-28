@@ -75,6 +75,10 @@ const FlipCardDemo = () => (
 const AccordionPlaceholder = () => <div className="flex items-center justify-center h-full text-gray-500 text-sm">Accordion — Coming Soon</div>;
 // 3D
 const AnimatedOrb = dyn(() => import("@/components/ui/AnimatedOrb"));
+// Wireframes — recordable for video, also Free-tier showpieces.
+const WireframeHammer = dyn(() => import("@/components/mjolnirui/wireframes/WireframeHammer").then(m => ({ default: m.WireframeHammer })));
+const WireframeOrbDyn = dyn(() => import("@/components/mjolnirui/wireframes/WireframeOrb").then(m => ({ default: m.WireframeOrb })));
+const WireframeGrid = dyn(() => import("@/components/mjolnirui/wireframes/WireframeGrid").then(m => ({ default: m.WireframeGrid })));
 
 /* ── New UI primitives (Sprint A — 2026-05-27) ──────────────────── */
 /* These primitives all need a parent that supplies content. We render
@@ -509,6 +513,9 @@ COMPONENT_MAP["stat-card"] = StatCardDemo;
 COMPONENT_MAP["mjolnir-input"] = MjolnirInputDemo;
 COMPONENT_MAP["mjolnir-select"] = MjolnirSelectDemo;
 COMPONENT_MAP["mjolnir-modal"] = MjolnirModalDemo;
+COMPONENT_MAP["wireframe-hammer"] = WireframeHammer;
+COMPONENT_MAP["wireframe-orb"] = WireframeOrbDyn;
+COMPONENT_MAP["wireframe-grid"] = WireframeGrid;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 /* ── Controls Panel ─────────────────────────────────── */

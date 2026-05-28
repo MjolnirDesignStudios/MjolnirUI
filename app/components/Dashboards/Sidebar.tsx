@@ -58,6 +58,9 @@ export const sidebarSections: SidebarSection[] = [
       { name: "Glass Card", href: "/blocks/browse/glass-card", icon: CreditCard, requiredTier: "free", isNew: true },
       { name: "Badge", href: "/blocks/browse/badge", icon: Tag, requiredTier: "free", isNew: true },
       { name: "Rune Loader", href: "/blocks/browse/rune-loader", icon: Loader2, requiredTier: "free", isNew: true },
+      { name: "Wireframe Hammer", href: "/blocks/browse/wireframe-hammer", icon: Hammer, requiredTier: "free", isNew: true },
+      { name: "Wireframe Orb", href: "/blocks/browse/wireframe-orb", icon: Orbit, requiredTier: "free", isNew: true },
+      { name: "Wireframe Grid", href: "/blocks/browse/wireframe-grid", icon: LayoutGrid, requiredTier: "free", isNew: true },
     ],
   },
   {
@@ -132,7 +135,10 @@ export const sidebarSections: SidebarSection[] = [
   {
     title: "3D & WEBGL",
     items: [
-      { name: "Animated Orbs", href: "/blocks/3d/orbs", icon: Orbit, requiredTier: "base" },
+      { name: "Wireframe Hammer", href: "/blocks/browse/wireframe-hammer", icon: Hammer, requiredTier: "free", isNew: true },
+      { name: "Wireframe Orb", href: "/blocks/browse/wireframe-orb", icon: Orbit, requiredTier: "free", isNew: true },
+      { name: "Wireframe Grid", href: "/blocks/browse/wireframe-grid", icon: LayoutGrid, requiredTier: "free", isNew: true },
+      { name: "Animated Orbs", href: "/blocks/browse/animated-orb", icon: Orbit, requiredTier: "base" },
       { name: "3D Showcase", href: "/blocks/3d/showcase", icon: Box, requiredTier: "pro" },
       { name: "3D Forge", href: "/blocks/3d/forge", icon: Hammer, requiredTier: "pro" },
     ],
@@ -256,7 +262,7 @@ export function MjolnirSidebar() {
             )}
           >
             <Layers size={16} />
-            <span>Browse All (53)</span>
+            <span>Browse All (56)</span>
           </Link>
 
           {visibleSections.map((section) => {

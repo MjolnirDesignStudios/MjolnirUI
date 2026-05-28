@@ -36,16 +36,20 @@ export interface ComponentMeta {
 }
 
 /* ═══════════════════════════════════════════════════════
-   COMPONENT REGISTRY — 53 Components
-     · 1 3D
+   COMPONENT REGISTRY — 56 Components
+     · 4 3D / Wireframe (incl. wireframe-hammer, wireframe-orb,
+       wireframe-grid — recordable for video production)
      · 11 animations
      · 16 backgrounds
      · 25 UI (text effects, buttons, cards, badges, loaders, stats,
             forms, modals)
    ═══════════════════════════════════════════════════════ */
 export const COMPONENT_REGISTRY: ComponentMeta[] = [
-  // ── 3D (1) ──────────────────────────────────────────
+  // ── 3D / WIREFRAME (4) ──────────────────────────────
   { id: "animated-orb", name: "Animated Orb", description: "React Three Fiber 3D orb with particles and orbit controls", category: "3d", requiredTier: "base", tech: ["r3f"], importPath: "@/components/ui/AnimatedOrb", hasCSS: false },
+  { id: "wireframe-hammer", name: "Wireframe Hammer", description: "Procedural Mjolnir hammer in wireframe mesh — rotates by default, programmable strike interval. Built for video keyframing.", category: "3d", requiredTier: "free", tech: ["r3f", "three"], importPath: "@/components/mjolnirui/wireframes/WireframeHammer", hasCSS: false, isNew: true, isPopular: true },
+  { id: "wireframe-orb", name: "Wireframe Orb", description: "Rotating wireframe icosahedron with expanding pulse rings — Mjolnir energy core aesthetic for video intros.", category: "3d", requiredTier: "free", tech: ["r3f", "three"], importPath: "@/components/mjolnirui/wireframes/WireframeOrb", hasCSS: false, isNew: true },
+  { id: "wireframe-grid", name: "Wireframe Grid", description: "Tron-style infinite perspective floor with custom GLSL shader, scrolling toward camera with optional horizon sun.", category: "3d", requiredTier: "free", tech: ["r3f", "three", "glsl"], importPath: "@/components/mjolnirui/wireframes/WireframeGrid", hasCSS: false, isNew: true },
 
   // ── ANIMATIONS (12) — A-Z ─────────────────────────────
   { id: "atmosphere", name: "Atmosphere", description: "Atmospheric particle cloud with tsparticles engine", category: "animations", requiredTier: "base", tech: ["tsparticles"], importPath: "@/components/mjolnirui/animations/atmosphere/Atmosphere", hasCSS: false },
