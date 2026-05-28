@@ -60,11 +60,9 @@ const tiers: {
     features: [
       { text: "Full Component Library" },
       { text: "Background Studio" },
-      { text: "Basic Animations" },
       { text: "Electric Effects" },
       { text: "Animated Orbs" },
       { text: "Email Support 24/7" },
-      { text: "Lifetime Updates" },
     ],
   },
   {
@@ -77,10 +75,7 @@ const tiers: {
       { text: "Everything in Base" },
       { text: "Shader Engine" },
       { text: "Particle Engine" },
-      { text: "Advanced GSAP Animations", comingSoon: true },
       { text: "3D Forge Pro", comingSoon: true },
-      { text: "Dashboard Builder", comingSoon: true },
-      { text: "Custom Components", comingSoon: true },
       { text: "Commercial License" },
     ],
   },
@@ -93,11 +88,9 @@ const tiers: {
     features: [
       { text: "Everything in Pro" },
       { text: "OdinAI Design Agent", comingSoon: true },
-      { text: "Asgardian Shader Engine", comingSoon: true },
       { text: "3D Forge Elite", comingSoon: true },
       { text: "Custom Development", comingSoon: true },
       { text: "Full Source Code Access", comingSoon: true },
-      { text: "Beta Test New Features", comingSoon: true },
     ],
     comingSoonBadge: "Coming Q3 2026",
   },
@@ -272,24 +265,28 @@ export default function SubscriptionPage() {
 
               {/* Features — lightning bolt icons. Coming-soon items render
                   with a dim icon, gray text, and an inline "Soon" chip so
-                  users see what is and isn't deliverable on launch day. */}
+                  users see what is and isn't deliverable on launch day.
+                  Each bullet is locked to 1 line via whitespace-nowrap +
+                  truncate so narrow viewports don't break the card grid. */}
               <ul className="space-y-2.5 flex-1 mb-6">
                 {t.features.map((f) => (
                   <li
                     key={f.text}
-                    className={`flex items-start gap-2 text-sm ${
+                    className={`flex items-center gap-2 text-sm ${
                       f.comingSoon ? "text-gray-400" : "text-gray-300"
                     }`}
                   >
                     <Zap
                       size={14}
-                      className="shrink-0 mt-0.5"
+                      className="shrink-0"
                       style={{
                         color: f.comingSoon ? "#71717a" : t.color,
                         opacity: f.comingSoon ? 0.55 : 1,
                       }}
                     />
-                    <span className="flex-1">{f.text}</span>
+                    <span className="flex-1 whitespace-nowrap truncate">
+                      {f.text}
+                    </span>
                     {f.comingSoon && (
                       <span
                         className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border whitespace-nowrap shrink-0"

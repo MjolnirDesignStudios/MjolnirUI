@@ -99,9 +99,7 @@ const tierCopy: TierCopy[] = [
       { text: "Everything in Base" },
       { text: "Shader Engine" },
       { text: "Particle Engine" },
-      { text: "Advanced GSAP Animations", comingSoon: true },
       { text: "3D Forge", comingSoon: true },
-      { text: "Custom Component Requests", comingSoon: true },
       { text: "Commercial License" },
     ],
     buttonText: "Upgrade to Pro",
@@ -285,7 +283,9 @@ export default function Pricing() {
                               opacity: f.comingSoon ? 0.6 : 1,
                             }}
                           />
-                          <span className="flex-1">{f.text}</span>
+                          <span className="flex-1 whitespace-nowrap truncate">
+                            {f.text}
+                          </span>
                           {f.comingSoon && (
                             <span
                               className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border whitespace-nowrap shrink-0"
