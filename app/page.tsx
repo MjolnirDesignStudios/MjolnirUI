@@ -1,18 +1,27 @@
+import dynamic from 'next/dynamic';
 import ShaderBG_Type1 from '@/components/ShaderBG_Type1';
 import Navbar_V2 from '@/components/Navigation/Navbar_V2';
 import { FloatingNav } from '@/components/Navigation/FloatingNav';
 import Footer from '@/components/Footer';
 import Hero from '@/components/Hero';
-import About from '@/components/About';
-import Build from '@/components/Build';
-import Demo from '@/components/Demo';
-import Pricing from '@/components/Pricing';
-import Tech from '@/components/Tech';
+import { LazyMount } from '@/components/LazyMount';
+
+/* Below-the-fold sections — dynamic imports keep them out of the
+   initial bundle, and LazyMount waits until the user scrolls within
+   400px before mounting + hydrating. Hero stays eagerly imported so
+   the above-the-fold paint is instant. */
+const About = dynamic(() => import('@/components/About'), { ssr: false });
+const Build = dynamic(() => import('@/components/Build'), { ssr: false });
+const Demo = dynamic(() => import('@/components/Demo'), { ssr: false });
+const Pricing = dynamic(() => import('@/components/Pricing'), { ssr: false });
+const Tech = dynamic(() => import('@/components/Tech'), { ssr: false });
 
 export default function Home() {
 	return (
 		<main className="relative min-h-screen overflow-x-hidden">
-			{/* Background Layer - Shader BG behind everything */}
+			{/* Background Layer - Shader BG behind everything. Self-throttles
+			    to 30fps and pauses when the user scrolls > 1.5 viewports
+			    deep (see ShaderBG_Type1.tsx). */}
 			<ShaderBG_Type1 />
 
 			{/* Navigation Layer - Above BG, below content */}
@@ -28,25 +37,29 @@ export default function Home() {
 			{/* Content Layer - Above BG and Nav, main page content */}
 			<div className="relative z-10">
 				<div className="bg-transparent w-full">
-					{/* Hero Section */}
+					{/* Hero — above-the-fold, mounts eagerly */}
 					<Hero />
 
-					{/* About Section — BentoGrid feature highlights */}
-					<About />
+					{/* Everything below the fold is dynamic-imported and
+					    LazyMount-gated. First paint stays light; sections
+					    hydrate on demand as the user scrolls. */}
+					<LazyMount>
+						<About />
+					</LazyMount>
+					<LazyMount>
+						<Build />
+					</LazyMount>
+					<LazyMount>
+						<Demo />
+					</LazyMount>
+					<LazyMount>
+						<Pricing />
+					</LazyMount>
+					<LazyMount>
+						<Tech />
+					</LazyMount>
 
-					{/* Build Section — Founder's Kit */}
-					<Build />
-
-					{/* Demo Section — Dashboard Preview */}
-					<Demo />
-
-					{/* Pricing Section */}
-					<Pricing />
-
-					{/* Tech Section */}
-					<Tech />
-
-					{/* Footer - At the bottom */}
+					{/* Footer - At the bottom, kept eager since it's small. */}
 					<Footer />
 				</div>
 			</div>

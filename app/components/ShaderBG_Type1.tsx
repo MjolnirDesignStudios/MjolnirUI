@@ -126,16 +126,87 @@ export default function ShaderBG_Type1({
     window.addEventListener("resize", handleResize);
     handleResize();
 
+    /* Performance gates:
+       1. Pause render loop entirely when the canvas isn't intersecting
+          the viewport (user scrolled past). Resume on re-intersect.
+       2. Throttle to ~30fps via frame skipping — ambient backgrounds
+          look identical at 30fps but cost half the GPU.
+       3. Respect prefers-reduced-motion — render a single frame and stop. */
+
     const clock = new THREE.Clock();
-    const animate = () => {
-      uniforms.iTime.value = clock.getElapsedTime();
-      renderer.render(scene, camera);
-      frameRef.current = requestAnimationFrame(animate);
+    let isVisible = true;
+    let isReducedMotion = false;
+    let lastRenderTime = 0;
+    const FRAME_BUDGET_MS = 1000 / 30; // ~33ms = 30fps cap
+
+    if (typeof window !== "undefined" && window.matchMedia) {
+      isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+
+    const animate = (now: number) => {
+      // Skip frames to stay under the 30fps budget.
+      if (now - lastRenderTime >= FRAME_BUDGET_MS) {
+        uniforms.iTime.value = clock.getElapsedTime();
+        renderer.render(scene, camera);
+        lastRenderTime = now;
+      }
+      // Only schedule the next frame if we're actually on-screen and
+      // motion isn't suppressed.
+      if (isVisible && !isReducedMotion) {
+        frameRef.current = requestAnimationFrame(animate);
+      } else {
+        frameRef.current = null;
+      }
     };
-    animate();
+
+    /* Kick off one render so the background paints immediately even if
+       motion is reduced. */
+    uniforms.iTime.value = 0;
+    renderer.render(scene, camera);
+
+    if (!isReducedMotion) {
+      frameRef.current = requestAnimationFrame(animate);
+    }
+
+    /* Scroll-based gating: the container is position:fixed so it always
+       intersects the viewport — IntersectionObserver would never trigger.
+       Instead, watch scrollY: when the user is more than ~1.5 viewports
+       deep, the shader is visually obscured by content above it, so
+       there's no point rendering. Resume when scrolled back up. */
+    const onScroll = () => {
+      const wasVisible = isVisible;
+      const pastFold = window.scrollY > window.innerHeight * 1.5;
+      isVisible = !pastFold;
+      if (
+        isVisible &&
+        !wasVisible &&
+        frameRef.current === null &&
+        !isReducedMotion
+      ) {
+        frameRef.current = requestAnimationFrame(animate);
+      }
+    };
+    /* Also pause when the tab is backgrounded. */
+    const onVisibilityChange = () => {
+      const wasVisible = isVisible;
+      isVisible = !document.hidden && window.scrollY <= window.innerHeight * 1.5;
+      if (
+        isVisible &&
+        !wasVisible &&
+        frameRef.current === null &&
+        !isReducedMotion
+      ) {
+        frameRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
       if (rendererRef.current?.domElement?.parentNode) {
         container.removeChild(rendererRef.current.domElement);
