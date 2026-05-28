@@ -20,7 +20,18 @@ const vertexShader = `
   }
 `;
 
-const fragmentShader = `
+/* Fragment shader with compile-time iteration counts. GLSL `for` loops
+   need constant bounds for best perf — runtime uniforms force the GPU
+   to plan for the worst case. We compile two variants and pick at
+   runtime based on viewport width.
+
+   HIGH (desktop ≥ 768px):  outer 10 × inner 3 = 30 iterations per pixel
+   LOW  (mobile  < 768px):  outer  6 × inner 2 = 12 iterations per pixel
+
+   The mobile path also boosts u_brightness slightly to compensate for
+   fewer accumulation steps so the visual character matches. */
+function buildFragmentShader(outerSteps: number, innerSteps: number): string {
+  return `
   precision highp float;
 
   uniform float iTime;
@@ -39,11 +50,11 @@ const fragmentShader = `
   void mainImage(out vec4 O, vec2 I) {
     float z = 0.0, d, i = 0.0;
     O = vec4(0.0);
-    for(float step = 0.0; step < 10.0; step++) {  // Reduced from 15.0 for better performance
+    for(float step = 0.0; step < ${outerSteps.toFixed(1)}; step++) {
       i = step;
       vec3 p = z * normalize(vec3(I + I, 0) - iResolution.xyx) + 0.1 * u_depth;
       p = vec3(atan(p.y / 0.2, p.x) * 2.0, p.z / 3.0, length(p.xy) - 5.0 - z * 0.2);
-      for(float turb = 0.0; turb < 3.0; turb++) {  // Reduced from 5.0 for better performance
+      for(float turb = 0.0; turb < ${innerSteps.toFixed(1)}; turb++) {
         p += sin(p.yzx * (turb + 1.0) + iTime * u_speed + 0.3 * i * u_turbulence) / (turb + 1.0);
       }
       d = length(vec4(0.4 * cos(p) - 0.4, p.z));
@@ -59,6 +70,10 @@ const fragmentShader = `
     mainImage(gl_FragColor, vUv * iResolution.xy);
   }
 `;
+}
+
+const fragmentShaderHigh = buildFragmentShader(10, 3);
+const fragmentShaderLow = buildFragmentShader(6, 2);
 
 export default function ShaderBG_Type1({
   className,
@@ -81,20 +96,26 @@ export default function ShaderBG_Type1({
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const geometry = new THREE.PlaneGeometry(2, 2);
 
+    /* Quality tier: mobile gets the LOW shader variant + boosted
+       brightness to compensate for fewer accumulation steps. */
+    const isMobile = window.innerWidth < 768;
+    const qualityFragment = isMobile ? fragmentShaderLow : fragmentShaderHigh;
+    const qualityBrightness = isMobile ? brightness * 1.5 : brightness;
+
     const uniforms = {
       iTime: { value: 0 },
       iResolution: { value: new THREE.Vector3() },
       u_speed: { value: speed },
       u_turbulence: { value: turbulence },
       u_depth: { value: depth },
-      u_brightness: { value: brightness },
+      u_brightness: { value: qualityBrightness },
       u_colorShift: { value: colorShift },
     };
 
     const material = new THREE.ShaderMaterial({
       uniforms,
       vertexShader,
-      fragmentShader,
+      fragmentShader: qualityFragment,
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
@@ -108,7 +129,10 @@ export default function ShaderBG_Type1({
       alpha: true,
       powerPreference: "high-performance",
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Reduced for smoother performance
+    /* DPR cap: 1.0 on mobile (33% fewer pixels than 1.5), 1.5 on desktop.
+       The Bifrost shader is heavy enough that even retina laptops can
+       feel the difference between 1.5 and 2.0 — this cap is a major win. */
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.0 : 1.5));
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
