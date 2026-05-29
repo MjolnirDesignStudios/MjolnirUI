@@ -21,18 +21,33 @@ declare module 'next-auth' {
 
 export const nextAuthOptions = {
   providers: [
+    /* allowDangerousEmailAccountLinking: true
+       Necessary for the MDS cross-grant flow: the Stripe webhook
+       pre-creates a next_auth.users row by email (from the verified
+       Stripe customer record) when an MDS subscriber doesn't yet have
+       a MjolnirUI account. When they sign in via Google/GitHub, NextAuth
+       needs to link the OAuth identity to the pre-created row instead
+       of refusing with "OAuthAccountNotLinked".
+
+       The "dangerous" framing applies to email-takeover attacks where
+       an attacker pre-registers with someone else's email; here the
+       email source is Stripe's verified customer record, so the attack
+       vector doesn't apply. See app/lib/mdsEntitlements.ts. */
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      allowDangerousEmailAccountLinking: true,
     }),
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID || '',
       clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
+      allowDangerousEmailAccountLinking: true,
     }),
     TwitterProvider({
       clientId: process.env.TWITTER_CLIENT_ID || '',
       clientSecret: process.env.TWITTER_CLIENT_SECRET || '',
       version: '2.0',
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
   // Only construct the SupabaseAdapter when env vars are actually present.
