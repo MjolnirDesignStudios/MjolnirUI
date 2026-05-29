@@ -9,12 +9,18 @@ import { LazyMount } from '@/components/LazyMount';
 /* Below-the-fold sections — dynamic imports keep them out of the
    initial bundle, and LazyMount waits until the user scrolls within
    400px before mounting + hydrating. Hero stays eagerly imported so
-   the above-the-fold paint is instant. */
-const About = dynamic(() => import('@/components/About'), { ssr: false });
-const Build = dynamic(() => import('@/components/Build'), { ssr: false });
-const Demo = dynamic(() => import('@/components/Demo'), { ssr: false });
-const Pricing = dynamic(() => import('@/components/Pricing'), { ssr: false });
-const Tech = dynamic(() => import('@/components/Tech'), { ssr: false });
+   the above-the-fold paint is instant.
+
+   NEXT.JS 16 NOTE: `ssr: false` is forbidden on next/dynamic in a
+   Server Component (this file). We leave ssr at its default (true) —
+   the perf win is preserved because LazyMount returns its placeholder
+   on both SSR + first client paint until IntersectionObserver fires.
+   The dynamic chunks still code-split out of the initial bundle. */
+const About = dynamic(() => import('@/components/About'));
+const Build = dynamic(() => import('@/components/Build'));
+const Demo = dynamic(() => import('@/components/Demo'));
+const Pricing = dynamic(() => import('@/components/Pricing'));
+const Tech = dynamic(() => import('@/components/Tech'));
 
 export default function Home() {
 	return (
