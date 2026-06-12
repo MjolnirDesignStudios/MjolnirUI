@@ -69,13 +69,19 @@ export function isItemNew(item: SidebarItem, now: number = Date.now()): boolean 
  * them — they just don't render).
  */
 export const NEW_LAUNCHES: SidebarItem[] = [
-  // ── 2026-06-11 charts pack ──────────────────────────────────────
+  // ── 2026-06-11 data viz pack ────────────────────────────────────
   { name: "Bar Chart", href: "/blocks/browse/bar-chart", icon: BarChart3, requiredTier: "base", releasedAt: "2026-06-11" },
   { name: "Line Chart", href: "/blocks/browse/line-chart", icon: BarChart3, requiredTier: "base", releasedAt: "2026-06-11" },
   { name: "Area Chart", href: "/blocks/browse/area-chart", icon: BarChart3, requiredTier: "base", releasedAt: "2026-06-11" },
   { name: "Donut Chart", href: "/blocks/browse/donut-chart", icon: BarChart3, requiredTier: "base", releasedAt: "2026-06-11" },
   { name: "Sparkline", href: "/blocks/browse/sparkline", icon: BarChart3, requiredTier: "base", releasedAt: "2026-06-11" },
   { name: "Radial Bar", href: "/blocks/browse/radial-bar", icon: BarChart3, requiredTier: "base", releasedAt: "2026-06-11" },
+  // ── 2026-06-11 dashboard primitives ─────────────────────────────
+  { name: "Data Table", href: "/blocks/browse/data-table", icon: LayoutGrid, requiredTier: "base", releasedAt: "2026-06-11" },
+  { name: "Heatmap", href: "/blocks/browse/heatmap", icon: LayoutGrid, requiredTier: "base", releasedAt: "2026-06-11" },
+  { name: "Progress Bar", href: "/blocks/browse/progress-bar", icon: Layers, requiredTier: "free", releasedAt: "2026-06-11" },
+  { name: "Skeleton", href: "/blocks/browse/skeleton", icon: Layers, requiredTier: "free", releasedAt: "2026-06-11" },
+  { name: "Avatar", href: "/blocks/browse/avatar", icon: User, requiredTier: "free", releasedAt: "2026-06-11" },
 ];
 
 export type SidebarSection = {
@@ -315,7 +321,7 @@ export function MjolnirSidebar() {
             )}
           >
             <Layers size={16} />
-            <span>Browse All (62)</span>
+            <span>Browse All (67)</span>
           </Link>
 
           {visibleSections.map((section) => {

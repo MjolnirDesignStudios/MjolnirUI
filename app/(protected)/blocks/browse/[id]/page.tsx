@@ -591,6 +591,155 @@ const RadialBarDemo = dyn(() =>
   }))
 );
 
+/* ── Tranche 2 (2026-06-11) ──────────────────────────────────── */
+
+const DataTableDemo = dyn(() =>
+  import("@/components/ui/DataTable").then((m) => ({
+    default: () => {
+      const rows = [
+        { id: 1, name: "Thor Odinson", email: "thor@example.test", tier: "Elite", mrr: 50, active: true },
+        { id: 2, name: "Lady Sif", email: "sif@example.test", tier: "Pro", mrr: 25, active: true },
+        { id: 3, name: "Loki Laufeyson", email: "loki@example.test", tier: "Pro", mrr: 25, active: false },
+        { id: 4, name: "Heimdall", email: "heimdall@example.test", tier: "Base", mrr: 10, active: true },
+        { id: 5, name: "Freya", email: "freya@example.test", tier: "Base", mrr: 10, active: true },
+        { id: 6, name: "Balder", email: "balder@example.test", tier: "Free", mrr: 0, active: true },
+      ];
+      return (
+        <div className="flex items-center justify-center w-full h-full p-6">
+          <div className="w-full max-w-3xl">
+            <m.MjolnirDataTable
+              data={rows}
+              columns={[
+                { key: "name", header: "Name", sortable: true },
+                { key: "email", header: "Email", mono: true, dim: true, sortable: true },
+                { key: "tier", header: "Tier", sortable: true },
+                {
+                  key: "mrr",
+                  header: "MRR",
+                  align: "right",
+                  sortable: true,
+                  mono: true,
+                  format: (v) => (v === 0 ? "—" : `$${v}`),
+                },
+                {
+                  key: "active",
+                  header: "Status",
+                  align: "center",
+                  render: (r) => (
+                    <span className={r.active ? "text-emerald-400" : "text-gray-500"}>
+                      {r.active ? "● Active" : "○ Idle"}
+                    </span>
+                  ),
+                },
+              ]}
+              onRowClick={(r) => console.log("row clicked", r)}
+            />
+          </div>
+        </div>
+      );
+    },
+  }))
+);
+
+const HeatmapDemo = dyn(() =>
+  import("@/components/ui/Heatmap").then((m) => ({
+    default: () => {
+      // Generate 1 year of sample data with deterministic-ish pattern.
+      const today = new Date();
+      const data: { date: string; value: number }[] = [];
+      for (let i = 0; i < 365; i++) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        const iso = d.toISOString().slice(0, 10);
+        // Weekday bias + monthly clusters.
+        const dow = d.getDay();
+        const isWeekend = dow === 0 || dow === 6;
+        const seed = (d.getDate() * 7 + d.getMonth() * 13) % 17;
+        const value = isWeekend ? Math.max(0, seed - 13) : Math.max(0, seed - 6 + Math.floor((i % 11) / 3));
+        data.push({ date: iso, value });
+      }
+      return (
+        <div className="flex items-center justify-center w-full h-full p-6">
+          <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-5">
+            <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
+              Contribution activity · last 12 months
+            </div>
+            <m.MjolnirHeatmap data={data} weeks={52} variant="thunder" />
+          </div>
+        </div>
+      );
+    },
+  }))
+);
+
+const ProgressBarDemo = dyn(() =>
+  import("@/components/ui/ProgressBar").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-8">
+        <div className="w-full max-w-md space-y-6">
+          <m.MjolnirProgressBar
+            value={72}
+            variant="thunder"
+            label="Determinate · Project completion"
+            showValue
+          />
+          <m.MjolnirProgressBar
+            mode="indeterminate"
+            variant="storm"
+            label="Indeterminate · Syncing your library"
+          />
+          <m.MjolnirProgressBar
+            mode="segmented"
+            value={60}
+            variant="bifrost"
+            label="Segmented · Tier progress (3 of 5)"
+            segments={5}
+            showValue
+            height={10}
+          />
+        </div>
+      </div>
+    ),
+  }))
+);
+
+const SkeletonDemo = dyn(() =>
+  import("@/components/ui/Skeleton").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-8">
+        <div className="w-full max-w-md space-y-5">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-3">
+              <m.MjolnirSkeleton shape="circle" size={40} />
+              <div className="flex-1 space-y-2">
+                <m.MjolnirSkeleton shape="text" w="60%" />
+                <m.MjolnirSkeleton shape="text" w="40%" h={8} />
+              </div>
+              <m.MjolnirSkeleton shape="box" w={64} h={28} radius={8} />
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  }))
+);
+
+const AvatarDemo = dyn(() =>
+  import("@/components/ui/Avatar").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-8 gap-8 flex-wrap">
+        <div className="flex items-end gap-4">
+          <m.MjolnirAvatar name="Thor Odinson" size="xs" tier="elite" status="online" />
+          <m.MjolnirAvatar name="Lady Sif" size="sm" tier="pro" status="online" />
+          <m.MjolnirAvatar name="Loki" size="md" tier="pro" status="away" />
+          <m.MjolnirAvatar name="Heimdall Gatekeeper" size="lg" tier="base" status="busy" />
+          <m.MjolnirAvatar name="Freya" size="xl" tier="free" status="offline" />
+        </div>
+      </div>
+    ),
+  }))
+);
+
 const StatCardDemo = dyn(() =>
   Promise.all([
     import("@/components/ui/StatCard"),
@@ -702,6 +851,11 @@ COMPONENT_MAP["area-chart"] = AreaChartDemo;
 COMPONENT_MAP["donut-chart"] = DonutChartDemo;
 COMPONENT_MAP["sparkline"] = SparklineDemo;
 COMPONENT_MAP["radial-bar"] = RadialBarDemo;
+COMPONENT_MAP["data-table"] = DataTableDemo;
+COMPONENT_MAP["heatmap"] = HeatmapDemo;
+COMPONENT_MAP["progress-bar"] = ProgressBarDemo;
+COMPONENT_MAP["skeleton"] = SkeletonDemo;
+COMPONENT_MAP["avatar"] = AvatarDemo;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 /* ── Controls Panel ─────────────────────────────────── */

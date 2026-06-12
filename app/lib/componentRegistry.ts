@@ -36,12 +36,13 @@ export interface ComponentMeta {
 }
 
 /* ═══════════════════════════════════════════════════════
-   COMPONENT REGISTRY — 62 Components
+   COMPONENT REGISTRY — 67 Components
      · 4 3D / Wireframe
      · 11 animations
      · 16 backgrounds
-     · 31 UI (text effects, buttons, cards, badges, loaders, stats,
-            forms, modals, 6-chart data viz pack)
+     · 36 UI (text effects, buttons, cards, badges, loaders, stats,
+            forms, modals, 6-chart data viz pack, data table, heatmap,
+            progress, skeleton, avatar)
    ═══════════════════════════════════════════════════════ */
 export const COMPONENT_REGISTRY: ComponentMeta[] = [
   // ── 3D / WIREFRAME (4) ──────────────────────────────
@@ -109,6 +110,11 @@ export const COMPONENT_REGISTRY: ComponentMeta[] = [
   { id: "donut-chart", name: "Donut Chart", description: "Distribution donut / pie with center label slot, 5 accent palettes, right or bottom legend", category: "ui", requiredTier: "base", tech: ["framer-motion"], importPath: "@/components/ui/charts/DonutChart", hasCSS: false, isNew: true },
   { id: "sparkline", name: "Sparkline", description: "Tiny inline trend chart — line or bars mode. Drops into StatCards, table cells, anywhere", category: "ui", requiredTier: "base", tech: ["framer-motion"], importPath: "@/components/ui/charts/Sparkline", hasCSS: false, isNew: true },
   { id: "radial-bar", name: "Radial Bar", description: "Circular progress gauge with center label slot — performance scores, KPI dials, conversion rates", category: "ui", requiredTier: "base", tech: ["framer-motion"], importPath: "@/components/ui/charts/RadialBar", hasCSS: false, isNew: true },
+  { id: "data-table", name: "Data Table", description: "Sortable, configurable table — column-level alignment / mono / format / render slot, density toggle, sticky header, row click", category: "ui", requiredTier: "base", tech: ["css"], importPath: "@/components/ui/DataTable", hasCSS: false, isNew: true, isPopular: true },
+  { id: "heatmap", name: "Heatmap", description: "GitHub contribution-style activity grid — 52 weeks × 7 days, intensity ramp from value distribution, hover tooltip", category: "ui", requiredTier: "base", tech: ["css"], importPath: "@/components/ui/Heatmap", hasCSS: false, isNew: true },
+  { id: "progress-bar", name: "Progress Bar", description: "Linear progress with 3 modes (determinate / indeterminate / segmented) and 5 brand variants", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/ProgressBar", hasCSS: false, isNew: true },
+  { id: "skeleton", name: "Skeleton", description: "Loading placeholder primitives — text / box / circle with subtle shimmer", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/Skeleton", hasCSS: false, isNew: true },
+  { id: "avatar", name: "Avatar", description: "Circle profile with image, auto-initials fallback, tier-color ring, and optional status dot", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/Avatar", hasCSS: false, isNew: true, isPopular: true },
   { id: "shiny-text", name: "Shiny Text", description: "Lustrous text with travelling specular highlight", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/ShinyText", hasCSS: false, isNew: true },
   { id: "text-reveal", name: "Text Reveal", description: "Character-by-character text reveal with blur effects", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/TextReveal", hasCSS: false },
   { id: "typewriter-text", name: "Typewriter Text", description: "Character-by-character typing with blinking cursor and string cycling", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/TypewriterText", hasCSS: false, isNew: true },
