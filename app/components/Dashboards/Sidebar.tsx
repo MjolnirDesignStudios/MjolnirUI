@@ -69,17 +69,13 @@ export function isItemNew(item: SidebarItem, now: number = Date.now()): boolean 
  * them — they just don't render).
  */
 export const NEW_LAUNCHES: SidebarItem[] = [
-  // ── 2026-05-27 launch wave ──────────────────────────────────────
-  { name: "Mjolnir Button", href: "/blocks/browse/mjolnir-button", icon: Zap, requiredTier: "free", releasedAt: "2026-05-27" },
-  { name: "Mjolnir Modal", href: "/blocks/browse/mjolnir-modal", icon: MessageSquare, requiredTier: "base", releasedAt: "2026-05-27" },
-  { name: "Mjolnir Forms", href: "/blocks/browse/mjolnir-input", icon: FormInput, requiredTier: "free", releasedAt: "2026-05-27" },
-  { name: "Stat Card", href: "/blocks/browse/stat-card", icon: BarChart3, requiredTier: "free", releasedAt: "2026-05-27" },
-  { name: "Glass Card", href: "/blocks/browse/glass-card", icon: CreditCard, requiredTier: "free", releasedAt: "2026-05-27" },
-  { name: "Badge", href: "/blocks/browse/badge", icon: Tag, requiredTier: "free", releasedAt: "2026-05-27" },
-  { name: "Rune Loader", href: "/blocks/browse/rune-loader", icon: Loader2, requiredTier: "free", releasedAt: "2026-05-27" },
-  { name: "Wireframe Hammer", href: "/blocks/browse/wireframe-hammer", icon: Hammer, requiredTier: "free", releasedAt: "2026-05-27" },
-  { name: "Wireframe Orb", href: "/blocks/browse/wireframe-orb", icon: Orbit, requiredTier: "free", releasedAt: "2026-05-27" },
-  { name: "Wireframe Grid", href: "/blocks/browse/wireframe-grid", icon: LayoutGrid, requiredTier: "free", releasedAt: "2026-05-27" },
+  // Cleared on 2026-05-31 per user request — the launch-day wave (2026-05-27)
+  // has had its visibility window. All components remain fully browseable
+  // via the registry + filtered category navigation:
+  //   • Mjolnir Button / Glass Card / Badge / Rune Loader / Stat Card /
+  //     Mjolnir Forms / Mjolnir Modal → COMPONENTS sidebar section
+  //   • Wireframe Hammer / Orb / Grid → 3D & WEBGL → Wireframes
+  // Future weekly drops should be appended here with today's ISO date.
 ];
 
 export type SidebarSection = {
