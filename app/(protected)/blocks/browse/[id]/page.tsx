@@ -411,6 +411,186 @@ function MjolnirModalDemo() {
   );
 }
 
+/* ── Charts pack (6 components, all Base tier) ──────────────── */
+
+const SAMPLE_TIMESERIES = [
+  { label: "Mon", users: 240, sessions: 178 },
+  { label: "Tue", users: 312, sessions: 220 },
+  { label: "Wed", users: 289, sessions: 195 },
+  { label: "Thu", users: 380, sessions: 268 },
+  { label: "Fri", users: 425, sessions: 304 },
+  { label: "Sat", users: 198, sessions: 142 },
+  { label: "Sun", users: 156, sessions: 110 },
+];
+
+const SAMPLE_TIER_BREAKDOWN = [
+  { label: "Free", value: 4280 },
+  { label: "Base", value: 642 },
+  { label: "Pro", value: 218 },
+  { label: "Elite", value: 47 },
+];
+
+const BarChartDemo = dyn(() =>
+  import("@/components/ui/charts/BarChart").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-6">
+        <div className="w-full max-w-2xl">
+          <m.MjolnirBarChart
+            data={SAMPLE_TIMESERIES}
+            series={[
+              { key: "users", name: "Users" },
+              { key: "sessions", name: "Sessions" },
+            ]}
+            variant="thunder"
+            height={280}
+          />
+        </div>
+      </div>
+    ),
+  }))
+);
+
+const LineChartDemo = dyn(() =>
+  import("@/components/ui/charts/LineChart").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-6">
+        <div className="w-full max-w-2xl">
+          <m.MjolnirLineChart
+            data={SAMPLE_TIMESERIES}
+            series={[
+              { key: "users", name: "Users" },
+              { key: "sessions", name: "Sessions" },
+            ]}
+            curve="monotone"
+            height={280}
+          />
+        </div>
+      </div>
+    ),
+  }))
+);
+
+const AreaChartDemo = dyn(() =>
+  import("@/components/ui/charts/AreaChart").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-6">
+        <div className="w-full max-w-2xl">
+          <m.MjolnirAreaChart
+            data={SAMPLE_TIMESERIES}
+            series={[
+              { key: "users", name: "Users" },
+              { key: "sessions", name: "Sessions" },
+            ]}
+            curve="monotone"
+            stacked
+            height={280}
+          />
+        </div>
+      </div>
+    ),
+  }))
+);
+
+const DonutChartDemo = dyn(() =>
+  import("@/components/ui/charts/DonutChart").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-6">
+        <div className="w-full max-w-md">
+          <m.MjolnirDonutChart
+            data={SAMPLE_TIER_BREAKDOWN}
+            height={280}
+            legendPosition="right"
+            centerLabel={
+              <div>
+                <div className="text-3xl font-black text-white">5,187</div>
+                <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+                  Total users
+                </div>
+              </div>
+            }
+          />
+        </div>
+      </div>
+    ),
+  }))
+);
+
+const SparklineDemo = dyn(() =>
+  import("@/components/ui/charts/Sparkline").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-8">
+        <div className="w-full max-w-md grid grid-cols-1 gap-4">
+          {[
+            { label: "Signups", data: [12, 18, 14, 22, 28, 24, 31], variant: "thunder" as const },
+            { label: "MRR ($)", data: [820, 845, 870, 910, 945, 980, 1020], variant: "storm" as const },
+            { label: "Errors", data: [3, 1, 2, 0, 1, 4, 2], variant: "forge" as const },
+          ].map((row) => (
+            <div key={row.label} className="flex items-center gap-3">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 w-20 shrink-0">
+                {row.label}
+              </span>
+              <div className="flex-1">
+                <m.MjolnirSparkline data={row.data} variant={row.variant} height={32} />
+              </div>
+              <span className="text-sm font-mono text-white w-16 text-right">
+                {row.data[row.data.length - 1]}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  }))
+);
+
+const RadialBarDemo = dyn(() =>
+  import("@/components/ui/charts/RadialBar").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-6 gap-8 flex-wrap">
+        <m.MjolnirRadialBar
+          value={87}
+          variant="thunder"
+          size={180}
+          centerLabel={
+            <div>
+              <div className="text-3xl font-black text-white">87</div>
+              <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+                Perf score
+              </div>
+            </div>
+          }
+        />
+        <m.MjolnirRadialBar
+          value={62}
+          variant="storm"
+          size={180}
+          centerLabel={
+            <div>
+              <div className="text-3xl font-black text-white">62%</div>
+              <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+                Of goal
+              </div>
+            </div>
+          }
+        />
+        <m.MjolnirRadialBar
+          value={94}
+          variant="bifrost"
+          size={180}
+          centerLabel={
+            <div>
+              <div className="text-3xl font-black text-white">94</div>
+              <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+                Health
+              </div>
+            </div>
+          }
+        />
+      </div>
+    ),
+  }))
+);
+
 const StatCardDemo = dyn(() =>
   Promise.all([
     import("@/components/ui/StatCard"),
@@ -516,6 +696,12 @@ COMPONENT_MAP["mjolnir-modal"] = MjolnirModalDemo;
 COMPONENT_MAP["wireframe-hammer"] = WireframeHammer;
 COMPONENT_MAP["wireframe-orb"] = WireframeOrbDyn;
 COMPONENT_MAP["wireframe-grid"] = WireframeGrid;
+COMPONENT_MAP["bar-chart"] = BarChartDemo;
+COMPONENT_MAP["line-chart"] = LineChartDemo;
+COMPONENT_MAP["area-chart"] = AreaChartDemo;
+COMPONENT_MAP["donut-chart"] = DonutChartDemo;
+COMPONENT_MAP["sparkline"] = SparklineDemo;
+COMPONENT_MAP["radial-bar"] = RadialBarDemo;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 /* ── Controls Panel ─────────────────────────────────── */

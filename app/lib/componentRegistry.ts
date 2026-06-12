@@ -36,13 +36,12 @@ export interface ComponentMeta {
 }
 
 /* ═══════════════════════════════════════════════════════
-   COMPONENT REGISTRY — 56 Components
-     · 4 3D / Wireframe (incl. wireframe-hammer, wireframe-orb,
-       wireframe-grid — recordable for video production)
+   COMPONENT REGISTRY — 62 Components
+     · 4 3D / Wireframe
      · 11 animations
      · 16 backgrounds
-     · 25 UI (text effects, buttons, cards, badges, loaders, stats,
-            forms, modals)
+     · 31 UI (text effects, buttons, cards, badges, loaders, stats,
+            forms, modals, 6-chart data viz pack)
    ═══════════════════════════════════════════════════════ */
 export const COMPONENT_REGISTRY: ComponentMeta[] = [
   // ── 3D / WIREFRAME (4) ──────────────────────────────
@@ -104,6 +103,12 @@ export const COMPONENT_REGISTRY: ComponentMeta[] = [
   { id: "rune-loader", name: "Rune Loader", description: "Norse Elder Futhark rune spinner — 9 runes, 6 colors, 4 sizes", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/RuneLoader", hasCSS: false, isNew: true },
   { id: "shimmer-button", name: "Shimmer Button", description: "Premium shimmer gradient buttons in gold, silver, bronze variants", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/Buttons/ShimmerButton", hasCSS: false, isPopular: true },
   { id: "stat-card", name: "Stat Card", description: "KPI display with label, value, delta indicator, and 5 accent variants", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/StatCard", hasCSS: false, isNew: true },
+  { id: "bar-chart", name: "Bar Chart", description: "Mjolnir-themed bar chart — vertical / horizontal layouts, single + multi-series, stacked / grouped modes", category: "ui", requiredTier: "base", tech: ["framer-motion"], importPath: "@/components/ui/charts/BarChart", hasCSS: false, isNew: true },
+  { id: "line-chart", name: "Line Chart", description: "Smooth or linear line chart with multi-series support, branded tooltip + axis styling", category: "ui", requiredTier: "base", tech: ["framer-motion"], importPath: "@/components/ui/charts/LineChart", hasCSS: false, isNew: true },
+  { id: "area-chart", name: "Area Chart", description: "Time-series area chart with brand-colored gradient fills — stacked + grouped modes", category: "ui", requiredTier: "base", tech: ["framer-motion"], importPath: "@/components/ui/charts/AreaChart", hasCSS: false, isNew: true },
+  { id: "donut-chart", name: "Donut Chart", description: "Distribution donut / pie with center label slot, 5 accent palettes, right or bottom legend", category: "ui", requiredTier: "base", tech: ["framer-motion"], importPath: "@/components/ui/charts/DonutChart", hasCSS: false, isNew: true },
+  { id: "sparkline", name: "Sparkline", description: "Tiny inline trend chart — line or bars mode. Drops into StatCards, table cells, anywhere", category: "ui", requiredTier: "base", tech: ["framer-motion"], importPath: "@/components/ui/charts/Sparkline", hasCSS: false, isNew: true },
+  { id: "radial-bar", name: "Radial Bar", description: "Circular progress gauge with center label slot — performance scores, KPI dials, conversion rates", category: "ui", requiredTier: "base", tech: ["framer-motion"], importPath: "@/components/ui/charts/RadialBar", hasCSS: false, isNew: true },
   { id: "shiny-text", name: "Shiny Text", description: "Lustrous text with travelling specular highlight", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/ShinyText", hasCSS: false, isNew: true },
   { id: "text-reveal", name: "Text Reveal", description: "Character-by-character text reveal with blur effects", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/TextReveal", hasCSS: false },
   { id: "typewriter-text", name: "Typewriter Text", description: "Character-by-character typing with blinking cursor and string cycling", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/TypewriterText", hasCSS: false, isNew: true },

@@ -69,13 +69,13 @@ export function isItemNew(item: SidebarItem, now: number = Date.now()): boolean 
  * them — they just don't render).
  */
 export const NEW_LAUNCHES: SidebarItem[] = [
-  // Cleared on 2026-05-31 per user request — the launch-day wave (2026-05-27)
-  // has had its visibility window. All components remain fully browseable
-  // via the registry + filtered category navigation:
-  //   • Mjolnir Button / Glass Card / Badge / Rune Loader / Stat Card /
-  //     Mjolnir Forms / Mjolnir Modal → COMPONENTS sidebar section
-  //   • Wireframe Hammer / Orb / Grid → 3D & WEBGL → Wireframes
-  // Future weekly drops should be appended here with today's ISO date.
+  // ── 2026-06-11 charts pack ──────────────────────────────────────
+  { name: "Bar Chart", href: "/blocks/browse/bar-chart", icon: BarChart3, requiredTier: "base", releasedAt: "2026-06-11" },
+  { name: "Line Chart", href: "/blocks/browse/line-chart", icon: BarChart3, requiredTier: "base", releasedAt: "2026-06-11" },
+  { name: "Area Chart", href: "/blocks/browse/area-chart", icon: BarChart3, requiredTier: "base", releasedAt: "2026-06-11" },
+  { name: "Donut Chart", href: "/blocks/browse/donut-chart", icon: BarChart3, requiredTier: "base", releasedAt: "2026-06-11" },
+  { name: "Sparkline", href: "/blocks/browse/sparkline", icon: BarChart3, requiredTier: "base", releasedAt: "2026-06-11" },
+  { name: "Radial Bar", href: "/blocks/browse/radial-bar", icon: BarChart3, requiredTier: "base", releasedAt: "2026-06-11" },
 ];
 
 export type SidebarSection = {
@@ -147,6 +147,7 @@ export const sidebarSections: SidebarSection[] = [
       { name: "Inputs & Forms", href: "/blocks/browse?category=ui&search=input", icon: FormInput, requiredTier: "free" },
       { name: "Modals & Dialogs", href: "/blocks/browse?category=ui&search=modal", icon: MessageSquare, requiredTier: "base" },
       { name: "Stats & Data", href: "/blocks/browse?category=ui&search=stat", icon: BarChart3, requiredTier: "free" },
+      { name: "Charts", href: "/blocks/browse?category=ui&search=chart", icon: BarChart3, requiredTier: "base" },
       { name: "Loaders", href: "/blocks/browse?category=ui&search=loader", icon: Loader2, requiredTier: "free" },
     ],
   },
@@ -314,7 +315,7 @@ export function MjolnirSidebar() {
             )}
           >
             <Layers size={16} />
-            <span>Browse All (56)</span>
+            <span>Browse All (62)</span>
           </Link>
 
           {visibleSections.map((section) => {
