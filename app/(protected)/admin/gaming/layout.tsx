@@ -1,0 +1,27 @@
+import { Toaster } from "sonner";
+import { MjolnirSidebar } from "@/components/Dashboards/Sidebar";
+import { MjolnirHeader } from "@/components/Dashboards/Header";
+
+export const metadata = {
+  title: "MjolnirUI Admin • Gaming Studio",
+  description: "Live agent-swarm cockpit for all Mjolnir gaming IP.",
+};
+
+export default function AdminGamingLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-screen bg-black text-white flex">
+      <MjolnirSidebar />
+      <div className="flex-1 flex flex-col">
+        <MjolnirHeader />
+        <main className="flex-1 p-6 md:p-10 bg-linear-to-br from-zinc-950/50 via-black to-zinc-950/50 overflow-auto">
+          {children}
+        </main>
+      </div>
+      <Toaster position="bottom-right" richColors theme="dark" />
+    </div>
+  );
+}
