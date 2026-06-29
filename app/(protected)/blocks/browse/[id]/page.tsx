@@ -740,6 +740,253 @@ const AvatarDemo = dyn(() =>
   }))
 );
 
+/* ── Tranche 3 (2026-06-29) — feedback + forms ─────────────── */
+
+function ToastDemoInner() {
+  const [t, setT] = React.useState<{
+    show: (m: string, opts?: any) => void;
+    success: (m: string, opts?: any) => void;
+    warning: (m: string, opts?: any) => void;
+    error: (m: string, opts?: any) => void;
+    info: (m: string, opts?: any) => void;
+    thunder: (m: string, opts?: any) => void;
+    storm: (m: string, opts?: any) => void;
+  } | null>(null);
+  const [Host, setHost] = React.useState<React.ComponentType<any> | null>(null);
+  React.useEffect(() => {
+    import("@/components/ui/Toast").then((m) => {
+      setT(m.toast);
+      setHost(() => m.MjolnirToaster);
+    });
+  }, []);
+  return (
+    <div className="flex items-center justify-center w-full h-full p-8">
+      {Host && <Host position="bottom-right" />}
+      <div className="grid grid-cols-2 gap-2 max-w-md">
+        {t && (
+          <>
+            <button
+              onClick={() => t.success("Palette saved", { description: "Your changes are live." })}
+              className="px-3 py-2 rounded-lg bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-bold"
+            >
+              success()
+            </button>
+            <button
+              onClick={() => t.warning("Approaching plan limit", { description: "3 of 5 trial unlocks used." })}
+              className="px-3 py-2 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold"
+            >
+              warning()
+            </button>
+            <button
+              onClick={() => t.error("Couldn't reach Stripe", { description: "Retrying in 3s…" })}
+              className="px-3 py-2 rounded-lg bg-red-500/15 border border-red-500/40 text-red-300 text-xs font-bold"
+            >
+              error()
+            </button>
+            <button
+              onClick={() => t.info("New components shipped", { description: "5 just landed in the library." })}
+              className="px-3 py-2 rounded-lg bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-xs font-bold"
+            >
+              info()
+            </button>
+            <button
+              onClick={() => t.thunder("Mjolnir struck", { description: "Pro tier activated." })}
+              className="col-span-2 px-3 py-2 rounded-lg bg-[#FFCC11]/15 border border-[#FFCC11]/50 text-[#FFCC11] text-xs font-bold"
+            >
+              thunder() — branded
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+const ToastDemo = ToastDemoInner;
+
+const AlertDemo = dyn(() =>
+  import("@/components/ui/Alert").then((m) => ({
+    default: () => (
+      <div className="flex items-center justify-center w-full h-full p-8">
+        <div className="w-full max-w-md space-y-3">
+          <m.MjolnirAlert variant="success" title="Saved" />
+          <m.MjolnirAlert variant="warning" title="Payment past due" dismissible>
+            We tried to charge your card on June 9 and it failed.
+          </m.MjolnirAlert>
+          <m.MjolnirAlert
+            variant="error"
+            title="Connection lost"
+            action={
+              <button className="px-2.5 py-1 rounded-md bg-red-500/20 text-red-200 text-xs font-bold">
+                Retry
+              </button>
+            }
+          >
+            We couldn&apos;t reach the Stripe API.
+          </m.MjolnirAlert>
+          <m.MjolnirAlert variant="info" title="New components shipped">
+            5 just landed in the library. Browse the NEW FEATURES section.
+          </m.MjolnirAlert>
+          <m.MjolnirAlert variant="neutral" title="Heads up" dismissible>
+            Maintenance window scheduled for Sunday 2 AM ET.
+          </m.MjolnirAlert>
+        </div>
+      </div>
+    ),
+  }))
+);
+
+const BannerDemo = dyn(() =>
+  import("@/components/ui/Banner").then((m) => ({
+    default: () => (
+      <div className="w-full h-full flex flex-col gap-3 p-6">
+        <m.MjolnirBanner
+          variant="thunder"
+          icon={<span className="text-base leading-none">🔨</span>}
+          dismissible
+          action={
+            <a className="text-xs font-bold underline underline-offset-2 cursor-pointer">
+              Read the post →
+            </a>
+          }
+        >
+          The Hammer · June 2026 is live — here&apos;s what shipped.
+        </m.MjolnirBanner>
+        <m.MjolnirBanner variant="storm" dismissible>
+          New feature: Charts pack now available on Base + Pro tiers.
+        </m.MjolnirBanner>
+        <m.MjolnirBanner variant="bifrost" dismissible>
+          Beta program now open for MjolnirUI Elite.
+        </m.MjolnirBanner>
+        <m.MjolnirBanner variant="forge" dismissible>
+          Scheduled maintenance — Sunday 2 AM ET, expect ~5 minutes downtime.
+        </m.MjolnirBanner>
+        <m.MjolnirBanner variant="neutral" dismissible>
+          Cookies notice — we use cookies to keep you signed in.
+        </m.MjolnirBanner>
+      </div>
+    ),
+  }))
+);
+
+function CheckboxDemoInner() {
+  const [parent, setParent] = React.useState(false);
+  const [items, setItems] = React.useState([false, false, false]);
+  const [Cmp, setCmp] = React.useState<{
+    Checkbox: React.ComponentType<any>;
+    Group: React.ComponentType<any>;
+  } | null>(null);
+  React.useEffect(() => {
+    import("@/components/ui/Checkbox").then((m) => {
+      setCmp({ Checkbox: m.MjolnirCheckbox, Group: m.MjolnirCheckboxGroup });
+    });
+  }, []);
+  const allChecked = items.every(Boolean);
+  const someChecked = items.some(Boolean);
+  React.useEffect(() => {
+    setParent(allChecked);
+  }, [allChecked]);
+  if (!Cmp) return null;
+  const { Checkbox, Group } = Cmp;
+  return (
+    <div className="flex items-center justify-center w-full h-full p-8">
+      <div className="w-full max-w-md space-y-6">
+        <Checkbox
+          label="Email me about new components"
+          helper="Sent every Friday with the weekly drop."
+          variant="thunder"
+          defaultChecked
+        />
+        <Checkbox
+          label="Subscribe to The Hammer (monthly recap)"
+          variant="storm"
+          defaultChecked
+        />
+        <Checkbox
+          label="Tier-locked feature (disabled)"
+          helper="Available on Pro and above."
+          disabled
+        />
+        <Group label="Select notifications" helper="Pick what lands in your inbox.">
+          <Checkbox
+            label="All"
+            checked={allChecked}
+            indeterminate={!allChecked && someChecked}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              const next = e.target.checked;
+              setParent(next);
+              setItems([next, next, next]);
+            }}
+            variant="bifrost"
+          />
+          {["Components", "Tutorials", "Billing receipts"].map((lbl, i) => (
+            <Checkbox
+              key={lbl}
+              label={lbl}
+              checked={items[i]}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setItems((s) => s.map((v, j) => (j === i ? e.target.checked : v)))
+              }
+              variant="bifrost"
+              wrapperClassName="ml-5"
+            />
+          ))}
+        </Group>
+      </div>
+    </div>
+  );
+}
+const CheckboxDemo = CheckboxDemoInner;
+
+function SwitchDemoInner() {
+  const [vals, setVals] = React.useState({ a: true, b: false, c: true, d: false });
+  const [Cmp, setCmp] = React.useState<React.ComponentType<any> | null>(null);
+  React.useEffect(() => {
+    import("@/components/ui/Switch").then((m) => {
+      setCmp(() => m.MjolnirSwitch);
+    });
+  }, []);
+  if (!Cmp) return null;
+  const Switch = Cmp;
+  return (
+    <div className="flex items-center justify-center w-full h-full p-8">
+      <div className="w-full max-w-md space-y-5">
+        <Switch
+          label="Product updates"
+          description="Get notified about new components and tools."
+          checked={vals.a}
+          onCheckedChange={(v: boolean) => setVals({ ...vals, a: v })}
+          variant="thunder"
+        />
+        <Switch
+          label="Newsletter"
+          description="Monthly Hammer post + behind-the-scenes."
+          checked={vals.b}
+          onCheckedChange={(v: boolean) => setVals({ ...vals, b: v })}
+          variant="storm"
+        />
+        <Switch
+          label="Beta features"
+          description="Try new things before they ship to everyone."
+          checked={vals.c}
+          onCheckedChange={(v: boolean) => setVals({ ...vals, c: v })}
+          variant="bifrost"
+          size="lg"
+        />
+        <Switch
+          label="Critical alerts"
+          description="Always on — service outages and billing failures."
+          checked={vals.d}
+          onCheckedChange={(v: boolean) => setVals({ ...vals, d: v })}
+          variant="forge"
+          size="sm"
+          disabled
+        />
+      </div>
+    </div>
+  );
+}
+const SwitchDemo = SwitchDemoInner;
+
 const StatCardDemo = dyn(() =>
   Promise.all([
     import("@/components/ui/StatCard"),
@@ -856,6 +1103,11 @@ COMPONENT_MAP["heatmap"] = HeatmapDemo;
 COMPONENT_MAP["progress-bar"] = ProgressBarDemo;
 COMPONENT_MAP["skeleton"] = SkeletonDemo;
 COMPONENT_MAP["avatar"] = AvatarDemo;
+COMPONENT_MAP["toast"] = ToastDemo;
+COMPONENT_MAP["alert"] = AlertDemo;
+COMPONENT_MAP["banner"] = BannerDemo;
+COMPONENT_MAP["checkbox"] = CheckboxDemo;
+COMPONENT_MAP["switch"] = SwitchDemo;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 /* ── Controls Panel ─────────────────────────────────── */

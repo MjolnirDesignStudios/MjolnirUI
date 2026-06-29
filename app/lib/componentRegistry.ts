@@ -36,13 +36,14 @@ export interface ComponentMeta {
 }
 
 /* ═══════════════════════════════════════════════════════
-   COMPONENT REGISTRY — 67 Components
+   COMPONENT REGISTRY — 72 Components
      · 4 3D / Wireframe
      · 11 animations
      · 16 backgrounds
-     · 36 UI (text effects, buttons, cards, badges, loaders, stats,
+     · 41 UI (text effects, buttons, cards, badges, loaders, stats,
             forms, modals, 6-chart data viz pack, data table, heatmap,
-            progress, skeleton, avatar)
+            progress, skeleton, avatar, toast, alert, banner, checkbox,
+            switch)
    ═══════════════════════════════════════════════════════ */
 export const COMPONENT_REGISTRY: ComponentMeta[] = [
   // ── 3D / WIREFRAME (4) ──────────────────────────────
@@ -115,6 +116,11 @@ export const COMPONENT_REGISTRY: ComponentMeta[] = [
   { id: "progress-bar", name: "Progress Bar", description: "Linear progress with 3 modes (determinate / indeterminate / segmented) and 5 brand variants", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/ProgressBar", hasCSS: false, isNew: true },
   { id: "skeleton", name: "Skeleton", description: "Loading placeholder primitives — text / box / circle with subtle shimmer", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/Skeleton", hasCSS: false, isNew: true },
   { id: "avatar", name: "Avatar", description: "Circle profile with image, auto-initials fallback, tier-color ring, and optional status dot", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/Avatar", hasCSS: false, isNew: true, isPopular: true },
+  { id: "toast", name: "Toast", description: "Notification toast — sonner-powered with 6 status helpers (success / warning / error / info / thunder / storm)", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/Toast", hasCSS: false, isNew: true, isPopular: true },
+  { id: "alert", name: "Alert", description: "Inline alert callout — 5 status variants, optional dismiss + action CTA", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/Alert", hasCSS: false, isNew: true },
+  { id: "banner", name: "Banner", description: "Page-level full-width banner with optional sticky pin, dismiss, and localStorage persistence", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/Banner", hasCSS: false, isNew: true },
+  { id: "checkbox", name: "Checkbox", description: "Branded checkbox with indeterminate state, 5 brand variants, 3 sizes, and group composition", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/Checkbox", hasCSS: false, isNew: true },
+  { id: "switch", name: "Switch", description: "Branded toggle switch with controlled + uncontrolled bridge, 5 variants, 3 sizes, label / description slots", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/Switch", hasCSS: false, isNew: true },
   { id: "shiny-text", name: "Shiny Text", description: "Lustrous text with travelling specular highlight", category: "ui", requiredTier: "free", tech: ["css"], importPath: "@/components/ui/ShinyText", hasCSS: false, isNew: true },
   { id: "text-reveal", name: "Text Reveal", description: "Character-by-character text reveal with blur effects", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/TextReveal", hasCSS: false },
   { id: "typewriter-text", name: "Typewriter Text", description: "Character-by-character typing with blinking cursor and string cycling", category: "ui", requiredTier: "free", tech: ["framer-motion"], importPath: "@/components/ui/TypewriterText", hasCSS: false, isNew: true },
