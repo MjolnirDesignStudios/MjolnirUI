@@ -129,7 +129,7 @@ export default function Pricing() {
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         <motion.div 
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-          <h1 className="heading text-silver-100 text-5xl lg:text-5xl font-bold text-center mb-4">
+          <h1 className="heading text-silver-100 text-5xl lg:text-5xl font-bold text-center mb-4 line-clamp-2 md:line-clamp-none">
             Our Pricing: We Accept All Forms of <span className="text-gold">Gold!</span>
           </h1>
           <p className="mt-6 text-xl text-gray-400">All plans include lifetime updates</p>

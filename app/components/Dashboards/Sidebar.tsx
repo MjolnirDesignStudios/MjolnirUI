@@ -7,6 +7,7 @@ export function MjolnirSidebar() {
       <nav className="space-y-4">
         <a href="/dashboard" className="block text-white font-semibold hover:text-cyan-400 transition">Dashboard</a>
         <a href="/admin/gaming" className="block text-white font-semibold hover:text-purple-400 transition">🎮 Gaming Studio</a>
+        <a href="/admin/asgardians" className="block text-white font-semibold hover:text-amber-400 transition">⚡ Asgardians</a>
         <a href="/components" className="block text-white font-semibold hover:text-emerald-400 transition">Components</a>
         <a href="/templates" className="block text-white font-semibold hover:text-purple-400 transition">Templates</a>
         <a href="/account" className="block text-white font-semibold hover:text-pink-400 transition">Account</a>

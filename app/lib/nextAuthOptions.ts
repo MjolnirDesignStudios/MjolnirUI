@@ -36,7 +36,10 @@ export const nextAuthOptions = {
   ],
   adapter: SupabaseAdapter({
     url: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    secret: process.env.NEXT_PUBLIC_SUPABASE_KEY || '',
+    // Adapter writes users into the `next_auth` schema — this MUST be the
+    // service-role key (bypasses RLS), NOT the public anon key, or every
+    // OAuth sign-in fails on the callback and bounces back to /auth/signin.
+    secret: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
   }),
   session: {
     strategy: 'jwt' as SessionStrategy,

@@ -76,7 +76,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" className={`dark ${ubuntu.variable}`}>
+		<html lang="en" className={`dark ${ubuntu.variable}`} suppressHydrationWarning={true}>
 			<body className="antialiased bg-black text-white">
 				<Providers>
 					{children}

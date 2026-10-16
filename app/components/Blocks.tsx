@@ -1,17 +1,30 @@
 // app/components/Blocks.tsx — EnergyTunnel Background on Rocket Block
+"use client";
 import React from "react";
-import { Globe, Rocket, Zap, Hammer, Shield } from "lucide-react";
+import { Globe, Rocket, Zap, Hammer, Shield, Box } from "lucide-react";
 import ShimmerButton from "@/components/Buttons/ShimmerButton";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function Blocks() {
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const handleViewBlocks = () => {
+    if (!session) {
+      router.push('/auth/signin?callbackUrl=/blocks/dashboard');
+    } else {
+      router.push('/blocks/dashboard');
+    }
+  };
   return (
     <section id="blocks" 
       className="py-16 relative flex items-center justify-center overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-10">
-          <h1 className="text-5xl lg:text-5xl font-black text-white mb-4">
+          <h1 className="text-5xl lg:text-5xl font-black text-white mb-4 line-clamp-2 md:line-clamp-none">
             Asgardian Tech Forged in <span className="text-gold">Valhalla</span>
           </h1>
           <p className="mt-6 text-xl text-gray-400">
@@ -52,12 +65,13 @@ export default function Blocks() {
                     From Idea to Launch!
                   </p>
 
-                  <Link href="/blocks" className="mt-10 inline-block">
+                  <div onClick={handleViewBlocks} className="mt-10 inline-block cursor-pointer">
                     <ShimmerButton
                       title="View Blocks"
+                      icon={<Box className="w-6 h-6 text-white" />}
                       otherClasses="mx-auto border border-gray-300/50"
                     />
-                  </Link>
+                  </div>
                 </div>
               </div>
             </div>

@@ -51,7 +51,7 @@
   color: transparent;
 }
 /* app/globals.css — MJÖLNIR DESIGN STUDIOS 2026 — THUNDER REBORN */
-@import "tailwindcss";
+/* app/globals.css — MJÖLNIR DESIGN STUDIOS 2026 — THUNDER REBORN */
 
 /* ─────── 1. CSS VARIABLES — Light & Dark Mode (Tailwind v4 compatible) ─────── */
 @layer base {

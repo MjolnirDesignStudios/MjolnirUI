@@ -1,6 +1,5 @@
 import ShaderBG_Type1 from '@/components/ShaderBG_Type1';
-import Navbar_V2 from '@/components/Navigation/Navbar_V2';
-import { FloatingNav } from '@/components/Navigation/FloatingNav';
+import NavigationWrapper from '@/components/NavigationWrapper';
 import Footer from '@/components/Footer';
 import Hero from '@/components/Hero';
 import Blocks from '@/components/Blocks';
@@ -13,12 +12,7 @@ export default function Home() {
 			<ShaderBG_Type1 />
 
 			{/* Navigation Layer - Above BG, below content */}
-			{/* Floating Nav — Mobile Only */}
-			<div className="block lg:hidden w-full">
-				<FloatingNav />
-			</div>
-			{/* Navbar — Desktop Only */}
-			<Navbar_V2 />
+			<NavigationWrapper />
 
 			{/* Content Layer - Above BG and Nav, main page content */}
 			<div className="relative z-10">

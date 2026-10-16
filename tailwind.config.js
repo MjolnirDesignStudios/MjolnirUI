@@ -1,12 +1,13 @@
-// tailwind.config.ts — MJÖLNIR 2026 — FINAL & UNBREAKABLE
+const path = require('path');
 
-const config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   darkMode: "class",
   content: [
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    "./data/**/*.{ts,tsx}",
+    path.join(__dirname, "app/**/*.{js,ts,jsx,tsx,mdx}"),
+    path.join(__dirname, "components/**/*.{js,ts,jsx,tsx,mdx}"),
+    path.join(__dirname, "src/**/*.{js,ts,jsx,tsx,mdx}"),
+    path.join(__dirname, "data/**/*.{ts,tsx}"),
   ],
   theme: {
     container: {
@@ -75,5 +76,3 @@ const config = {
   },
   plugins: [],
 }
-
-export default config;
